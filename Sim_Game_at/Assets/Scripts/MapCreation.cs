@@ -6,19 +6,29 @@ using UnityEngine;
 public class MapCreation : MonoBehaviour
 {
 
+    public int textSize = 512;
 
+    [Space(30)]
     [Range(1, 1000)]
     public int offsetX = 100;
     [Range(1, 1000)]
     public int offsetY = 100;
 
-    public int textSize = 256;
+    [Space(20)]
+    public float scale = 18;
+    [Range(0.1f, 0.5f)]
+    public float lacu = 5;
+    [Range(0.1f, 0.5f)]
+    public float pers = 0.5f;
+    [Range(2, 6)]
+    public int octaves = 3;
 
-    public int scale = 10;
-
-
+    [Space(30)]
+    [Range(0.05f,0.5f)]
     public float threasholdGrass = 0.2f;
+    [Range(0.5f, 0.75f)]
     public float threasholdHill = 0.65f;
+    [Range(0.75f, 0.9f)]
     public float threasholdSnow = 0.89f;
 
     public Tile[,] tilesArray = new Tile[0, 0];
@@ -30,18 +40,15 @@ public class MapCreation : MonoBehaviour
         plane.transform.parent = transform;
         plane.transform.localScale = new Vector3(scale, scale, scale);
 
-        tilesArray = PerlinNoise2D(18, 3, 0.5f, 2, offsetX, offsetY);
-
-
+        tilesArray = PerlinNoise2D(scale, octaves, pers, lacu, offsetX, offsetY);
 
         plane.GetComponent<Renderer>().material.mainTexture = ColorArray(tilesArray);
-
+       
     }
 
 
     public Texture2D ColorArray(Tile[,] tileArray)
     {
-
         Texture2D texture = new Texture2D(textSize, textSize);
 
         for (int y = 0; y < tileArray.GetLength(0); y++)
@@ -54,10 +61,10 @@ public class MapCreation : MonoBehaviour
                         texture.SetPixel(x, y, Color.green);
                         break;
                     case TileType.HILL:
-                        texture.SetPixel(x, y, new Color(165, 42, 42));
+                        texture.SetPixel(x, y, new Color(165.0f/255, 42.0f / 255, 42.0f / 255,1));
                         break;
                     case TileType.SNOW:
-                        texture.SetPixel(x, y, Color.cyan);
+                        texture.SetPixel(x, y, Color.white);
                         break;
                     case TileType.WATER:
                         texture.SetPixel(x, y, Color.cyan);
@@ -74,6 +81,8 @@ public class MapCreation : MonoBehaviour
             }
         }
 
+        texture.filterMode = FilterMode.Point;
+        texture.Apply();
         return texture;
     }
 
@@ -123,39 +132,33 @@ public class MapCreation : MonoBehaviour
                     amplitude *= persistance;
 
                     freq *= lacu;
-
                 }
 
 
                 if (noiseHeight > maxN) { maxN = noiseHeight; }
                 else if (noiseHeight < minN) { minN = noiseHeight; }
 
-                noiseMap[x, y] = noiseHeight;
-
-
+                noiseMap[x, y] = Mathf.Abs(noiseHeight);
 
                 tiles[x, y] = new Tile();
 
 
-                if (noiseHeight > threasholdSnow)
+                if (noiseMap[x, y] > threasholdSnow)
                     tiles[x, y].tileType = TileType.SNOW;
 
-                else if (noiseHeight > threasholdHill)
+                else if (noiseMap[x, y] > threasholdHill)
                     tiles[x, y].tileType = TileType.HILL;
 
-                else if (noiseHeight > threasholdGrass)
+                else if (noiseMap[x, y] > threasholdGrass)
                     tiles[x, y].tileType = TileType.GRASS;
 
                 else
                     tiles[x, y].tileType = TileType.WATER;
 
                 tiles[x, y].noiseVal = noiseHeight;
-                Debug.Log(tiles[x, y].tileType);
                 tiles[x, y].coord = new Vector2Int(x,y);
-
             }
         }
-
 
         return tiles;
     }

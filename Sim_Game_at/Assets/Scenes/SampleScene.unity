@@ -152,8 +152,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5ebd2f44220df8499155a5e9fef8f8b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  resolution: 1056
-  scale: 10
+  textSize: 256
+  offsetX: 1000
+  offsetY: 100
+  scale: 40
+  lacu: 0.5
+  pers: 0.1
+  octaves: 5
+  threasholdGrass: 0.1
+  threasholdHill: 0.65
+  threasholdSnow: 0.89
 --- !u!4 &221688226
 Transform:
   m_ObjectHideFlags: 0
