@@ -5,9 +5,9 @@ using UnityEngine;
 
 public class MapCreation : MonoBehaviour
 {
-  
 
-    [Range(1,1000)]
+
+    [Range(1, 1000)]
     public int offsetX = 100;
     [Range(1, 1000)]
     public int offsetY = 100;
@@ -21,16 +21,16 @@ public class MapCreation : MonoBehaviour
     public float threasholdHill = 0.65f;
     public float threasholdSnow = 0.89f;
 
-    public Tile[,] tilesArray = new Tile[0,0];
+    public Tile[,] tilesArray = new Tile[0, 0];
 
 
     private void Start()
     {
         GameObject plane = GameObject.CreatePrimitive(PrimitiveType.Plane);
         plane.transform.parent = transform;
-        plane.transform.localScale= new Vector3(scale,scale,scale);
+        plane.transform.localScale = new Vector3(scale, scale, scale);
 
-        tilesArray = PerlinNoise2D(1, 3, 0.5f, 2, offsetX, offsetY);
+        tilesArray = PerlinNoise2D(18, 3, 0.5f, 2, offsetX, offsetY);
 
 
 
@@ -39,7 +39,7 @@ public class MapCreation : MonoBehaviour
     }
 
 
-    public Texture2D ColorArray(Tile[,] tileArray) 
+    public Texture2D ColorArray(Tile[,] tileArray)
     {
 
         Texture2D texture = new Texture2D(textSize, textSize);
@@ -48,14 +48,29 @@ public class MapCreation : MonoBehaviour
         {
             for (int x = 0; x < tileArray.GetLength(1); x++)
             {
-                if (tileArray[x, y].noiseVal > threasholdSnow)
-                    texture.SetPixel(x, y, Color.white);
-
-                if (tileArray[x, y].noiseVal > threasholdHill)
-                    texture.SetPixel(x, y, Color.yellow);
-
-                if (tileArray[x, y].noiseVal > threasholdGrass)
-                    texture.SetPixel(x, y, Color.green);
+                switch (tileArray[x, y].tileType)
+                {
+                    case TileType.GRASS:
+                        texture.SetPixel(x, y, Color.green);
+                        break;
+                    case TileType.HILL:
+                        texture.SetPixel(x, y, new Color(165, 42, 42));
+                        break;
+                    case TileType.SNOW:
+                        texture.SetPixel(x, y, Color.cyan);
+                        break;
+                    case TileType.WATER:
+                        texture.SetPixel(x, y, Color.cyan);
+                        break;
+                    case TileType.NULL:
+                        texture.SetPixel(x, y, Color.red);
+                        break;
+                    case TileType.BLOCKED:
+                        texture.SetPixel(x, y, Color.black);
+                        break;
+                    default:
+                        break;
+                }
             }
         }
 
@@ -67,7 +82,7 @@ public class MapCreation : MonoBehaviour
     {
 
         if (threasholdHill <= threasholdGrass)
-            threasholdHill = threasholdGrass+ 0.01f;
+            threasholdHill = threasholdGrass + 0.01f;
 
         if (threasholdSnow <= threasholdHill)
             threasholdSnow = threasholdHill + 0.01f;
@@ -118,19 +133,30 @@ public class MapCreation : MonoBehaviour
                 noiseMap[x, y] = noiseHeight;
 
 
+
+                tiles[x, y] = new Tile();
+
+
                 if (noiseHeight > threasholdSnow)
-                    tiles[x, y].tileType = TileType.SNOW;     tiles[x, y].noiseVal = noiseHeight;
+                    tiles[x, y].tileType = TileType.SNOW;
 
-                if (noiseHeight > threasholdHill)
-                    tiles[x, y].tileType = TileType.HILL; tiles[x, y].noiseVal = noiseHeight;
+                else if (noiseHeight > threasholdHill)
+                    tiles[x, y].tileType = TileType.HILL;
 
-                if (noiseHeight > threasholdGrass)
-                    tiles[x, y].tileType = TileType.GRASS; tiles[x, y].noiseVal = noiseHeight;
+                else if (noiseHeight > threasholdGrass)
+                    tiles[x, y].tileType = TileType.GRASS;
+
+                else
+                    tiles[x, y].tileType = TileType.WATER;
+
+                tiles[x, y].noiseVal = noiseHeight;
+                Debug.Log(tiles[x, y].tileType);
+                tiles[x, y].coord = new Vector2Int(x,y);
 
             }
         }
 
-       
+
         return tiles;
     }
 
@@ -138,16 +164,16 @@ public class MapCreation : MonoBehaviour
 
 
 
-public class Tile 
+public class Tile
 {
     public Color color;
     public TileType tileType;
 
     public float noiseVal;
-    public Vector2Int coord = new Vector2Int(0,0);
+    public Vector2Int coord = new Vector2Int(0, 0);
 }
 
-public enum TileType 
+public enum TileType
 {
     GRASS,
     HILL,
