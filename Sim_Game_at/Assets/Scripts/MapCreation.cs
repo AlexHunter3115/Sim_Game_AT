@@ -51,7 +51,7 @@ public class MapCreation : MonoBehaviour
     
     //public HashSet<Vector3> debugVert = new HashSet<Vector3>();
     public List<Vector3> textureVertecies = new List<Vector3>();
-    public int debugIndex = 2;
+    public Vector2Int debugIndex = new Vector2Int(0,0);
 
     private void Start()
     {
@@ -90,19 +90,14 @@ public class MapCreation : MonoBehaviour
 
 
 
-        //int index = 0;
+        foreach (var tile in tilesArray)
+        {
+            tile.BotLeft = textureVertecies[tile.oneDcoord];
+            tile.BotRight = textureVertecies[tile.oneDcoord+1];
 
-        //foreach (var tile in tilesArray)
-        //{
-
-        //    tile.TopLeft = textureVertecies[index+1];
-        //    tile.TopRight = textureVertecies[index];
-
-        //    tile.BotLeft = textureVertecies[index + textSize +1];
-        //    tile.BotRight = textureVertecies[index + textSize];
-
-        //    index++;
-        //}
+            tile.BotLeft = textureVertecies[tile.oneDcoord + textSize-1];
+            tile.BotRight = textureVertecies[tile.oneDcoord + 1 + textSize - 1];
+        }
 
 
 
@@ -168,7 +163,7 @@ public class MapCreation : MonoBehaviour
 
         float maxN = float.MinValue;
         float minN = float.MaxValue;
-
+        int index = 0;
 
         for (int y = 0; y < noiseMap.GetLength(0); y++)
         {
@@ -216,7 +211,9 @@ public class MapCreation : MonoBehaviour
                     tiles[x, y].tileType = TileType.WATER;
 
                 tiles[x, y].noiseVal = noiseHeight;
-                tiles[x, y].coord = new Vector2(x,y);
+                tiles[x, y].oneDcoord = index;
+                index++;
+
             }
         }
 
@@ -230,11 +227,11 @@ public class MapCreation : MonoBehaviour
         Gizmos.color = Color.red;
         if (showGizmos) 
         {
-
-            
-            Gizmos.DrawSphere(textureVertecies[0], 1f);
-
-            Gizmos.DrawSphere(new Vector3(tilesArray[0, 0].coord.x,0, tilesArray[0, 0].coord.y), 0.5f);
+            Gizmos.DrawWireSphere(tilesArray[debugIndex.x, debugIndex.y].BotLeft, 1f);
+            Gizmos.DrawWireSphere(tilesArray[debugIndex.x, debugIndex.y].BotRight, 1f);
+            //Gizmos.DrawWireSphere(tilesArray[debugIndex.x, debugIndex.y].TopLeft, 1f);
+            //Gizmos.DrawWireSphere(tilesArray[debugIndex.x, debugIndex.y].TopRight, 1f);
+            Gizmos.DrawSphere(textureVertecies[debugIndex.x], 2f);
         }
     }
 
@@ -255,6 +252,7 @@ public class Tile
     public Vector3 BotLeft = new Vector3();
 
     public Vector2 coord = new Vector2();
+    public int oneDcoord;
 }
 
 public enum TileType
