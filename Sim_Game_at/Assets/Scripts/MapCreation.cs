@@ -40,7 +40,7 @@ public class MapCreation : MonoBehaviour
 
     private GameObject plane;
 
-
+    
 
     private Vector3 bottomLeft = new Vector3();
     private Vector3 bottomRight = new Vector3();
@@ -48,10 +48,7 @@ public class MapCreation : MonoBehaviour
     private Vector3 topLeft = new Vector3();
     private Vector3 topRight = new Vector3();
 
-    
-    //public HashSet<Vector3> debugVert = new HashSet<Vector3>();
     public List<Vector3> textureVertecies = new List<Vector3>();
-    public Vector2Int debugIndex = new Vector2Int(0,0);
 
     private void Start()
     {
@@ -62,7 +59,7 @@ public class MapCreation : MonoBehaviour
         tilesArray = PerlinNoise2D(scale, octaves, pers, lacu, offsetX, offsetY);
 
         plane.GetComponent<Renderer>().material.mainTexture = ColorArray(tilesArray);
-
+        plane.transform.Translate(new Vector3(200, 0, 200));
 
         MeshRenderer meshRenderer = plane.GetComponent<MeshRenderer>();
         Mesh mesh = meshRenderer.GetComponent<MeshFilter>().mesh;
@@ -73,9 +70,6 @@ public class MapCreation : MonoBehaviour
 
         topLeft = plane.transform.TransformPoint(vertices[110]);
         topRight = plane.transform.TransformPoint(vertices[vertices.Length - 1]);
-
-
-
 
         for (float x = 0; x < textSize + 1; x++)
         {
@@ -88,20 +82,18 @@ public class MapCreation : MonoBehaviour
             }
         }
 
-
-
-        foreach (var tile in tilesArray)
+        int cor = 0;
+        for (int y = 0; y < textSize; y++)
         {
-            tile.BotLeft = textureVertecies[tile.oneDcoord];
-            tile.BotRight = textureVertecies[tile.oneDcoord+1];
-
-            tile.BotLeft = textureVertecies[tile.oneDcoord + textSize-1];
-            tile.BotRight = textureVertecies[tile.oneDcoord + 1 + textSize - 1];
+            for (int x = 0; x < textSize; x++)
+            {
+                tilesArray[x, y].BotLeft = textureVertecies[tilesArray[x, y].oneDcoord + cor];
+                tilesArray[x , y ].BotRight = textureVertecies[tilesArray[x, y].oneDcoord + cor +1];
+                tilesArray[x , y ].TopLeft = textureVertecies[tilesArray[x, y].oneDcoord + cor + 1 + textSize];
+                tilesArray[x , y ].TopRight = textureVertecies[tilesArray[x, y].oneDcoord + cor +textSize + 2];
+            }
+            cor++;
         }
-
-
-
-
     }
 
     public Texture2D ColorArray(Tile[,] tileArray)
@@ -212,6 +204,7 @@ public class MapCreation : MonoBehaviour
 
                 tiles[x, y].noiseVal = noiseHeight;
                 tiles[x, y].oneDcoord = index;
+                tiles[x, y].coord = new Vector2Int(x,y);
                 index++;
 
             }
@@ -227,11 +220,6 @@ public class MapCreation : MonoBehaviour
         Gizmos.color = Color.red;
         if (showGizmos) 
         {
-            Gizmos.DrawWireSphere(tilesArray[debugIndex.x, debugIndex.y].BotLeft, 1f);
-            Gizmos.DrawWireSphere(tilesArray[debugIndex.x, debugIndex.y].BotRight, 1f);
-            //Gizmos.DrawWireSphere(tilesArray[debugIndex.x, debugIndex.y].TopLeft, 1f);
-            //Gizmos.DrawWireSphere(tilesArray[debugIndex.x, debugIndex.y].TopRight, 1f);
-            Gizmos.DrawSphere(textureVertecies[debugIndex.x], 2f);
         }
     }
 

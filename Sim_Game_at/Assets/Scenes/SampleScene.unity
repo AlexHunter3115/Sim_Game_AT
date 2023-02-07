@@ -164,7 +164,7 @@ MonoBehaviour:
   threasholdSnow: 0.89
   showGizmos: 0
   textureVertecies: []
-  debugIndex: 2
+  debugIndex: {x: 0, y: 0}
 --- !u!4 &221688226
 Transform:
   m_ObjectHideFlags: 0
