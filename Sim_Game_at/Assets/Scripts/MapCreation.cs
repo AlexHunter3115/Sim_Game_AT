@@ -49,16 +49,18 @@ public class MapCreation : MonoBehaviour
     private Vector3 topRight = new Vector3();
 
     public List<Vector3> textureVertecies = new List<Vector3>();
+    public Tile ClickedTile = null;
 
     private void Start()
     {
         plane = GameObject.CreatePrimitive(PrimitiveType.Plane);
         plane.transform.parent = transform;
         plane.transform.localScale = new Vector3(scale, scale, scale);
+        plane.gameObject.layer = 6;
 
         tilesArray = PerlinNoise2D(scale, octaves, pers, lacu, offsetX, offsetY);
 
-        plane.GetComponent<Renderer>().material.mainTexture = ColorArray(tilesArray);
+        plane.GetComponent<Renderer>().material.mainTexture = UpdateMapTexture(tilesArray);
         plane.transform.Translate(new Vector3(200, 0, 200));
 
         MeshRenderer meshRenderer = plane.GetComponent<MeshRenderer>();
@@ -87,16 +89,35 @@ public class MapCreation : MonoBehaviour
         {
             for (int x = 0; x < textSize; x++)
             {
-                tilesArray[x, y].BotLeft = textureVertecies[tilesArray[x, y].oneDcoord + cor];
-                tilesArray[x , y ].BotRight = textureVertecies[tilesArray[x, y].oneDcoord + cor +1];
-                tilesArray[x , y ].TopLeft = textureVertecies[tilesArray[x, y].oneDcoord + cor + 1 + textSize];
-                tilesArray[x , y ].TopRight = textureVertecies[tilesArray[x, y].oneDcoord + cor +textSize + 2];
+                tilesArray[x, y].BotLeft = textureVertecies[tilesArray[x, y].oneDcoord + y];
+                tilesArray[x , y ].BotRight = textureVertecies[tilesArray[x, y].oneDcoord + y +1];
+                tilesArray[x , y ].TopLeft = textureVertecies[tilesArray[x, y].oneDcoord + y + 1 + textSize];
+                tilesArray[x , y ].TopRight = textureVertecies[tilesArray[x, y].oneDcoord + y +textSize + 2];
             }
             cor++;
         }
+
+
+        plane.transform.Rotate(new Vector3(0, 180, 0));    // this is a temp fix but i think the issue is with the for loop above cheking x first other than y
+
+
+        var paths = GeneralUtil.A_StarPathfinding(tilesArray, new Vector2Int(0, 0), new Vector2Int(10, 10));
+
+
+        foreach (var pathTile in paths.Item1)
+        {
+            pathTile.tileType = TileType.NULL;
+        }
+
+
+        plane.GetComponent<Renderer>().material.mainTexture = UpdateMapTexture(tilesArray);
+
     }
 
-    public Texture2D ColorArray(Tile[,] tileArray)
+
+
+    // in a way the setting of the weight can be here as we are redrawin the map but should theroatically be put somewhere else
+    public Texture2D UpdateMapTexture(Tile[,] tileArray)
     {
         Texture2D texture = new Texture2D(textSize, textSize);
 
@@ -108,21 +129,28 @@ public class MapCreation : MonoBehaviour
                 {
                     case TileType.GRASS:
                         texture.SetPixel(x, y, Color.green);
+                        tileArray[x, y].cost = 0.1f;
                         break;
                     case TileType.HILL:
                         texture.SetPixel(x, y, new Color(165.0f/255, 42.0f / 255, 42.0f / 255,1));
+                        tileArray[x, y].cost = 0.4f;
                         break;
                     case TileType.SNOW:
                         texture.SetPixel(x, y, Color.white);
+                        tileArray[x, y].cost = 0.8f;
                         break;
                     case TileType.WATER:
                         texture.SetPixel(x, y, Color.cyan);
+                        tileArray[x, y].cost = 1;
                         break;
                     case TileType.NULL:
                         texture.SetPixel(x, y, Color.red);
+                        tileArray[x, y].cost = 10000;
+
                         break;
                     case TileType.BLOCKED:
                         texture.SetPixel(x, y, Color.black);
+                        tileArray[x, y].cost = 10000;
                         break;
                     default:
                         break;
@@ -205,6 +233,7 @@ public class MapCreation : MonoBehaviour
                 tiles[x, y].noiseVal = noiseHeight;
                 tiles[x, y].oneDcoord = index;
                 tiles[x, y].coord = new Vector2Int(x,y);
+              //  Debug.Log($"the coord at {tiles[x, y].coord} or {tiles[x, y].oneDcoord}   is of type  {tiles[x, y].tileType} \n\n");
                 index++;
 
             }
@@ -220,6 +249,15 @@ public class MapCreation : MonoBehaviour
         Gizmos.color = Color.red;
         if (showGizmos) 
         {
+
+            if (ClickedTile != null) 
+            {
+                Gizmos.DrawSphere(ClickedTile.BotLeft, 0.5f);
+                Gizmos.DrawSphere(ClickedTile.TopLeft, 0.5f);
+                Gizmos.DrawSphere(ClickedTile.TopRight, 0.5f);
+                Gizmos.DrawSphere(ClickedTile.BotRight, 0.5f);
+            }
+
         }
     }
 
@@ -234,12 +272,14 @@ public class Tile
 
     public float noiseVal;
 
+    public float cost;
+
     public Vector3 BotRight = new Vector3();
     public Vector3 TopLeft = new Vector3();
     public Vector3 TopRight = new Vector3();
     public Vector3 BotLeft = new Vector3();
 
-    public Vector2 coord = new Vector2();
+    public Vector2Int coord = new Vector2Int();
     public int oneDcoord;
 }
 

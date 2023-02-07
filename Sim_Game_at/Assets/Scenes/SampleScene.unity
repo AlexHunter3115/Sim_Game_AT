@@ -152,7 +152,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5ebd2f44220df8499155a5e9fef8f8b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  textSize: 128
+  textSize: 512
   offsetX: 1000
   offsetY: 100
   scale: 40
@@ -164,7 +164,6 @@ MonoBehaviour:
   threasholdSnow: 0.89
   showGizmos: 0
   textureVertecies: []
-  debugIndex: {x: 0, y: 0}
 --- !u!4 &221688226
 Transform:
   m_ObjectHideFlags: 0
@@ -351,8 +350,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: -10}
+  m_LocalRotation: {x: -0.41868782, y: 0.0013774247, z: -0.00062692235, w: -0.90812904}
+  m_LocalPosition: {x: 38.269398, y: 76.579605, z: -12.224377}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -371,4 +370,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 00d50d77f573bbb44a32bcd4d6dbab68, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  map: {fileID: 0}
+  map: {fileID: 221688225}
+  transparent: {fileID: 2100000, guid: bfaa0086723db034382a85f0f88630aa, type: 2}
+  transparentError: {fileID: 2100000, guid: fbd341f37cae9214db231f0d1f7106fa, type: 2}
+  showObj: {fileID: 6913699009249884795, guid: 17dac486ed7bbb642835b728b6ec0735, type: 3}
+  mapLayer:
+    serializedVersion: 2
+    m_Bits: 64
+  selectionGridSize: {x: 4, y: 4}
