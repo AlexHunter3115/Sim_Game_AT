@@ -1,7 +1,8 @@
 /*
 
+SPAWN THE FIRST BUILDING AND MAKE IT A INHERITANCE BASED THING
 
-
+start some npc stuff
 
 
 
