@@ -2,10 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+using System;
+using System.Reflection;
+using UnityEngine.UIElements;
 
 public class MapCreation : MonoBehaviour
 {
-
     public int textSize = 512;
 
     [Space(30)]
@@ -31,21 +33,81 @@ public class MapCreation : MonoBehaviour
     [Range(0.75f, 0.9f)]
     public float threasholdSnow = 0.89f;
 
+
+    [Space(30)]
+    public bool showGizmos = false;
     public Tile[,] tilesArray = new Tile[0, 0];
 
+    private GameObject plane;
+
+
+
+    private Vector3 bottomLeft = new Vector3();
+    private Vector3 bottomRight = new Vector3();
+
+    private Vector3 topLeft = new Vector3();
+    private Vector3 topRight = new Vector3();
+
+    
+    //public HashSet<Vector3> debugVert = new HashSet<Vector3>();
+    public List<Vector3> textureVertecies = new List<Vector3>();
+    public int debugIndex = 2;
 
     private void Start()
     {
-        GameObject plane = GameObject.CreatePrimitive(PrimitiveType.Plane);
+        plane = GameObject.CreatePrimitive(PrimitiveType.Plane);
         plane.transform.parent = transform;
         plane.transform.localScale = new Vector3(scale, scale, scale);
 
         tilesArray = PerlinNoise2D(scale, octaves, pers, lacu, offsetX, offsetY);
 
         plane.GetComponent<Renderer>().material.mainTexture = ColorArray(tilesArray);
-       
-    }
 
+
+        MeshRenderer meshRenderer = plane.GetComponent<MeshRenderer>();
+        Mesh mesh = meshRenderer.GetComponent<MeshFilter>().mesh;
+        Vector3[] vertices = mesh.vertices;
+
+        bottomLeft = plane.transform.TransformPoint(vertices[0]);
+        bottomRight = plane.transform.TransformPoint(vertices[10]);
+
+        topLeft = plane.transform.TransformPoint(vertices[110]);
+        topRight = plane.transform.TransformPoint(vertices[vertices.Length - 1]);
+
+
+
+
+        for (float x = 0; x < textSize + 1; x++)
+        {
+            var left = Vector3.Lerp(topLeft, bottomLeft, x / textSize);
+            var right = Vector3.Lerp(topRight, bottomRight, x / textSize);
+            
+            for (float y = 0; y < textSize + 1; y++)
+            {
+                textureVertecies.Add(Vector3.Lerp(right, left, y / textSize));
+            }
+        }
+
+
+
+        //int index = 0;
+
+        //foreach (var tile in tilesArray)
+        //{
+
+        //    tile.TopLeft = textureVertecies[index+1];
+        //    tile.TopRight = textureVertecies[index];
+
+        //    tile.BotLeft = textureVertecies[index + textSize +1];
+        //    tile.BotRight = textureVertecies[index + textSize];
+
+        //    index++;
+        //}
+
+
+
+
+    }
 
     public Texture2D ColorArray(Tile[,] tileArray)
     {
@@ -85,8 +147,6 @@ public class MapCreation : MonoBehaviour
         texture.Apply();
         return texture;
     }
-
-
     public Tile[,] PerlinNoise2D(float scale, int octaves, float persistance, float lacu, int offsetX, int offsetY)
     {
 
@@ -156,11 +216,26 @@ public class MapCreation : MonoBehaviour
                     tiles[x, y].tileType = TileType.WATER;
 
                 tiles[x, y].noiseVal = noiseHeight;
-                tiles[x, y].coord = new Vector2Int(x,y);
+                tiles[x, y].coord = new Vector2(x,y);
             }
         }
 
         return tiles;
+    }
+
+
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.red;
+        if (showGizmos) 
+        {
+
+            
+            Gizmos.DrawSphere(textureVertecies[0], 1f);
+
+            Gizmos.DrawSphere(new Vector3(tilesArray[0, 0].coord.x,0, tilesArray[0, 0].coord.y), 0.5f);
+        }
     }
 
 }
@@ -173,7 +248,13 @@ public class Tile
     public TileType tileType;
 
     public float noiseVal;
-    public Vector2Int coord = new Vector2Int(0, 0);
+
+    public Vector3 BotRight = new Vector3();
+    public Vector3 TopLeft = new Vector3();
+    public Vector3 TopRight = new Vector3();
+    public Vector3 BotLeft = new Vector3();
+
+    public Vector2 coord = new Vector2();
 }
 
 public enum TileType
