@@ -163,7 +163,16 @@ MonoBehaviour:
   threasholdHill: 0.65
   threasholdSnow: 0.89
   showGizmos: 0
-  textureVertecies: []
+  trees:
+  - {fileID: 7138016484143298565, guid: d5d0d3795d9467e429276b80347bac09, type: 3}
+  rocks:
+  - {fileID: 3593481755819213432, guid: a5425d7761be8b848b2c5a217e273771, type: 3}
+  bushes:
+  - {fileID: 206635724849184401, guid: 8d4ac59308c28524dbad7cd930a90469, type: 3}
+  percOfStoneOnGrass: 0.005
+  percOfStoneOnHill: 0.05
+  regions: 3
+  percOfBushInGrass: 0.05
 --- !u!4 &221688226
 Transform:
   m_ObjectHideFlags: 0
@@ -285,6 +294,7 @@ GameObject:
   - component: {fileID: 963194227}
   - component: {fileID: 963194226}
   - component: {fileID: 963194229}
+  - component: {fileID: 963194230}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -350,8 +360,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
-  m_LocalRotation: {x: -0.41868782, y: 0.0013774247, z: -0.00062692235, w: -0.90812904}
-  m_LocalPosition: {x: 38.269398, y: 76.579605, z: -12.224377}
+  m_LocalRotation: {x: 0.110394776, y: -0.693934, z: 0.10891621, w: 0.70314}
+  m_LocalPosition: {x: 409.89328, y: 9.311234, z: 29.270723}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -377,4 +387,24 @@ MonoBehaviour:
   mapLayer:
     serializedVersion: 2
     m_Bits: 64
-  selectionGridSize: {x: 4, y: 4}
+  selectionGridSize: {x: 5, y: 5}
+  council: {fileID: 1536163236575794297, guid: 3a833e0bba287844289de25c1a8cdcbf, type: 3}
+  sawMill: {fileID: 0}
+  mine: {fileID: 0}
+  dock: {fileID: 0}
+  house: {fileID: 0}
+--- !u!114 &963194230
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 963194225}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e6601a7f743ee134fa87ac9a1ccb1308, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minuteCheck: 4
+  hourCheck: 8
+  dayCheck: 12

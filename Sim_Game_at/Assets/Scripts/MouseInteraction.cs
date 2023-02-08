@@ -10,6 +10,22 @@ using Debug = UnityEngine.Debug;
 public class MouseInteraction : MonoBehaviour
 {
 
+    Dictionary<BuildingData.BUILDING_TYPE, List<int>> allowedDict = new Dictionary<BuildingData.BUILDING_TYPE, List<int>>()
+    {
+        {BuildingData.BUILDING_TYPE.COUNCIL, new List<int>() {0,1 }  },
+        {BuildingData.BUILDING_TYPE.FARM, new List<int>() {0 }  },
+        {BuildingData.BUILDING_TYPE.MINE, new List<int>() {1,2 }  },
+        {BuildingData.BUILDING_TYPE.HOUSE, new List<int>() {0,1 }  },
+        {BuildingData.BUILDING_TYPE.SAWMILL, new List<int>() {0 }  },
+        {BuildingData.BUILDING_TYPE.DOCK, new List<int>() {0,3 }  }
+    };
+
+
+
+
+
+
+
     [SerializeField] MapCreation map;
     [SerializeField] Material transparent;
     [SerializeField] Material transparentError;
@@ -19,19 +35,31 @@ public class MouseInteraction : MonoBehaviour
 
     private List<GameObject> spawnedShowObj = new List<GameObject>();
     public Vector2Int selectionGridSize = new Vector2Int(0, 0);
+
+    private List<Vector2Int> selectedCoords = new List<Vector2Int>();
+
+    private Tile middleTile;
+
+    [Space(30)]
+    [SerializeField] GameObject council;
+    [SerializeField] GameObject sawMill;
+    [SerializeField] GameObject mine;
+    [SerializeField] GameObject dock;
+    [SerializeField] GameObject house;
+
     //public bool canInteract;
 
     void Update()
     {
         if (Input.GetMouseButtonDown(0))
         {
-            Debug.Log("pressed the right mous but");
+            // Debug.Log("pressed the right mous but");
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
 
             if (Physics.Raycast(ray, out hit))
             {
-                Debug.Log("called the raycast");
+                //  Debug.Log("called the raycast");
                 for (int i = 0; i < map.tilesArray.Length; i++)
                 {
                     int row = i / map.textSize;
@@ -39,7 +67,7 @@ public class MouseInteraction : MonoBehaviour
 
                     if (AABBCol(hit.point, map.tilesArray[row, col]))
                     {
-                        Debug.Log("find a collison in the AABB");
+                        // Debug.Log("find a collison in the AABB");
                         map.ClickedTile = map.tilesArray[row, col];
                         SpawnShowObj(map.ClickedTile, selectionGridSize.x, selectionGridSize.y);
                         break;
@@ -50,14 +78,51 @@ public class MouseInteraction : MonoBehaviour
 
 
 
+
+        if (Input.GetKeyDown(KeyCode.Return)) 
+        {
+            // need to check if i am allowed to spawn
+            ClearSection();
+           var success = SpawnBuilding();
+
+
+            if (success) 
+            {
+                Debug.Log("Did spawn fine");
+            }
+            else 
+            {
+                Debug.Log("There is an issue");
+            }
+        }
+
+
+
         if (Input.GetMouseButtonDown(1))
         {
-           
+
         }
     }
 
 
-    private void SpawnShowObj(Tile startingTile, int width, int height) 
+
+
+    private bool SpawnBuilding() 
+    {
+
+        //if not enough materials then return false
+
+
+        var objRef = Instantiate(council, middleTile.midCoord, Quaternion.identity);
+
+
+
+        return true;
+    }
+
+
+
+    private void SpawnShowObj(Tile startingTile, int width, int height)
     {
         if (spawnedShowObj.Count > 0)
             ClearShowObj();
@@ -67,48 +132,80 @@ public class MouseInteraction : MonoBehaviour
         int halfWidth = width / 2;
         int halfHeight = height / 2;
 
+        int midTile = (width * height) / 2;
+        int tileCounter = 0;
 
-        for (int y = startingTile.coord.y  - (height - halfHeight); y < startingTile.coord.y + halfHeight; y++)
+        for (int y = startingTile.coord.y - (height - halfHeight); y < startingTile.coord.y + halfHeight; y++)
         {
             for (int x = startingTile.coord.x - (width - halfWidth); x < startingTile.coord.x + halfWidth; x++)
             {
 
-                if (x < 0 || y < 0 || x >= map.textSize || y >= map.textSize) 
+                if (x < 0 || y < 0 || x >= map.textSize || y >= map.textSize)
                 {
                     canInteract = false;
                     break;
                 }
 
-                var objRef =Instantiate(showObj, Vector3.Lerp(map.tilesArray[x, y].BotRight, map.tilesArray[x, y].TopLeft, 0.5f), Quaternion.identity);
+                if (tileCounter == midTile)
+                {
+                    middleTile = map.tilesArray[x, y];
+                }
 
+                var objRef = Instantiate(showObj, Vector3.Lerp(map.tilesArray[x, y].BotRight, map.tilesArray[x, y].TopLeft, 0.5f), Quaternion.identity);
 
                 objRef.transform.parent = this.transform;
                 spawnedShowObj.Add(objRef);
 
-                if (map.tilesArray[x, y].tileType == TileType.WATER)
-                    canInteract = false;
+                bool typeCheck = false;
 
+
+                foreach (var type in allowedDict[0])
+                {
+                    if (map.tilesArray[x, y].tileType == (TileType)type) 
+                    {
+                        typeCheck = true;
+                        break;
+                    }
+                }
+
+                selectedCoords.Add(new Vector2Int(x, y));
+
+                if (!typeCheck) 
+                {
+                    canInteract = false;
+                }
+
+                tileCounter++;
             }
         }
 
         CheckInteractionAllowance(canInteract);
     }
-    private void ClearShowObj() 
+    private void ClearShowObj()
     {
+        selectedCoords.Clear();
+
         for (int i = spawnedShowObj.Count; i-- > 0;)
         {
             Destroy(spawnedShowObj[i]);
             spawnedShowObj.RemoveAt(i);
         }
     }
-    private void CheckInteractionAllowance(bool canInteract) 
+    private void CheckInteractionAllowance(bool canInteract)
     {
         foreach (var showObj in spawnedShowObj)
         {
             showObj.GetComponent<Renderer>().material = canInteract == true ? transparent : transparentError;
         }
     }
-
+    private void ClearSection() 
+    {
+        foreach (var tiles in selectedCoords)
+        {
+            map.tilesArray[tiles.x, tiles.y].busy = false;
+            Destroy(map.tilesArray[tiles.x, tiles.y].tileObject);
+        }
+    }
 
     private bool AABBCol(Vector3 player, Tile tile)
     {
