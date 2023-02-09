@@ -4,9 +4,11 @@ using UnityEngine;
 
 public class BuildingData : Entity
 {
-    public BuildingData(BUILDING_TYPE typeOfBuilding)
+    public BuildingData(BUILDING_TYPE typeOfBuilding, Vector2Int size, Vector2Int mid)
     {
         this.typeOfBuilding = typeOfBuilding;
+        this.buildingSize = size;
+        this.centerCoord = mid;
 
     }
 
@@ -33,7 +35,9 @@ public class BuildingData : Entity
 
     #region map pos stuff
     public Vector2Int centerCoord;
-    public List<Vector2Int> entrances = new List<Vector2Int>();
+    public Vector2Int entrances = Vector2Int.zero;
+    public Vector2Int buildingSize = Vector2Int.zero;
+
     public List<Tile> takenTiles = new List<Tile>();
 
     public Vector2Int botLeft;

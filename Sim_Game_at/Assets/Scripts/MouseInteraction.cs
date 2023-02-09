@@ -9,6 +9,7 @@ using Debug = UnityEngine.Debug;
 
 public class MouseInteraction : MonoBehaviour
 {
+    [SerializeField] DataHolder dataHolder;
 
     Dictionary<BuildingData.BUILDING_TYPE, List<int>> allowedDict = new Dictionary<BuildingData.BUILDING_TYPE, List<int>>()
     {
@@ -20,7 +21,17 @@ public class MouseInteraction : MonoBehaviour
         {BuildingData.BUILDING_TYPE.DOCK, new List<int>() {0,3 }  }
     };
 
+    Dictionary<BuildingData.BUILDING_TYPE, Vector2Int> buildingSize = new Dictionary<BuildingData.BUILDING_TYPE, Vector2Int>()
+    {
+        {BuildingData.BUILDING_TYPE.COUNCIL, new Vector2Int(5,5)  },
+        {BuildingData.BUILDING_TYPE.FARM,  new Vector2Int(5,10)  },
+        {BuildingData.BUILDING_TYPE.MINE,  new Vector2Int(3,5)  },
+        {BuildingData.BUILDING_TYPE.HOUSE,  new Vector2Int(5,5)  },
+        {BuildingData.BUILDING_TYPE.SAWMILL,  new Vector2Int(3,5)  },
+        {BuildingData.BUILDING_TYPE.DOCK,  new Vector2Int(3,7)  }
+    };
 
+    private string[] buildNames = new string[6] { "Council", "Farm", "Mine", "House", "Sawmill","Dock" };
 
 
 
@@ -39,6 +50,8 @@ public class MouseInteraction : MonoBehaviour
     private List<Vector2Int> selectedCoords = new List<Vector2Int>();
 
     private Tile middleTile;
+
+    [SerializeField] int selectedIndex = 0;
 
     [Space(30)]
     [SerializeField] GameObject council;
@@ -69,7 +82,9 @@ public class MouseInteraction : MonoBehaviour
                     {
                         // Debug.Log("find a collison in the AABB");
                         map.ClickedTile = map.tilesArray[row, col];
-                        SpawnShowObj(map.ClickedTile, selectionGridSize.x, selectionGridSize.y);
+
+                        var sel = buildingSize[(BuildingData.BUILDING_TYPE)selectedIndex];
+                        SpawnShowObj(map.ClickedTile, sel.x,sel.y);
                         break;
                     }
                 }
@@ -81,21 +96,46 @@ public class MouseInteraction : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Return)) 
         {
+
+            if (selectedCoords.Count != 0) 
+            {
+                ClearSection();
+                var success = SpawnBuilding();
+
+
+                if (success)
+                {
+                    Debug.Log("Did spawn fine");
+                }
+                else
+                {
+                    Debug.Log("There is an issue");
+                }
+            }
             // need to check if i am allowed to spawn
-            ClearSection();
-           var success = SpawnBuilding();
-
-
-            if (success) 
-            {
-                Debug.Log("Did spawn fine");
-            }
-            else 
-            {
-                Debug.Log("There is an issue");
-            }
+            
         }
 
+          
+
+
+        if (Input.GetKeyDown(KeyCode.UpArrow)) 
+        {
+            if (selectedIndex + 1>= allowedDict.Count) { selectedIndex = 0; }
+            else { selectedIndex += 1; }
+
+            ClearSection();
+            GeneralUtil.Ui.SetSelIndexText(buildNames[selectedIndex]);
+        }
+        if (Input.GetKeyDown(KeyCode.DownArrow))
+        {
+            if (selectedIndex -1  < 0) { selectedIndex = allowedDict.Count -1; }
+            else { selectedIndex -= 1; }
+
+            ClearSection();
+
+            GeneralUtil.Ui.SetSelIndexText(buildNames[selectedIndex]);
+        }
 
 
         if (Input.GetMouseButtonDown(1))
@@ -109,13 +149,11 @@ public class MouseInteraction : MonoBehaviour
 
     private bool SpawnBuilding() 
     {
-
-        //if not enough materials then return false
-
-
         var objRef = Instantiate(council, middleTile.midCoord, Quaternion.identity);
+        var BID = objRef.GetComponent<BuildingIdentifier>();
+        BID.init(middleTile, buildingSize[(BuildingData.BUILDING_TYPE)selectedIndex]);
 
-
+        dataHolder.buildingDict.Add(BID.guid, BID.buildingData);
 
         return true;
     }
@@ -200,6 +238,9 @@ public class MouseInteraction : MonoBehaviour
     }
     private void ClearSection() 
     {
+
+        ClearShowObj();
+
         foreach (var tiles in selectedCoords)
         {
             map.tilesArray[tiles.x, tiles.y].busy = false;

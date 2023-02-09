@@ -313,6 +313,7 @@ public class MapCreation : MonoBehaviour
                             objRef.transform.parent = this.transform;
                             objRef.transform.position = new Vector3(tile.midCoord.x, 0.1f, tile.midCoord.z);
 
+                            objRef.transform.rotation = Quaternion.Euler(0, Random.Range(0, 360), 0);
                             tile.tileObject = objRef;
                         }
 
@@ -337,8 +338,9 @@ public class MapCreation : MonoBehaviour
                                 tile.busy = true;
                                 var objRef = Instantiate(rocks.Count == 0 ? rocks[0] : rocks[Random.Range(0, rocks.Count)]);
                                 objRef.transform.parent = this.transform;
-                                objRef.transform.position = new Vector3(tile.midCoord.x, 0.1f, tile.midCoord.z);
+                                objRef.transform.position = new Vector3(tile.midCoord.x, 0.25f, tile.midCoord.z);
                                 tile.tileObject = objRef;
+
                             }
                         }
 
@@ -357,7 +359,7 @@ public class MapCreation : MonoBehaviour
                             tile.busy = true;
                             var objRef = Instantiate(rocks.Count == 0 ? rocks[0] : rocks[Random.Range(0, rocks.Count)]);
                             objRef.transform.parent = this.transform;
-                            objRef.transform.position = new Vector3(tile.midCoord.x, 0.1f, tile.midCoord.z);
+                            objRef.transform.position = new Vector3(tile.midCoord.x, 0.25f, tile.midCoord.z);
 
                             tile.tileObject = objRef;
                         }
@@ -479,7 +481,6 @@ public class Tile
     public bool busy;
     public GameObject tileObject;
 
-    
     public float noiseVal;
 
     public float cost;

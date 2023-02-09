@@ -9,8 +9,11 @@ public static class GeneralUtil
     public static int[,] childPosArry4Side = { { 0, -1 }, { -1, 0 }, { 1, 0 }, { 0, 1 } };
     public static int[,] childPosArry8Side = { { 0, -1 }, { 1, -1 }, { -1, -1 }, { -1, 0 }, { 1, 0 }, { 0, 1 }, { 1, 1 }, { -1, 1 } };
 
+    public static UserUIManager Ui;
 
 
+
+    public static void TrialTest(UserUIManager u) => Ui = u;
 
     public static Tuple<List<Tile>, List<Tile>> A_StarPathfinding(Tile[,] tileArray2D, Vector2Int start, Vector2Int end)
     {

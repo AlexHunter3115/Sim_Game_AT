@@ -1,43 +1,18 @@
 /*
 
 
+need a way to find the entrance this could be half the size and then add to the front as all of them are gpoign to have a singular orientation
 
-the resources can be, stone, wood sand and wood
-
-
-
-
-SPAWN THE FIRST BUILDING AND MAKE IT A INHERITANCE BASED THING
-each building will have a starting cost of resources
-will have a list of allowed tiles it can go on 
-each building will store a ref to a certain npc 
+basic ui showing whihc thing is selected so it can be ptu with the size selected also for the resources 
 
 
-council
+the start of an agent at least, agents dont collide with others they just glide on the map,
 
-house
+the council has all the power and the ddecidion making on what happens 
 
-sawmill 
+need a way to estimate the resource consumption
 
-mine
-
-dock
-
-"farm"
-
-
-
-
-
-
-
-
-
-
-start some npc stuff
-Npc will have a max distance they can check in the or loop for the A pathfinding
-there will be an npc mangaer, a dict is going to give key (GUID)  to npcClass
-
+make the cycles go through the compute shader system
 
 
 
