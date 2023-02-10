@@ -14,7 +14,8 @@ public class UserUIManager : MonoBehaviour
 
     [SerializeField] TMP_Text peopleAmountText;
 
-    private void Awake() => GeneralUtil.TrialTest(this);
+    private void Awake() => GeneralUtil.Ui = this;
+
 
     public void SetSelIndexText(string buildName) => selectedIndexText.text = $"Selected building {buildName}";
     public void SetFoodResText(int val) => foodResourcesText.text = $"Food: {val}";

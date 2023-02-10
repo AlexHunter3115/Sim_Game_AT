@@ -5,13 +5,10 @@ using UnityEngine;
 public class DataHolder : MonoBehaviour
 {
 
-    public static DataHolder instance;
-
-    private void Start()
+    private void Awake()
     {
-        instance = this;
+        GeneralUtil.dataBank = this;
     }
-
 
 
     public Dictionary<string, NpcData> npcDict = new Dictionary<string, NpcData>();

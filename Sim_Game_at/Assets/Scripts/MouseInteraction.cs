@@ -7,6 +7,10 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using Debug = UnityEngine.Debug;
 
+
+
+// we need a way to disavle the gen
+
 public class MouseInteraction : MonoBehaviour
 {
     [SerializeField] DataHolder dataHolder;
@@ -20,7 +24,6 @@ public class MouseInteraction : MonoBehaviour
         {BuildingData.BUILDING_TYPE.SAWMILL, new List<int>() {0 }  },
         {BuildingData.BUILDING_TYPE.DOCK, new List<int>() {0,3 }  }
     };
-
     Dictionary<BuildingData.BUILDING_TYPE, Vector2Int> buildingSize = new Dictionary<BuildingData.BUILDING_TYPE, Vector2Int>()
     {
         {BuildingData.BUILDING_TYPE.COUNCIL, new Vector2Int(5,5)  },
@@ -34,10 +37,6 @@ public class MouseInteraction : MonoBehaviour
     private string[] buildNames = new string[6] { "Council", "Farm", "Mine", "House", "Sawmill","Dock" };
 
 
-
-
-
-    [SerializeField] MapCreation map;
     [SerializeField] Material transparent;
     [SerializeField] Material transparentError;
     [SerializeField] GameObject showObj;
@@ -47,7 +46,7 @@ public class MouseInteraction : MonoBehaviour
     private List<GameObject> spawnedShowObj = new List<GameObject>();
     public Vector2Int selectionGridSize = new Vector2Int(0, 0);
 
-    private List<Vector2Int> selectedCoords = new List<Vector2Int>();
+    private List<Tile> selectedCoords = new List<Tile>();
 
     private Tile middleTile;
 
@@ -60,7 +59,13 @@ public class MouseInteraction : MonoBehaviour
     [SerializeField] GameObject dock;
     [SerializeField] GameObject house;
 
-    //public bool canInteract;
+    private bool canSpawn = false;
+
+
+    private void Start()
+    {
+        GeneralUtil.Ui.SetSelIndexText(buildNames[selectedIndex]);
+    }
 
     void Update()
     {
@@ -73,47 +78,44 @@ public class MouseInteraction : MonoBehaviour
             if (Physics.Raycast(ray, out hit))
             {
                 //  Debug.Log("called the raycast");
-                for (int i = 0; i < map.tilesArray.Length; i++)
+                for (int i = 0; i < GeneralUtil.map.tilesArray.Length; i++)
                 {
-                    int row = i / map.textSize;
-                    int col = i % map.textSize;
+                    int row = i / GeneralUtil.map.textSize;
+                    int col = i % GeneralUtil.map.textSize;
 
-                    if (AABBCol(hit.point, map.tilesArray[row, col]))
+                    if (AABBCol(hit.point, GeneralUtil.map.tilesArray[row, col]))
                     {
                         // Debug.Log("find a collison in the AABB");
-                        map.ClickedTile = map.tilesArray[row, col];
+                        GeneralUtil.map.ClickedTile = GeneralUtil.map.tilesArray[row, col];
 
                         var sel = buildingSize[(BuildingData.BUILDING_TYPE)selectedIndex];
-                        SpawnShowObj(map.ClickedTile, sel.x,sel.y);
+                        SpawnShowObj(GeneralUtil.map.ClickedTile, sel.x,sel.y);
+
                         break;
                     }
                 }
             }
         }
 
-
-
-
         if (Input.GetKeyDown(KeyCode.Return)) 
         {
-
-            if (selectedCoords.Count != 0) 
+            if (canSpawn) 
             {
-                ClearSection();
-                var success = SpawnBuilding();
+                if (selectedCoords.Count != 0)
+                {
+                    var success = SpawnBuilding();
+                    ClearSection();
 
 
-                if (success)
-                {
-                    Debug.Log("Did spawn fine");
-                }
-                else
-                {
-                    Debug.Log("There is an issue");
+                    if (success)
+                    {
+                    }
+                    else
+                    {
+                     
+                    }
                 }
             }
-            // need to check if i am allowed to spawn
-            
         }
 
           
@@ -140,21 +142,25 @@ public class MouseInteraction : MonoBehaviour
 
         if (Input.GetMouseButtonDown(1))
         {
-
+            
         }
     }
 
 
 
-
+    //this doesnt work something is not turning them into blocked
     private bool SpawnBuilding() 
     {
         var objRef = Instantiate(council, middleTile.midCoord, Quaternion.identity);
         var BID = objRef.GetComponent<BuildingIdentifier>();
-        BID.init(middleTile, buildingSize[(BuildingData.BUILDING_TYPE)selectedIndex]);
+        BID.init(middleTile, buildingSize[(BuildingData.BUILDING_TYPE)selectedIndex],selectedCoords);
 
-        dataHolder.buildingDict.Add(BID.guid, BID.buildingData);
+        GeneralUtil.dataBank.buildingDict.Add(BID.guid, BID.buildingData);
 
+        foreach (var cord in selectedCoords)
+        {
+            GeneralUtil.map.tilesArray[cord.coord.x,cord.coord.y].tileType = TileType.BLOCKED;
+        }
         return true;
     }
 
@@ -178,7 +184,7 @@ public class MouseInteraction : MonoBehaviour
             for (int x = startingTile.coord.x - (width - halfWidth); x < startingTile.coord.x + halfWidth; x++)
             {
 
-                if (x < 0 || y < 0 || x >= map.textSize || y >= map.textSize)
+                if (x < 0 || y < 0 || x >= GeneralUtil.map.textSize || y >= GeneralUtil.map.textSize)
                 {
                     canInteract = false;
                     break;
@@ -186,10 +192,10 @@ public class MouseInteraction : MonoBehaviour
 
                 if (tileCounter == midTile)
                 {
-                    middleTile = map.tilesArray[x, y];
+                    middleTile = GeneralUtil.map.tilesArray[x, y];
                 }
 
-                var objRef = Instantiate(showObj, Vector3.Lerp(map.tilesArray[x, y].BotRight, map.tilesArray[x, y].TopLeft, 0.5f), Quaternion.identity);
+                var objRef = Instantiate(showObj, Vector3.Lerp(GeneralUtil.map.tilesArray[x, y].BotRight, GeneralUtil.map.tilesArray[x, y].TopLeft, 0.5f), Quaternion.identity);
 
                 objRef.transform.parent = this.transform;
                 spawnedShowObj.Add(objRef);
@@ -199,14 +205,14 @@ public class MouseInteraction : MonoBehaviour
 
                 foreach (var type in allowedDict[0])
                 {
-                    if (map.tilesArray[x, y].tileType == (TileType)type) 
+                    if (GeneralUtil.map.tilesArray[x, y].tileType == (TileType)type) 
                     {
                         typeCheck = true;
                         break;
                     }
                 }
 
-                selectedCoords.Add(new Vector2Int(x, y));
+                selectedCoords.Add(GeneralUtil.map.tilesArray[x,y]);
 
                 if (!typeCheck) 
                 {
@@ -216,7 +222,7 @@ public class MouseInteraction : MonoBehaviour
                 tileCounter++;
             }
         }
-
+        canSpawn = canInteract;
         CheckInteractionAllowance(canInteract);
     }
     private void ClearShowObj()
@@ -236,16 +242,20 @@ public class MouseInteraction : MonoBehaviour
             showObj.GetComponent<Renderer>().material = canInteract == true ? transparent : transparentError;
         }
     }
+
+
     private void ClearSection() 
     {
 
-        ClearShowObj();
-
         foreach (var tiles in selectedCoords)
         {
-            map.tilesArray[tiles.x, tiles.y].busy = false;
-            Destroy(map.tilesArray[tiles.x, tiles.y].tileObject);
+            GeneralUtil.map.tilesArray[tiles.coord.x, tiles.coord.y].busy = false;
+            if (GeneralUtil.map.tilesArray[tiles.coord.x, tiles.coord.y].tileObject != null)
+                Destroy(GeneralUtil.map.tilesArray[tiles.coord.x, tiles.coord.y].tileObject);
         }
+
+        ClearShowObj();
+        canSpawn = false;
     }
 
     private bool AABBCol(Vector3 player, Tile tile)

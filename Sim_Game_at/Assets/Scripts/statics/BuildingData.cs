@@ -7,9 +7,8 @@ public class BuildingData : Entity
     public BuildingData(BUILDING_TYPE typeOfBuilding, Vector2Int size, Vector2Int mid)
     {
         this.typeOfBuilding = typeOfBuilding;
-        this.buildingSize = size;
-        this.centerCoord = mid;
-
+        buildingSize = size;
+        centerCoord = mid;
     }
 
 
@@ -39,6 +38,7 @@ public class BuildingData : Entity
     public Vector2Int buildingSize = Vector2Int.zero;
 
     public List<Tile> takenTiles = new List<Tile>();
+    public List<Vector2Int> entrancePoints = new List<Vector2Int>();
 
     public Vector2Int botLeft;
     public Vector2Int botRight;
@@ -51,7 +51,6 @@ public class BuildingData : Entity
 
     public List<NpcData> workers;
     public int maxWorkers;
-
 
     public int wood;
     public int stone;

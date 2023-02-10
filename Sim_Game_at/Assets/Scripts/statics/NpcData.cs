@@ -65,13 +65,25 @@ public class NpcData : Entity
     public void AddChild(NpcData child) => this.children.Add(child);
     #endregion
 
-    // does the constructor inherit and activate the other const?
-    public NpcData()  
+    public NpcData(AGE_STATE age, BuildingData refToHouse)  
     {
-        
+        currAge = age;
+        this.refToHouse = refToHouse;
+
+        if (0.5f > Random.value) 
+        {
+            gender = 0;
+            name = GeneralUtil.femaleNames[Random.Range(0, 49)];
+        }
+        else
+        {
+            gender = 1;
+            name = GeneralUtil.maleNames[Random.Range(0, 49)];
+        }
     }
 
     #region overrides
+    // this is the ticks to trickle down health
     public override void TickDailyCycle()
     {
         base.TickDailyCycle();

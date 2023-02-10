@@ -59,7 +59,7 @@ public class MapCreation : MonoBehaviour
     public float percOfBushInGrass;
 
 
-    private GameObject plane;
+    public GameObject plane;
     
 
     private Vector3 bottomLeft = new Vector3();
@@ -71,6 +71,13 @@ public class MapCreation : MonoBehaviour
     private List<Vector3> textureVertecies = new List<Vector3>();
     public Tile ClickedTile = null;
 
+
+
+    private void Awake()
+    {
+        GeneralUtil.map = this;
+    }
+
     private void Start()
     {
         plane = GameObject.CreatePrimitive(PrimitiveType.Plane);
@@ -79,8 +86,8 @@ public class MapCreation : MonoBehaviour
         plane.gameObject.layer = 6;
 
         tilesArray = PerlinNoise2D(scale, octaves, pers, lacu, offsetX, offsetY);
-
-        plane.GetComponent<Renderer>().material.mainTexture = UpdateMapTexture(tilesArray);
+        
+        UpdateMapTexture();
         plane.transform.Translate(new Vector3(200, 0, 200));
 
         MeshRenderer meshRenderer = plane.GetComponent<MeshRenderer>();
@@ -121,57 +128,55 @@ public class MapCreation : MonoBehaviour
 
         plane.transform.Rotate(new Vector3(0, 180, 0));    // this is a temp fix but i think the issue is with the for loop above cheking x first other than y
 
-
-        var paths = GeneralUtil.A_StarPathfinding(tilesArray, new Vector2Int(0, 0), new Vector2Int(10, 10));
-
-
-        foreach (var pathTile in paths.Item1)
-        {
-            pathTile.tileType = TileType.NULL;
-        }
+        //this is what to do for the pathfinding
+        //var paths = GeneralUtil.A_StarPathfinding(tilesArray, new Vector2Int(0, 0), new Vector2Int(10, 10));
 
 
-        plane.GetComponent<Renderer>().material.mainTexture = UpdateMapTexture(tilesArray);
+        //foreach (var pathTile in paths.Item1)
+        //{
+        //    pathTile.tileType = TileType.NULL;
+        //}
+
+        //UpdateMapTexture();
         GenerateResources();
     }
 
 
 
     // in a way the setting of the weight can be here as we are redrawin the map but should theroatically be put somewhere else
-    public Texture2D UpdateMapTexture(Tile[,] tileArray)
+    public void UpdateMapTexture()
     {
         Texture2D texture = new Texture2D(textSize, textSize);
 
-        for (int y = 0; y < tileArray.GetLength(0); y++)
+        for (int y = 0; y < tilesArray.GetLength(0); y++)
         {
-            for (int x = 0; x < tileArray.GetLength(1); x++)
+            for (int x = 0; x < tilesArray.GetLength(1); x++)
             {
-                switch (tileArray[x, y].tileType)
+                switch (tilesArray[x, y].tileType)
                 {
                     case TileType.GRASS:
                         texture.SetPixel(x, y, Color.green);
-                        tileArray[x, y].cost = 0.1f;
+                        tilesArray[x, y].cost = 0.1f;
                         break;
                     case TileType.HILL:
                         texture.SetPixel(x, y, new Color(165.0f/255, 42.0f / 255, 42.0f / 255,1));
-                        tileArray[x, y].cost = 0.4f;
+                        tilesArray[x, y].cost = 0.4f;
                         break;
                     case TileType.SNOW:
                         texture.SetPixel(x, y, Color.white);
-                        tileArray[x, y].cost = 0.8f;
+                        tilesArray[x, y].cost = 0.8f;
                         break;
                     case TileType.WATER:
                         texture.SetPixel(x, y, Color.cyan);
-                        tileArray[x, y].cost = 1;
+                        tilesArray[x, y].cost = 1;
                         break;
                     case TileType.NULL:
                         texture.SetPixel(x, y, Color.red);
-                        tileArray[x, y].cost = 10000;
-
+                        tilesArray[x, y].cost = 10000;
                         break;
                     case TileType.BLOCKED:
                         texture.SetPixel(x, y, Color.black);
-                        tileArray[x, y].cost = 10000;
+                        tilesArray[x, y].cost = 10000;
                         break;
                     default:
                         break;
@@ -181,7 +186,8 @@ public class MapCreation : MonoBehaviour
 
         texture.filterMode = FilterMode.Point;
         texture.Apply();
-        return texture;
+
+        plane.GetComponent<Renderer>().material.mainTexture =  texture;
     }
     public Tile[,] PerlinNoise2D(float scale, int octaves, float persistance, float lacu, int offsetX, int offsetY)
     {

@@ -42,7 +42,6 @@ public class TimeCycle : MonoBehaviour
         while (timeOn)
         {
             yield return new WaitForSeconds(dayCheck);
-            Debug.Log("This is a call for the daily check");
         }
     }
 
@@ -51,7 +50,6 @@ public class TimeCycle : MonoBehaviour
         while (timeOn)
         {
             yield return new WaitForSeconds(hourCheck);
-            Debug.Log("This is a call for the Hour check");
         }
     }
 
@@ -60,7 +58,7 @@ public class TimeCycle : MonoBehaviour
         while (timeOn)
         {
             yield return new WaitForSeconds(minuteCheck);
-            Debug.Log("This is a call for the minute check");
+
         }
     }
 }

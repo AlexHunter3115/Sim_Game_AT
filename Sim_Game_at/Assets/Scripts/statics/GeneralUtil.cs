@@ -6,14 +6,26 @@ using UnityEngine;
 public static class GeneralUtil
 {
 
+    #region 
+    public static string[] femaleNames = new string[] { "Emily", "Emma", "Olivia", "Ava", "Isabella", "Sophia", "Mia", "Charlotte", "Amelia", "Harper", "Evelyn", "Abigail", "Emily", "Elizabeth", "Sofia", "Avery", "Ella", "Madison", "Scarlett", "Victoria", "Aria", "Grace", "Chloe", "Camila", "Penelope", "Riley", "Layla", "Lillian", "Natalie", "Hazel", "Aubrey", "Lucy", "Audrey", "Sadie", "Makayla", "Aaliyah", "Aurora", "Ellie", "Arianna", "Allison", "Savannah", "Nora", "Reagan", "Adalynn", "Brooklynn", "Leah", "Anna", "Aurora", "Scarlet", "Mila", "Everly" };
+
+    public static string[] maleNames = new string[] { "Liam", "Noah", "William", "James", "Oliver", "Benjamin", "Elijah", "Lucas", "Mason", "Logan", "Alexander", "Ethan", "Jacob", "Michael", "Daniel", "Henry", "Jackson", "Sebastian", "Aiden", "Matthew", "Samuel", "David", "Joseph", "Carter", "Owen", "Wyatt", "John", "Jack", "Luke", "Jayden", "Dylan", "Grayson", "Levi", "Isaac", "Gabriel", "Julian", "Mateo", "Anthony", "Jaxon", "Lincoln", "Joshua", "Christopher", "Andrew", "Theodore", "Caleb", "Ryan", "Asher", "Nathan", "Thomas", "Leo" };
+
+    #endregion
+
+
+
+
     public static int[,] childPosArry4Side = { { 0, -1 }, { -1, 0 }, { 1, 0 }, { 0, 1 } };
     public static int[,] childPosArry8Side = { { 0, -1 }, { 1, -1 }, { -1, -1 }, { -1, 0 }, { 1, 0 }, { 0, 1 }, { 1, 1 }, { -1, 1 } };
 
     public static UserUIManager Ui;
+    public static MapCreation map;
+    public static ResourceBank bank;
+    public static DataHolder dataBank;
+    
 
 
-
-    public static void TrialTest(UserUIManager u) => Ui = u;
 
     public static Tuple<List<Tile>, List<Tile>> A_StarPathfinding(Tile[,] tileArray2D, Vector2Int start, Vector2Int end)
     {
