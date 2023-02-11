@@ -30,4 +30,24 @@ need to find a way to tell them what building to build
 
 
 i think before we worry about the which builing to spawn we need to deal with the NPC actually going out and getting basic shit done
+
+
+
+
+a perc game
+
+
+cictizen goes to fetch fine
+
+issues:
+
+the agent ignore the block tiles and goes throught the building
+need a var to check if outside or not
+need to change it so that stamina is taken into account plus the skill
+add the max tiles shit
+fix the pathing so not across the water  (could do one round of a star check if it contains any water tiles)
+could do the small distaance one
+
+need to update the map everytime one resource is gone and should prob add a new resource every day tick
+
  */

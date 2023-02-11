@@ -6,7 +6,7 @@ using UnityEngine;
 public static class GeneralUtil
 {
 
-    #region 
+    #region names
     public static string[] femaleNames = new string[] { "Emily", "Emma", "Olivia", "Ava", "Isabella", "Sophia", "Mia", "Charlotte", "Amelia", "Harper", "Evelyn", "Abigail", "Emily", "Elizabeth", "Sofia", "Avery", "Ella", "Madison", "Scarlett", "Victoria", "Aria", "Grace", "Chloe", "Camila", "Penelope", "Riley", "Layla", "Lillian", "Natalie", "Hazel", "Aubrey", "Lucy", "Audrey", "Sadie", "Makayla", "Aaliyah", "Aurora", "Ellie", "Arianna", "Allison", "Savannah", "Nora", "Reagan", "Adalynn", "Brooklynn", "Leah", "Anna", "Aurora", "Scarlet", "Mila", "Everly" };
 
     public static string[] maleNames = new string[] { "Liam", "Noah", "William", "James", "Oliver", "Benjamin", "Elijah", "Lucas", "Mason", "Logan", "Alexander", "Ethan", "Jacob", "Michael", "Daniel", "Henry", "Jackson", "Sebastian", "Aiden", "Matthew", "Samuel", "David", "Joseph", "Carter", "Owen", "Wyatt", "John", "Jack", "Luke", "Jayden", "Dylan", "Grayson", "Levi", "Isaac", "Gabriel", "Julian", "Mateo", "Anthony", "Jaxon", "Lincoln", "Joshua", "Christopher", "Andrew", "Theodore", "Caleb", "Ryan", "Asher", "Nathan", "Thomas", "Leo" };
@@ -27,8 +27,10 @@ public static class GeneralUtil
 
 
 
-    public static Tuple<List<Tile>, List<Tile>> A_StarPathfinding(Tile[,] tileArray2D, Vector2Int start, Vector2Int end)
+    public static List<Tile> A_StarPathfinding(Vector2Int start, Vector2Int end)
     {
+        var tileArray2D = map.tilesArray;
+
         List<AStar_Node> openList = new List<AStar_Node>();
         List<AStar_Node> closedList = new List<AStar_Node>();
 
@@ -83,13 +85,8 @@ public static class GeneralUtil
                     pathOfBasicTiles.Add(tile.refToBasicTile);
                 }
 
-                var allVisiteBasicTiles = new List<Tile>();
-                foreach (var tile in openList)
-                {
-                    allVisiteBasicTiles.Add(tile.refToBasicTile);
-                }
-
-                return new Tuple<List<Tile>, List<Tile>>(pathOfBasicTiles, allVisiteBasicTiles);
+                pathOfBasicTiles.Reverse();
+                return pathOfBasicTiles;
             }
             else
             {
@@ -161,6 +158,70 @@ public static class GeneralUtil
         return MathF.Sqrt(MathF.Pow((point1.x - point2.x), 2) + MathF.Pow((point1.y - point2.y), 2));
     }
 
+    public static bool AABBCol(Vector3 player, Tile tile)
+    {
+        if (player.x >= tile.BotLeft.x && player.x < tile.TopRight.x)
+        {
+            if (player.z >= tile.BotLeft.z && player.z < tile.TopRight.z)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+
+
+
+
+
+
+    #region Dicts
+
+    public static Dictionary<BuildingData.BUILDING_TYPE, List<int>> ResourcesWSFSUpKeep = new Dictionary<BuildingData.BUILDING_TYPE, List<int>>
+    {
+        {BuildingData.BUILDING_TYPE.COUNCIL, new List<int>() {20,5,2,2 }  },
+        {BuildingData.BUILDING_TYPE.HOUSE, new List<int>() {0,0,0,0 }  },
+        {BuildingData.BUILDING_TYPE.SAWMILL, new List<int>() {0,0,0,0 }  },
+        {BuildingData.BUILDING_TYPE.MINE, new List<int>() {0,0,0,0 }  },
+        {BuildingData.BUILDING_TYPE.DOCK, new List<int>() {0,0,0,0 }  },
+        {BuildingData.BUILDING_TYPE.FARM, new List<int>() {0,0,0,0 }  },
+    };
+
+    public static Dictionary<BuildingData.BUILDING_TYPE, List<int>> ResourcesWSFSStart = new Dictionary<BuildingData.BUILDING_TYPE, List<int>>
+    {
+        {BuildingData.BUILDING_TYPE.COUNCIL, new List<int>() {250,30,20,10 }  },
+        {BuildingData.BUILDING_TYPE.HOUSE, new List<int>() {0,0,0,0 }  },
+        {BuildingData.BUILDING_TYPE.SAWMILL, new List<int>() {0,0,0,0 }  },
+        {BuildingData.BUILDING_TYPE.MINE, new List<int>() {0,0,0,0 }  },
+        {BuildingData.BUILDING_TYPE.DOCK, new List<int>() {0,0,0,0 }  },
+        {BuildingData.BUILDING_TYPE.FARM, new List<int>() {0,0,0,0 }  },
+    };
+
+
+    public static Dictionary<BuildingData.BUILDING_TYPE, List<int>> allowedDict = new Dictionary<BuildingData.BUILDING_TYPE, List<int>>()
+    {
+        {BuildingData.BUILDING_TYPE.COUNCIL, new List<int>() {0,1 }  },
+        {BuildingData.BUILDING_TYPE.FARM, new List<int>() {0 }  },
+        {BuildingData.BUILDING_TYPE.MINE, new List<int>() {1,2 }  },
+        {BuildingData.BUILDING_TYPE.HOUSE, new List<int>() {0,1 }  },
+        {BuildingData.BUILDING_TYPE.SAWMILL, new List<int>() {0 }  },
+        {BuildingData.BUILDING_TYPE.DOCK, new List<int>() {0,3 }  }
+    };
+
+    public static Dictionary<BuildingData.BUILDING_TYPE, Vector2Int> buildingSize = new Dictionary<BuildingData.BUILDING_TYPE, Vector2Int>()
+    {
+        {BuildingData.BUILDING_TYPE.COUNCIL, new Vector2Int(5,5)  },
+        {BuildingData.BUILDING_TYPE.FARM,  new Vector2Int(5,10)  },
+        {BuildingData.BUILDING_TYPE.MINE,  new Vector2Int(3,5)  },
+        {BuildingData.BUILDING_TYPE.HOUSE,  new Vector2Int(5,5)  },
+        {BuildingData.BUILDING_TYPE.SAWMILL,  new Vector2Int(3,5)  },
+        {BuildingData.BUILDING_TYPE.DOCK,  new Vector2Int(3,7)  }
+    };
+
+
+    #endregion
 
 
 }

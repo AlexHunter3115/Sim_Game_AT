@@ -6,23 +6,29 @@ using UnityEngine;
 
 public class BuildingIdentifier : MonoBehaviour
 {
+    //this is just used as a comp fetcher for th guid and stuff like that becuase of the different things a builiding can 
 
     public BuildingData buildingData;
     public string guid;
-    public Component comp;
+
     [Header("the entrance point is based on the middle point")]
-    public List<Vector2Int> entrances = new List<Vector2Int>();
+    public List<Vector2Int> entrances = new List<Vector2Int>();  // this also gives the entrance of the building
+    public int ActionRange = 25;
+    
+     
 
 
-    private MethodInfo minuteCycle;
-    private MethodInfo HourCycle;
-    private MethodInfo DayCycle;
+    //private MethodInfo minuteCycle;
+    //private MethodInfo HourCycle;
+    //private MethodInfo DayCycle;
 
     public void init(Tile middleTile, Vector2Int size, List<Tile> controlledTiles)
     {
-        buildingData = new BuildingData(BuildingData.BUILDING_TYPE.COUNCIL, size, middleTile.coord);
+        buildingData = new BuildingData(BuildingData.BUILDING_TYPE.COUNCIL, size, middleTile.coord,ActionRange);
         this.guid = buildingData.guid;
         buildingData.takenTiles = controlledTiles;
+        buildingData.buildingID = this;
+
 
         var entranceLocation = new List<Vector2Int>();
 
@@ -30,7 +36,7 @@ public class BuildingIdentifier : MonoBehaviour
         {
             entranceLocation.Add(new Vector2Int(entrance.x + buildingData.centerCoord.x, entrance.y + buildingData.centerCoord.y));
             //GeneralUtil.map.tilesArray[entrance.x + buildingData.centerCoord.x, entrance.y + buildingData.centerCoord.y].tileType = TileType.BLOCKED;
-
+            Debug.Log(entranceLocation[0]);
         }
 
         //GeneralUtil.map.UpdateMapTexture();
@@ -59,6 +65,17 @@ public class BuildingIdentifier : MonoBehaviour
         buildingData.entrancePoints = entranceLocation;
     }
     
+
+
+
+
+    public void MinuteCycle() 
+    {
+        
+    }
+    public void HourCycle() { }
+    public void DayCycle() { }
+
 
 
 

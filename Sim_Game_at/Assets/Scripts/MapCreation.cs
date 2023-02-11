@@ -58,6 +58,7 @@ public class MapCreation : MonoBehaviour
     [Range(0.05f, 0.15f)]
     public float percOfBushInGrass;
 
+    public GameObject agent;
 
     public GameObject plane;
     
@@ -382,7 +383,14 @@ public class MapCreation : MonoBehaviour
     }
 
 
+    public void SpawnAgent(string guid, Tile exitPoint) 
+    {
+        var objRef = Instantiate(agent, transform);
+        var comp = objRef.GetComponent<Agent>();
 
+        comp.LoadData(guid);
+        comp.SetPosition(exitPoint);
+    }
 
 
     public List<Tile>[] Voronoi() 

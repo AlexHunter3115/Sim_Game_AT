@@ -15,24 +15,7 @@ public class MouseInteraction : MonoBehaviour
 {
     [SerializeField] DataHolder dataHolder;
 
-    Dictionary<BuildingData.BUILDING_TYPE, List<int>> allowedDict = new Dictionary<BuildingData.BUILDING_TYPE, List<int>>()
-    {
-        {BuildingData.BUILDING_TYPE.COUNCIL, new List<int>() {0,1 }  },
-        {BuildingData.BUILDING_TYPE.FARM, new List<int>() {0 }  },
-        {BuildingData.BUILDING_TYPE.MINE, new List<int>() {1,2 }  },
-        {BuildingData.BUILDING_TYPE.HOUSE, new List<int>() {0,1 }  },
-        {BuildingData.BUILDING_TYPE.SAWMILL, new List<int>() {0 }  },
-        {BuildingData.BUILDING_TYPE.DOCK, new List<int>() {0,3 }  }
-    };
-    Dictionary<BuildingData.BUILDING_TYPE, Vector2Int> buildingSize = new Dictionary<BuildingData.BUILDING_TYPE, Vector2Int>()
-    {
-        {BuildingData.BUILDING_TYPE.COUNCIL, new Vector2Int(5,5)  },
-        {BuildingData.BUILDING_TYPE.FARM,  new Vector2Int(5,10)  },
-        {BuildingData.BUILDING_TYPE.MINE,  new Vector2Int(3,5)  },
-        {BuildingData.BUILDING_TYPE.HOUSE,  new Vector2Int(5,5)  },
-        {BuildingData.BUILDING_TYPE.SAWMILL,  new Vector2Int(3,5)  },
-        {BuildingData.BUILDING_TYPE.DOCK,  new Vector2Int(3,7)  }
-    };
+
 
     private string[] buildNames = new string[6] { "Council", "Farm", "Mine", "House", "Sawmill","Dock" };
 
@@ -83,12 +66,13 @@ public class MouseInteraction : MonoBehaviour
                     int row = i / GeneralUtil.map.textSize;
                     int col = i % GeneralUtil.map.textSize;
 
-                    if (AABBCol(hit.point, GeneralUtil.map.tilesArray[row, col]))
+                    if (GeneralUtil.AABBCol(hit.point, GeneralUtil.map.tilesArray[row, col]))
                     {
-                        // Debug.Log("find a collison in the AABB");
                         GeneralUtil.map.ClickedTile = GeneralUtil.map.tilesArray[row, col];
 
-                        var sel = buildingSize[(BuildingData.BUILDING_TYPE)selectedIndex];
+                        Debug.Log($"{row}   {col}");
+
+                        var sel = GeneralUtil.buildingSize[(BuildingData.BUILDING_TYPE)selectedIndex];
                         SpawnShowObj(GeneralUtil.map.ClickedTile, sel.x,sel.y);
 
                         break;
@@ -103,6 +87,9 @@ public class MouseInteraction : MonoBehaviour
             {
                 if (selectedCoords.Count != 0)
                 {
+                    //if (!CheckEnoughResources((BuildingData.BUILDING_TYPE)selectedIndex))
+                    //    return;
+
                     var success = SpawnBuilding();
                     ClearSection();
 
@@ -123,7 +110,7 @@ public class MouseInteraction : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.UpArrow)) 
         {
-            if (selectedIndex + 1>= allowedDict.Count) { selectedIndex = 0; }
+            if (selectedIndex + 1>= GeneralUtil.allowedDict.Count) { selectedIndex = 0; }
             else { selectedIndex += 1; }
 
             ClearSection();
@@ -131,7 +118,7 @@ public class MouseInteraction : MonoBehaviour
         }
         if (Input.GetKeyDown(KeyCode.DownArrow))
         {
-            if (selectedIndex -1  < 0) { selectedIndex = allowedDict.Count -1; }
+            if (selectedIndex -1  < 0) { selectedIndex = GeneralUtil.allowedDict.Count -1; }
             else { selectedIndex -= 1; }
 
             ClearSection();
@@ -148,12 +135,58 @@ public class MouseInteraction : MonoBehaviour
 
 
 
+
+
+
+    private bool CheckEnoughResources(BuildingData.BUILDING_TYPE type) 
+    {
+        var list = GeneralUtil.ResourcesWSFSStart[type];
+
+        int wood = list[0];
+        int stone = list[1];
+        int food = list[2];
+        int sand = list[3];
+
+        var bank = GeneralUtil.bank;
+
+        if (bank.woodAmount < wood) 
+        {
+            return false;
+        }
+        if (bank.stoneAmount < stone)
+        {
+            return false;
+        }
+        if (bank.foodAmount < food)
+        {
+            return false;
+        }
+        if (bank.sandAmount < sand)
+        {
+            return false;
+        }
+
+
+        bank.ChangeFoodAmount(-food);
+        bank.ChangeWoodAmount(-wood);
+        bank.ChangeStoneAmount(-stone);
+        bank.ChangeSandAmount(-sand);
+
+        return true;
+    }
+
+
+
+
+
+
+
     //this doesnt work something is not turning them into blocked
     private bool SpawnBuilding() 
     {
         var objRef = Instantiate(council, middleTile.midCoord, Quaternion.identity);
         var BID = objRef.GetComponent<BuildingIdentifier>();
-        BID.init(middleTile, buildingSize[(BuildingData.BUILDING_TYPE)selectedIndex],selectedCoords);
+        BID.init(middleTile, GeneralUtil.buildingSize[(BuildingData.BUILDING_TYPE)selectedIndex],selectedCoords);
 
         GeneralUtil.dataBank.buildingDict.Add(BID.guid, BID.buildingData);
 
@@ -203,7 +236,7 @@ public class MouseInteraction : MonoBehaviour
                 bool typeCheck = false;
 
 
-                foreach (var type in allowedDict[0])
+                foreach (var type in GeneralUtil.allowedDict[0])
                 {
                     if (GeneralUtil.map.tilesArray[x, y].tileType == (TileType)type) 
                     {
@@ -258,16 +291,5 @@ public class MouseInteraction : MonoBehaviour
         canSpawn = false;
     }
 
-    private bool AABBCol(Vector3 player, Tile tile)
-    {
-        if (player.x >= tile.BotLeft.x && player.x < tile.TopRight.x)
-        {
-            if (player.z >= tile.BotLeft.z && player.z < tile.TopRight.z)
-            {
-                return true;
-            }
-        }
 
-        return false;
-    }
 }

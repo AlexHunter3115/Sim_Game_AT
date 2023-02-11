@@ -443,6 +443,7 @@ MonoBehaviour:
   percOfStoneOnHill: 0.05
   regions: 3
   percOfBushInGrass: 0.05
+  agent: {fileID: 200377615479305663, guid: 3f6b847505d6bb74fbdb8e983073f318, type: 3}
   plane: {fileID: 0}
 --- !u!4 &221688226
 Transform:
@@ -875,7 +876,7 @@ Camera:
     width: 1
     height: 1
   near clip plane: 0.3
-  far clip plane: 1000
+  far clip plane: 100
   field of view: 60
   orthographic: 0
   orthographic size: 5

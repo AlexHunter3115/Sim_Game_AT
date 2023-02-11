@@ -30,6 +30,8 @@ public class NpcData : Entity
     public int gender;
     public float speed;
 
+    public bool busy;
+
     public enum AGE_STATE 
     {
         BABY,
@@ -82,6 +84,18 @@ public class NpcData : Entity
         }
     }
 
+
+    public bool AgeUp() 
+    {
+
+
+
+        //there needs to be a var that checks for days alive
+        // this will return false delete
+
+        //just set the shit to 0
+        return true;
+    }
     #region overrides
     // this is the ticks to trickle down health
     public override void TickDailyCycle()

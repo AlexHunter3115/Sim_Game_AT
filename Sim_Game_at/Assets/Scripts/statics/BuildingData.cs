@@ -4,11 +4,33 @@ using UnityEngine;
 
 public class BuildingData : Entity
 {
-    public BuildingData(BUILDING_TYPE typeOfBuilding, Vector2Int size, Vector2Int mid)
+    public BuildingData(BUILDING_TYPE typeOfBuilding, Vector2Int size, Vector2Int mid, int range )
     {
         this.typeOfBuilding = typeOfBuilding;
         buildingSize = size;
         centerCoord = mid;
+
+        int halfWidth = range / 2;
+        int halfHeight = range / 2;
+
+
+        for (int y = mid.y - (range - halfHeight); y < mid.y + halfHeight; y++)
+        {
+            for (int x = mid.x - (range - halfWidth); x < mid.x + halfWidth; x++)
+            {
+                if (x < 0 || y < 0 || x >= GeneralUtil.map.textSize || y >= GeneralUtil.map.textSize)
+                {
+                    // out of range
+                }
+                else 
+                {
+                    if (GeneralUtil.map.tilesArray[x,y].tileObject != null) 
+                    {
+                        tileInRange.Add(new Vector2Int(x, y));
+                    }
+                }
+            }
+        }
     }
 
 
@@ -48,8 +70,8 @@ public class BuildingData : Entity
     public int effectiveRadius;
     #endregion
 
-
-    public List<NpcData> workers;
+    public BuildingIdentifier buildingID;
+    public List<NpcData> workers = new List<NpcData>();
     public int maxWorkers;
 
     public int wood;
@@ -59,7 +81,7 @@ public class BuildingData : Entity
 
     public float buildTime;
 
-
+    public List<Vector2Int> tileInRange = new List<Vector2Int>();
 
 
 
@@ -69,14 +91,20 @@ public class BuildingData : Entity
     public override void TickDailyCycle()
     {
         base.TickDailyCycle();
+
+
+        buildingID.DayCycle();
     }
     public override void TickMinuteCycle()
     {
         base.TickMinuteCycle();
+        buildingID.MinuteCycle();
     }
     public override void TickHourCycle()
     {
         base.TickHourCycle();
+
+        buildingID.HourCycle();
     }
     #endregion
 
