@@ -2,6 +2,7 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Xml.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -24,7 +25,7 @@ public class MouseInteraction : MonoBehaviour
     [SerializeField] Material transparentError;
     [SerializeField] GameObject showObj;
 
-    [SerializeField] LayerMask mapLayer;
+    public LayerMask mapLayer;
 
     private List<GameObject> spawnedShowObj = new List<GameObject>();
     public Vector2Int selectionGridSize = new Vector2Int(0, 0);
@@ -44,6 +45,10 @@ public class MouseInteraction : MonoBehaviour
 
     private bool canSpawn = false;
 
+    private string guid;
+    private int typeSelected = 0;
+    private bool showToolTip = false;
+
 
     private void Start()
     {
@@ -60,24 +65,51 @@ public class MouseInteraction : MonoBehaviour
 
             if (Physics.Raycast(ray, out hit))
             {
-                //  Debug.Log("called the raycast");
-                for (int i = 0; i < GeneralUtil.map.tilesArray.Length; i++)
+
+
+                switch (hit.transform.gameObject.layer)
                 {
-                    int row = i / GeneralUtil.map.textSize;
-                    int col = i % GeneralUtil.map.textSize;
+                    case 6:  //map
+                        for (int i = 0; i < GeneralUtil.map.tilesArray.Length; i++)
+                        {
+                            int row = i / GeneralUtil.map.textSize;
+                            int col = i % GeneralUtil.map.textSize;
 
-                    if (GeneralUtil.AABBCol(hit.point, GeneralUtil.map.tilesArray[row, col]))
-                    {
-                        GeneralUtil.map.ClickedTile = GeneralUtil.map.tilesArray[row, col];
+                            if (GeneralUtil.AABBCol(hit.point, GeneralUtil.map.tilesArray[row, col]))
+                            {
+                                GeneralUtil.map.ClickedTile = GeneralUtil.map.tilesArray[row, col];
 
-                        Debug.Log($"{row}   {col}");
+                                var sel = GeneralUtil.buildingSize[(BuildingData.BUILDING_TYPE)selectedIndex];
+                                SpawnShowObj(GeneralUtil.map.ClickedTile, sel.x, sel.y);
 
-                        var sel = GeneralUtil.buildingSize[(BuildingData.BUILDING_TYPE)selectedIndex];
-                        SpawnShowObj(GeneralUtil.map.ClickedTile, sel.x,sel.y);
+                                break;
+                            }
+                        }
+                        typeSelected = 0;
+                        break;
+                    case 8:  //building
+
+                        showToolTip = true;
+                        var compBuilding = hit.transform.GetComponent<BuildingIdentifier>();
+                        guid = compBuilding.buildingData.guid;
+
+                        typeSelected = 2;
 
                         break;
-                    }
+                    case 9:  //citizen
+
+                        showToolTip = true;
+                        var compAgent = hit.transform.GetComponent<Agent>();
+                        guid = compAgent.data.guid;
+                        typeSelected = 1;
+                        break;
+
+
+
+                    default:
+                        break;
                 }
+
             }
         }
 
@@ -105,7 +137,11 @@ public class MouseInteraction : MonoBehaviour
             }
         }
 
-          
+
+
+        if (Input.GetKeyDown(KeyCode.Escape))
+            showToolTip = false;
+
 
 
         if (Input.GetKeyDown(KeyCode.UpArrow)) 
@@ -129,7 +165,12 @@ public class MouseInteraction : MonoBehaviour
 
         if (Input.GetMouseButtonDown(1))
         {
-            
+            //deselect everything
+            if (spawnedShowObj.Count > 0)
+                ClearShowObj();
+            showToolTip = false;
+
+            typeSelected = 0;
         }
     }
 
@@ -184,16 +225,19 @@ public class MouseInteraction : MonoBehaviour
     //this doesnt work something is not turning them into blocked
     private bool SpawnBuilding() 
     {
+
+        foreach (var cord in selectedCoords)
+        {
+            GeneralUtil.map.tilesArray[cord.coord.x, cord.coord.y].tileType = TileType.BLOCKED;
+        }
+
         var objRef = Instantiate(council, middleTile.midCoord, Quaternion.identity);
         var BID = objRef.GetComponent<BuildingIdentifier>();
         BID.init(middleTile, GeneralUtil.buildingSize[(BuildingData.BUILDING_TYPE)selectedIndex],selectedCoords);
 
         GeneralUtil.dataBank.buildingDict.Add(BID.guid, BID.buildingData);
 
-        foreach (var cord in selectedCoords)
-        {
-            GeneralUtil.map.tilesArray[cord.coord.x,cord.coord.y].tileType = TileType.BLOCKED;
-        }
+       
         return true;
     }
 
@@ -291,5 +335,118 @@ public class MouseInteraction : MonoBehaviour
         canSpawn = false;
     }
 
+
+
+
+    private void OnGUI()
+    {
+        if (showToolTip == true) 
+        {
+            switch (typeSelected)
+            {
+                case 1:
+                    GuiAgent();
+                    break;
+
+                case 2:
+                    GuiBuilidng();
+                    break;
+
+                default:
+                    break;
+            }
+        }
+    }
+
+
+
+
+    private void GuiAgent() 
+    {
+        var npcData = GeneralUtil.dataBank.npcDict[guid];
+
+
+
+        GUI.Box(new Rect(5, 5, 160, 120), "");
+        GUI.Label(new Rect(10, 10, 100, 20), "name");
+
+
+        GUI.Label(new Rect(10, 20, 100, 20), "stamina");
+        GUI.Label(new Rect(10, 30, 100, 20), "health");
+        GUI.Label(new Rect(10, 40, 100, 20), "hunger");
+        GUI.Label(new Rect(10, 50, 100, 20), "gender");
+        GUI.Label(new Rect(10, 60, 100, 20), "speed");
+
+
+        GUI.Label(new Rect(10, 70, 100, 20), "age state");
+
+        if (npcData.refToWorkPlace != null)
+            GUI.Label(new Rect(10, 80, 100, 20), "job guid");
+
+        if (npcData.refToHouse != null)
+            GUI.Label(new Rect(10, 90, 100, 20), "house guid");
+
+
+        GUI.Label(new Rect(10, 100, 100, 20), "mother");
+        GUI.Label(new Rect(10, 100, 100, 20), "father");
+
+        GUI.Label(new Rect(10, 110, 100, 20), "list of children");
+
+        if (npcData.children.Count > 0) 
+        {
+            for (int i = 0; i < npcData.children.Count; i++)
+            {
+                GUI.Label(new Rect(10, 120 + (i * 10), 100, 20), "child");
+            }
+        }
+       
+
+    }
+
+
+    private void GuiBuilidng()
+    {
+        BuildingData buildingData = null;
+
+        if (GeneralUtil.dataBank.buildingDict.ContainsKey(guid))
+            buildingData = GeneralUtil.dataBank.buildingDict[guid];
+        else 
+        {
+            showToolTip = false;
+            return;
+        }
+
+
+
+        GUI.Box(new Rect(5, 5, 160, 250), "");
+        GUI.Label(new Rect(10, 10, 100, 20), "building type");
+
+        GUI.Label(new Rect(10, 20, 100, 20), "building status");
+
+
+        GUI.Label(new Rect(10, 30, 100, 20), "list of workers");
+
+
+        for (int i = 0; i < buildingData.workers.Count; i++)
+        {
+            if (GUI.Button(new Rect(10, 60 + (i * 30), 100, 20), $"{buildingData.workers[i].name}"))
+            {
+                typeSelected = 1;
+                guid = buildingData.workers[i].guid;
+            }
+        }
+        
+        
+
+
+        GUI.Label(new Rect(10, 180 , 100, 20), "building age");
+
+
+        if (GUI.Button(new Rect(10, 220, 100, 20), "Delete Me"))
+        {
+            buildingData.buildingID.DeleteBuilding();
+        }
+
+    }
 
 }

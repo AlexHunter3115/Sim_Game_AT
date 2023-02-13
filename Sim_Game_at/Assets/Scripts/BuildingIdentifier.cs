@@ -6,21 +6,17 @@ using UnityEngine;
 
 public class BuildingIdentifier : MonoBehaviour
 {
-    //this is just used as a comp fetcher for th guid and stuff like that becuase of the different things a builiding can 
+   //this script is here to be fetched by others, this is because the actions of each building specifically will be held on another specilised script
+
+
 
     public BuildingData buildingData;
     public string guid;
 
     [Header("the entrance point is based on the middle point")]
     public List<Vector2Int> entrances = new List<Vector2Int>();  // this also gives the entrance of the building
-    public int ActionRange = 25;
+    public int ActionRange = 25;  
     
-     
-
-
-    //private MethodInfo minuteCycle;
-    //private MethodInfo HourCycle;
-    //private MethodInfo DayCycle;
 
     public void init(Tile middleTile, Vector2Int size, List<Tile> controlledTiles)
     {
@@ -29,40 +25,16 @@ public class BuildingIdentifier : MonoBehaviour
         buildingData.takenTiles = controlledTiles;
         buildingData.buildingID = this;
 
-
         var entranceLocation = new List<Vector2Int>();
 
         foreach (var entrance in entrances)
         {
             entranceLocation.Add(new Vector2Int(entrance.x + buildingData.centerCoord.x, entrance.y + buildingData.centerCoord.y));
-            //GeneralUtil.map.tilesArray[entrance.x + buildingData.centerCoord.x, entrance.y + buildingData.centerCoord.y].tileType = TileType.BLOCKED;
-            Debug.Log(entranceLocation[0]);
+            GeneralUtil.map.tilesArray[entrance.x + buildingData.centerCoord.x, entrance.y + buildingData.centerCoord.y].tileType = TileType.PATH;
         }
 
-        //GeneralUtil.map.UpdateMapTexture();
-
-
-
-
-        //to get a comp if needed
-        //Component[] components = gameObject.GetComponents<Component>();
-        //comp = components[4];
-
-
-        //Type componentType = comp.GetType();
-        //minuteCycle = componentType.GetMethod("MinuteTick");
-        //minuteCycle = componentType.GetMethod("HourTick");
-        //minuteCycle = componentType.GetMethod("DayTick");
-
-
-
-
-
-
-
-
-
         buildingData.entrancePoints = entranceLocation;
+
     }
     
 

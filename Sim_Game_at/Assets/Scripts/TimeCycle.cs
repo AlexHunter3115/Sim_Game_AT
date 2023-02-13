@@ -4,9 +4,12 @@ using UnityEngine;
 
 public class TimeCycle : MonoBehaviour
 {
-    public float minuteCheck = 4;
-    public float hourCheck = 8;
-    public float dayCheck = 12;
+    [Header("in seconds")]
+    public float minuteCheck = 5;
+    public float hourCheck = 25;
+    public float dayCheck = 125;
+
+    public float timerMultiplier = 1;
 
     private bool timeOn = true;   //deal with this later
 
@@ -41,7 +44,7 @@ public class TimeCycle : MonoBehaviour
     {
         while (timeOn)
         {
-            yield return new WaitForSeconds(dayCheck);
+            yield return new WaitForSeconds(dayCheck/timerMultiplier);
         }
     }
 
@@ -49,7 +52,7 @@ public class TimeCycle : MonoBehaviour
     {
         while (timeOn)
         {
-            yield return new WaitForSeconds(hourCheck);
+            yield return new WaitForSeconds(hourCheck / timerMultiplier);
         }
     }
 
@@ -57,8 +60,7 @@ public class TimeCycle : MonoBehaviour
     {
         while (timeOn)
         {
-            yield return new WaitForSeconds(minuteCheck);
-
+            yield return new WaitForSeconds(minuteCheck / timerMultiplier);
         }
     }
 }

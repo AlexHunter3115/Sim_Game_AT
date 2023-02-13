@@ -7,8 +7,8 @@ public class Agent : MonoBehaviour
 
     public bool moving = false;
     public NpcData data;
-    [SerializeField]string agentName;
-    [SerializeField]string guid;
+    [SerializeField] string agentName;
+    [SerializeField] string guid;
     private float speed = 1;
     // on the calc for the path nreverse the list
 
@@ -20,8 +20,6 @@ public class Agent : MonoBehaviour
     private void Update()
     {
         PathFinding();
-
-
 
     }
 
@@ -45,7 +43,6 @@ public class Agent : MonoBehaviour
                 }
                 else
                 {
-                    
                     lastTile = data.pathTile[0];
                     data.pathTile.RemoveAt(0);
                 }
@@ -54,7 +51,10 @@ public class Agent : MonoBehaviour
             {
                 doingJob = true; 
                 if (lastTile.tileType == TileType.BLOCKED) 
-                    Destroy(gameObject); 
+                {
+                    data.busy = false;
+                    Destroy(gameObject);
+                }
                 else
                     StartCoroutine(DoingStuff());
             }
@@ -69,26 +69,28 @@ public class Agent : MonoBehaviour
     {
         //age dependent
         yield return new WaitForSeconds(timeTaken);
-        Debug.Log("does this even call");
-        var obj = GeneralUtil.map.tilesArray[lastTile.coord.x, lastTile.coord.y].tileObject;
-        if (obj != null)
+
+        if (GeneralUtil.map.tilesArray[lastTile.coord.x, lastTile.coord.y].tileObject != null)
         {
-            var comp = obj.GetComponent<Resource>();
-            GeneralUtil.bank.ChangeFoodAmount(comp.foodAmount);
-            GeneralUtil.bank.ChangeStoneAmount(comp.stoneAmount);
-            GeneralUtil.bank.ChangeWoodAmount(comp.woodAmount);
+            var obj = GeneralUtil.map.tilesArray[lastTile.coord.x, lastTile.coord.y].tileObject;
+            if (obj != null)
+            {
+                var comp = obj.GetComponent<Resource>();
+                GeneralUtil.bank.ChangeFoodAmount(comp.foodAmount);
+                GeneralUtil.bank.ChangeStoneAmount(comp.stoneAmount);
+                GeneralUtil.bank.ChangeWoodAmount(comp.woodAmount);
+            }
+            doingJob = false;
+
+
+
+            GeneralUtil.map.tilesArray[lastTile.coord.x, lastTile.coord.y].tileObject = null;
+            Destroy(obj);
+
+
         }
-        doingJob = false;
 
-        //issue here
-        Debug.Log(new Vector2Int(lastTile.coord.x, lastTile.coord.y));
-        Debug.Log(data.guid);
-        Debug.Log(data.refToWorkPlace);
-        Debug.Log(data.refToWorkPlace.entrancePoints.Count);
-
-        Debug.Log(new Vector2Int(data.refToWorkPlace.entrancePoints[0].x, data.refToWorkPlace.entrancePoints[0].y));
         data.pathTile = GeneralUtil.A_StarPathfinding(new Vector2Int(lastTile.coord.x, lastTile.coord.y), new Vector2Int(data.refToWorkPlace.entrancePoints[0].x, data.refToWorkPlace.entrancePoints[0].y));
-        
     }
 
 

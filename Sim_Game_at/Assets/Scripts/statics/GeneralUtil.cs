@@ -41,14 +41,24 @@ public static class GeneralUtil
 
         int[,] childPosArry = new int[0, 0];
 
-        childPosArry = childPosArry8Side;
+        childPosArry = childPosArry4Side;
 
 
 
         openList.Add(start_node);
 
+        int iter = 0;
+
         while (openList.Count > 0)
         {
+
+
+            if (iter > 1000) 
+            {
+                //break;
+            }
+
+            //iter++;
 
             AStar_Node currNode = openList[0];
             int currIndex = 0;
@@ -106,9 +116,16 @@ public static class GeneralUtil
                     }
                     else
                     {
-                        //here an if statment also saying that walkable 
-                        AStar_Node new_node = new AStar_Node(tileArray2D[node_position[0],node_position[1]]);
-                        children.Add(new_node);
+                        if (tileArray2D[node_position[0], node_position[1]].tileType == TileType.NULL  || tileArray2D[node_position[0], node_position[1]].tileType == TileType.BLOCKED) 
+                        {
+                        
+                        }
+                        else
+                        { 
+                            //here an if statment also saying that walkable 
+                            AStar_Node new_node = new AStar_Node(tileArray2D[node_position[0], node_position[1]]);
+                            children.Add(new_node);
+                        }
                     }
                 }
 
@@ -128,7 +145,7 @@ public static class GeneralUtil
 
 
 
-                    child.f = child.g + child.h + child.refToBasicTile.cost;   //added value here
+                    child.f = child.g + child.h + tileCosts[child.refToBasicTile.tileType];   //added value here
                     child.parent = currNode;
                     
                    
@@ -218,6 +235,18 @@ public static class GeneralUtil
         {BuildingData.BUILDING_TYPE.HOUSE,  new Vector2Int(5,5)  },
         {BuildingData.BUILDING_TYPE.SAWMILL,  new Vector2Int(3,5)  },
         {BuildingData.BUILDING_TYPE.DOCK,  new Vector2Int(3,7)  }
+    };
+
+
+    public static Dictionary<TileType, float> tileCosts = new Dictionary<TileType, float>()
+    {
+        {TileType.GRASS, 0.15f},
+        {TileType.HILL, 0.3f},
+        {TileType.SNOW, 0.6f},
+        {TileType.WATER, 0.9f},
+        {TileType.NULL, 10000f},
+        {TileType.PATH, 0},
+        {TileType.BLOCKED, 10000f}
     };
 
 

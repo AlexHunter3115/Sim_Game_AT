@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 using UnityEngine;
 
 public class BuildingData : Entity
@@ -9,29 +10,67 @@ public class BuildingData : Entity
         this.typeOfBuilding = typeOfBuilding;
         buildingSize = size;
         centerCoord = mid;
+        this.range = range;
+
+        LookForResroucesTilesInRange();
+
+    }
+
+
+
+
+
+    public void LookForResroucesTilesInRange()
+    {
 
         int halfWidth = range / 2;
         int halfHeight = range / 2;
 
 
-        for (int y = mid.y - (range - halfHeight); y < mid.y + halfHeight; y++)
+        for (int y = centerCoord.y - (range - halfHeight); y < centerCoord.y + halfHeight; y++)
         {
-            for (int x = mid.x - (range - halfWidth); x < mid.x + halfWidth; x++)
+            for (int x = centerCoord.x - (range - halfWidth); x < centerCoord.x + halfWidth; x++)
             {
                 if (x < 0 || y < 0 || x >= GeneralUtil.map.textSize || y >= GeneralUtil.map.textSize)
                 {
                     // out of range
                 }
-                else 
+                else
                 {
-                    if (GeneralUtil.map.tilesArray[x,y].tileObject != null) 
+                    bool accept = true;
+
+                    if (GeneralUtil.map.tilesArray[x, y].tileObject != null) // if there is an object in here
                     {
+                        // if the object has the resource of this building
+                        var resource = GeneralUtil.map.tilesArray[x, y].tileObject.GetComponent<Resource>();
+
+                        if (upKeepWoodCost > 0)
+                            if (resource.woodAmount <= 0)
+                                accept = false;
+
+                        if (upKeepStoneCost > 0)
+                            if (resource.stoneAmount <= 0)
+                                accept = false;
+
+                        if (upKeepFoodCost > 0)
+                            if (resource.foodAmount <= 0)
+                                accept = false;
+
+                        if (accept == false)
+                            break;
+
+
+                        //need to think about this water pathing shit
+
                         tileInRange.Add(new Vector2Int(x, y));
                     }
                 }
             }
         }
     }
+
+
+
 
 
     public enum BUILDING_TYPE 
@@ -54,6 +93,10 @@ public class BuildingData : Entity
     }
     public BUILDING_STATUS buildingStatus;
 
+
+
+
+
     #region map pos stuff
     public Vector2Int centerCoord;
     public Vector2Int entrances = Vector2Int.zero;
@@ -62,10 +105,7 @@ public class BuildingData : Entity
     public List<Tile> takenTiles = new List<Tile>();
     public List<Vector2Int> entrancePoints = new List<Vector2Int>();
 
-    public Vector2Int botLeft;
-    public Vector2Int botRight;
-    public Vector2Int topLeft;
-    public Vector2Int topRight;
+    private int range;
 
     public int effectiveRadius;
     #endregion
@@ -74,10 +114,12 @@ public class BuildingData : Entity
     public List<NpcData> workers = new List<NpcData>();
     public int maxWorkers;
 
-    public int wood;
-    public int stone;
-    public int sand;
-    public int food;
+
+    //upkeep
+    public int upKeepWoodCost;
+    public int upKeepStoneCost;
+    public int upKeepSandCost;
+    public int upKeepFoodCost;
 
     public float buildTime;
 

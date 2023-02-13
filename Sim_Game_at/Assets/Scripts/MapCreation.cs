@@ -157,27 +157,24 @@ public class MapCreation : MonoBehaviour
                 {
                     case TileType.GRASS:
                         texture.SetPixel(x, y, Color.green);
-                        tilesArray[x, y].cost = 0.1f;
                         break;
                     case TileType.HILL:
                         texture.SetPixel(x, y, new Color(165.0f/255, 42.0f / 255, 42.0f / 255,1));
-                        tilesArray[x, y].cost = 0.4f;
                         break;
                     case TileType.SNOW:
                         texture.SetPixel(x, y, Color.white);
-                        tilesArray[x, y].cost = 0.8f;
                         break;
                     case TileType.WATER:
                         texture.SetPixel(x, y, Color.cyan);
-                        tilesArray[x, y].cost = 1;
                         break;
                     case TileType.NULL:
                         texture.SetPixel(x, y, Color.red);
-                        tilesArray[x, y].cost = 10000;
                         break;
                     case TileType.BLOCKED:
                         texture.SetPixel(x, y, Color.black);
-                        tilesArray[x, y].cost = 10000;
+                        break;
+                    case TileType.PATH:
+                        texture.SetPixel(x, y, Color.yellow);
                         break;
                     default:
                         break;
@@ -497,8 +494,6 @@ public class Tile
 
     public float noiseVal;
 
-    public float cost;
-
     public Vector3 BotRight = new Vector3();
     public Vector3 TopLeft = new Vector3();
     public Vector3 TopRight = new Vector3();
@@ -517,5 +512,6 @@ public enum TileType
     SNOW,
     WATER,
     NULL,
-    BLOCKED
+    BLOCKED,
+    PATH
 }

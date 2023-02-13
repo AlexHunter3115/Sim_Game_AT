@@ -33,25 +33,19 @@ public class CouncilBuilding : MonoBehaviour
         {
             test = false;
 
+            foreach (var worker in buildingId.buildingData.workers)
+            {
+                if (!worker.busy) 
+                {
+                    GeneralUtil.map.SpawnAgent(worker.guid, GeneralUtil.map.tilesArray[buildingId.buildingData.entrancePoints[0].x, buildingId.buildingData.entrancePoints[0].y]);
 
-            GeneralUtil.map.SpawnAgent(buildingId.buildingData.workers[0].guid,  GeneralUtil.map.tilesArray[buildingId.buildingData.entrancePoints[0].x, buildingId.buildingData.entrancePoints[0].y]  );
-            GeneralUtil.dataBank.npcDict[buildingId.buildingData.workers[0].guid].pathTile = GeneralUtil.A_StarPathfinding(buildingId.buildingData.entrancePoints[0], buildingId.buildingData.tileInRange[0]);
+                    GeneralUtil.dataBank.npcDict[worker.guid].pathTile = GeneralUtil.A_StarPathfinding(buildingId.buildingData.entrancePoints[0], buildingId.buildingData.tileInRange[Random.Range(0, buildingId.buildingData.tileInRange.Count)]);
+
+                    worker.busy = true;
+                    break;
+                }
+            }
             
-            Debug.Log(buildingId.buildingData.entrancePoints[0]);
-            Debug.Log(buildingId.buildingData.tileInRange[0]);
-            Debug.Log(buildingId.buildingData.centerCoord);
         }
-
     }
-
-
-    
-    public void DelCoord(Vector2Int coord) 
-    {
-    }
-
-
-
-
-
 }

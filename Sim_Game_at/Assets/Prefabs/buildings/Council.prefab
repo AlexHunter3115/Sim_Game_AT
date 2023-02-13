@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 4239690568144871306}
   - component: {fileID: -1830913879999596187}
   - component: {fileID: 8476237826427612893}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Council
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -111,6 +111,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff626e827e2a2094e966ef0ddba677fe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  test: 0
+  beforeTest: 0
 --- !u!114 &8476237826427612893
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -126,3 +128,4 @@ MonoBehaviour:
   guid: 
   entrances:
   - {x: 2, y: 0}
+  ActionRange: 25

@@ -10,6 +10,4 @@ public class Resource : MonoBehaviour
 
     public bool available;
 
-
-
 }
