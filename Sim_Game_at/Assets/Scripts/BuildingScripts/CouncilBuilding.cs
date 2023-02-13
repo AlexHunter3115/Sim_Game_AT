@@ -39,7 +39,7 @@ public class CouncilBuilding : MonoBehaviour
                 {
                     GeneralUtil.map.SpawnAgent(worker.guid, GeneralUtil.map.tilesArray[buildingId.buildingData.entrancePoints[0].x, buildingId.buildingData.entrancePoints[0].y]);
 
-                    GeneralUtil.dataBank.npcDict[worker.guid].pathTile = GeneralUtil.A_StarPathfinding(buildingId.buildingData.entrancePoints[0], buildingId.buildingData.tileInRange[Random.Range(0, buildingId.buildingData.tileInRange.Count)]);
+                    GeneralUtil.dataBank.npcDict[worker.guid].pathTile = GeneralUtil.A_StarPathfinding(buildingId.buildingData.entrancePoints[0], buildingId.buildingData.tileInRange[Random.Range(0, buildingId.buildingData.tileInRange.Count)], GeneralUtil.dataBank.npcDict[worker.guid]);
 
                     worker.busy = true;
                     break;

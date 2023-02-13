@@ -176,6 +176,9 @@ public class MapCreation : MonoBehaviour
                     case TileType.PATH:
                         texture.SetPixel(x, y, Color.yellow);
                         break;
+                    case TileType.ENTRANCE:
+                        texture.SetPixel(x, y, Color.gray);
+                        break;
                     default:
                         break;
                 }
@@ -513,5 +516,6 @@ public enum TileType
     WATER,
     NULL,
     BLOCKED,
-    PATH
+    PATH,
+    ENTRANCE
 }

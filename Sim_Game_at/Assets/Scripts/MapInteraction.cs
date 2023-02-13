@@ -1,25 +1,11 @@
-using Newtonsoft.Json.Linq;
-using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Xml.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.UIElements;
 using Debug = UnityEngine.Debug;
 
 
-
-// we need a way to disavle the gen
-
-public class MouseInteraction : MonoBehaviour
+public class MapInteraction : MonoBehaviour
 {
     [SerializeField] DataHolder dataHolder;
-
-
-
-    private string[] buildNames = new string[6] { "Council", "Farm", "Mine", "House", "Sawmill","Dock" };
-
 
     [SerializeField] Material transparent;
     [SerializeField] Material transparentError;
@@ -52,7 +38,7 @@ public class MouseInteraction : MonoBehaviour
 
     private void Start()
     {
-        GeneralUtil.Ui.SetSelIndexText(buildNames[selectedIndex]);
+        GeneralUtil.Ui.SetSelIndexText(GeneralUtil.buildingNames[(BuildingData.BUILDING_TYPE)selectedIndex]);
     }
 
     void Update()
@@ -65,8 +51,6 @@ public class MouseInteraction : MonoBehaviour
 
             if (Physics.Raycast(ray, out hit))
             {
-
-
                 switch (hit.transform.gameObject.layer)
                 {
                     case 6:  //map
@@ -150,7 +134,7 @@ public class MouseInteraction : MonoBehaviour
             else { selectedIndex += 1; }
 
             ClearSection();
-            GeneralUtil.Ui.SetSelIndexText(buildNames[selectedIndex]);
+            GeneralUtil.Ui.SetSelIndexText(GeneralUtil.buildingNames[(BuildingData.BUILDING_TYPE)selectedIndex]);
         }
         if (Input.GetKeyDown(KeyCode.DownArrow))
         {
@@ -159,7 +143,8 @@ public class MouseInteraction : MonoBehaviour
 
             ClearSection();
 
-            GeneralUtil.Ui.SetSelIndexText(buildNames[selectedIndex]);
+            GeneralUtil.Ui.SetSelIndexText(GeneralUtil.buildingNames[(BuildingData.BUILDING_TYPE)selectedIndex]);
+
         }
 
 

@@ -24,10 +24,8 @@ public static class GeneralUtil
     public static ResourceBank bank;
     public static DataHolder dataBank;
     
-
-
-
-    public static List<Tile> A_StarPathfinding(Vector2Int start, Vector2Int end)
+    
+    public static List<Tile> A_StarPathfinding(Vector2Int start, Vector2Int end, NpcData npc)
     {
         var tileArray2D = map.tilesArray;
 
@@ -89,10 +87,18 @@ public static class GeneralUtil
 
 
                 var pathOfBasicTiles = new List<Tile>();
+                float overallCost = 0;
 
                 foreach (var tile in path)
                 {
+                    overallCost += tile.f;
                     pathOfBasicTiles.Add(tile.refToBasicTile);
+                }
+
+
+                if (overallCost > maxTileDistPerAge[npc.currAge])
+                {
+                    return null;
                 }
 
                 pathOfBasicTiles.Reverse();
@@ -195,7 +201,9 @@ public static class GeneralUtil
 
 
     #region Dicts
-
+    /// <summary>
+    /// the needed resource per buidling to keep it up
+    /// </summary>
     public static Dictionary<BuildingData.BUILDING_TYPE, List<int>> ResourcesWSFSUpKeep = new Dictionary<BuildingData.BUILDING_TYPE, List<int>>
     {
         {BuildingData.BUILDING_TYPE.COUNCIL, new List<int>() {20,5,2,2 }  },
@@ -206,6 +214,10 @@ public static class GeneralUtil
         {BuildingData.BUILDING_TYPE.FARM, new List<int>() {0,0,0,0 }  },
     };
 
+
+    /// <summary>
+    /// the needed resrouces to start the building process
+    /// </summary>
     public static Dictionary<BuildingData.BUILDING_TYPE, List<int>> ResourcesWSFSStart = new Dictionary<BuildingData.BUILDING_TYPE, List<int>>
     {
         {BuildingData.BUILDING_TYPE.COUNCIL, new List<int>() {250,30,20,10 }  },
@@ -216,7 +228,7 @@ public static class GeneralUtil
         {BuildingData.BUILDING_TYPE.FARM, new List<int>() {0,0,0,0 }  },
     };
 
-
+    // the types of tiles allowed to build on specific to that buidling
     public static Dictionary<BuildingData.BUILDING_TYPE, List<int>> allowedDict = new Dictionary<BuildingData.BUILDING_TYPE, List<int>>()
     {
         {BuildingData.BUILDING_TYPE.COUNCIL, new List<int>() {0,1 }  },
@@ -227,6 +239,7 @@ public static class GeneralUtil
         {BuildingData.BUILDING_TYPE.DOCK, new List<int>() {0,3 }  }
     };
 
+    // the size of each buidling
     public static Dictionary<BuildingData.BUILDING_TYPE, Vector2Int> buildingSize = new Dictionary<BuildingData.BUILDING_TYPE, Vector2Int>()
     {
         {BuildingData.BUILDING_TYPE.COUNCIL, new Vector2Int(5,5)  },
@@ -237,7 +250,7 @@ public static class GeneralUtil
         {BuildingData.BUILDING_TYPE.DOCK,  new Vector2Int(3,7)  }
     };
 
-
+    //the cost of pathfidnign for each tile
     public static Dictionary<TileType, float> tileCosts = new Dictionary<TileType, float>()
     {
         {TileType.GRASS, 0.15f},
@@ -248,6 +261,31 @@ public static class GeneralUtil
         {TileType.PATH, 0},
         {TileType.BLOCKED, 10000f}
     };
+
+
+
+    public static Dictionary<NpcData.AGE_STATE, float> maxTileDistPerAge = new Dictionary<NpcData.AGE_STATE, float>()
+    {
+        {NpcData.AGE_STATE.BABY, 3},
+        {NpcData.AGE_STATE.TEEN, 10},
+        {NpcData.AGE_STATE.ADULT, 15},
+        {NpcData.AGE_STATE.ELDER, 7}
+    };
+
+
+
+    public static Dictionary<BuildingData.BUILDING_TYPE, string> buildingNames = new Dictionary<BuildingData.BUILDING_TYPE, string>()
+    {
+        {BuildingData.BUILDING_TYPE.COUNCIL, "Council"},
+        {BuildingData.BUILDING_TYPE.FARM, "Farm"},
+        {BuildingData.BUILDING_TYPE.DOCK, "Dock"},
+        {BuildingData.BUILDING_TYPE.HOUSE, "House"},
+        {BuildingData.BUILDING_TYPE.MINE, "Mine"},
+        {BuildingData.BUILDING_TYPE.SAWMILL, "Sawmill"},
+    };
+
+
+
 
 
     #endregion

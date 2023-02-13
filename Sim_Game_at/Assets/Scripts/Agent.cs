@@ -90,7 +90,8 @@ public class Agent : MonoBehaviour
 
         }
 
-        data.pathTile = GeneralUtil.A_StarPathfinding(new Vector2Int(lastTile.coord.x, lastTile.coord.y), new Vector2Int(data.refToWorkPlace.entrancePoints[0].x, data.refToWorkPlace.entrancePoints[0].y));
+        data.pathTile = GeneralUtil.A_StarPathfinding(new Vector2Int(lastTile.coord.x, lastTile.coord.y), new Vector2Int(data.refToWorkPlace.entrancePoints[0].x, data.refToWorkPlace.entrancePoints[0].y),this.data);
+   
     }
 
 
