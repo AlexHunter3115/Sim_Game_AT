@@ -954,6 +954,15 @@ MonoBehaviour:
   afternoonColor: {r: 1, g: 0.6600757, b: 0.36320752, a: 0}
   colorLerpDur: 1
   sunLight: {fileID: 705507994}
+  minuteTick:
+    m_PersistentCalls:
+      m_Calls: []
+  hourTick:
+    m_PersistentCalls:
+      m_Calls: []
+  dayTick:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &1084521085
 GameObject:
   m_ObjectHideFlags: 0

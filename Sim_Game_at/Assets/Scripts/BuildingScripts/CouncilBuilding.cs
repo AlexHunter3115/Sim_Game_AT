@@ -39,7 +39,12 @@ public class CouncilBuilding : MonoBehaviour
             var destination = new Vector2Int(buildingId.buildingData.centerCoord.x + Random.Range(-10, 10), buildingId.buildingData.centerCoord.y + Random.Range(-10, 10));   //chooses the random pos to spawn on
             if (destination.x < 0 || destination.y < 0 || destination.x >= GeneralUtil.map.tilesArray.GetLength(0) || destination.y >= GeneralUtil.map.tilesArray.GetLength(1))
             {
-                destination = new Vector2Int(buildingId.buildingData.centerCoord.x + Random.Range(-1, 1), buildingId.buildingData.centerCoord.y + Random.Range(-1, 1));
+                destination = buildingId.buildingData.entrancePoints[0];
+            }
+
+            if (GeneralUtil.map.tilesArray[destination.x,destination.y].tileType == TileType.WATER) 
+            {
+                destination = buildingId.buildingData.entrancePoints[0];
             }
 
 

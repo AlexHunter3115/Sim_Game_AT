@@ -23,9 +23,9 @@ public class Agent : MonoBehaviour
         animator = GetComponent<Animator>();
     }
 
-   
 
-    public void LoadData(string guid) 
+
+    public void LoadData(string guid)
     {
         data = GeneralUtil.dataBank.npcDict[guid];
         agentName = data.name;
@@ -42,7 +42,7 @@ public class Agent : MonoBehaviour
         PathFinding();
     }
 
-    public void PathFinding() 
+    public void PathFinding()
     {
         if (data.pathTile.Count > 0 && waiting == false)   // if the path is larger than 0 tiles
         {
@@ -58,7 +58,7 @@ public class Agent : MonoBehaviour
                 data.pathTile.RemoveAt(0);
             }
         }
-        else 
+        else
         {
 
 
@@ -98,7 +98,7 @@ public class Agent : MonoBehaviour
     //wondering is for the hobos nothing to do
     private IEnumerator WonderingCall()
     {
-        yield return new WaitForSeconds(timeTaken*2);
+        yield return new WaitForSeconds(timeTaken * 2);
 
         var pos = new Vector2Int();
 
@@ -126,11 +126,11 @@ public class Agent : MonoBehaviour
 
             var path = GeneralUtil.A_StarPathfinding(pos, destination, this.data);
 
-            if (GeneralUtil.PathContainsTileType(TileType.WATER, path)) 
+            if (GeneralUtil.PathContainsTileType(TileType.WATER, path))
             {
                 continue;
             }
-            else 
+            else
             {
                 data.pathTile = path;
 
@@ -142,8 +142,8 @@ public class Agent : MonoBehaviour
 
     private IEnumerator AccessingResource()
     {
-        animator.SetBool("Working",true);
-       
+        animator.SetBool("Working", true);
+
         yield return new WaitForSeconds(timeTaken);
 
 
@@ -178,16 +178,16 @@ public class Agent : MonoBehaviour
 
     private void OnDrawGizmosSelected()
     {
-        if (data != null )
-        {
-            if (data.pathTile.Count > 0)   // if the path is larger than 0 tiles
-            {
-                foreach (var tile in data.pathTile)
-                {
-                    Gizmos.DrawSphere(tile.midCoord, 0.5f);
-                }
-            } 
-        }
+
+        if (data != null)
+            return;
+
+        if (data.pathTile.Count > 0)   // if the path is larger than 0 tiles
+            return;
+
+        foreach (var tile in data.pathTile)
+            Gizmos.DrawSphere(tile.midCoord, 0.5f);
+        
     }
 
 

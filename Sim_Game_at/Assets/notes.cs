@@ -126,13 +126,13 @@ if no house at night then idle
 
 
 
-the council is placed
+the council is placed   - done 
 
-4 people are spawned in 
+4 people are spawned in    -   done
 
-they are spawned around
+they are spawned around  -- done
 
-the job is set as the council
+the job is set as the council   
 
 they get into the concil 
 
@@ -145,4 +145,7 @@ they leave wit a radnom dest
 sleep becasue of no house
 
 
+
+
+try to not use any foreach  use only for loops
  */

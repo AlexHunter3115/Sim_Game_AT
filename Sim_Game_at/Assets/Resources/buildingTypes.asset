@@ -23,7 +23,7 @@ MonoBehaviour:
     keepUpCostWSFS: 14000000050000000200000002000000
     startCostWSFS: fa0000001e000000140000000a000000
     allowedTileTypes: 0000000001000000
-    building: {fileID: 5628269147707626193, guid: 3a833e0bba287844289de25c1a8cdcbf, type: 3}
+    building: {fileID: 8044071594055797428, guid: 3a833e0bba287844289de25c1a8cdcbf, type: 3}
   - type: 1
     centerOffset: {x: -0.25, y: 0}
     name: Sawmill
@@ -34,7 +34,7 @@ MonoBehaviour:
     keepUpCostWSFS: 
     startCostWSFS: 
     allowedTileTypes: 00000000
-    building: {fileID: 655032196559888283, guid: 80992b63c3f74bd41ae008cfce31f538, type: 3}
+    building: {fileID: 7682443745824996913, guid: 80992b63c3f74bd41ae008cfce31f538, type: 3}
   - type: 7
     centerOffset: {x: 0, y: 0}
     name: Shop
@@ -46,7 +46,7 @@ MonoBehaviour:
     keepUpCostWSFS: 
     startCostWSFS: 
     allowedTileTypes: 000000000100000002000000
-    building: {fileID: 4194551688990847813, guid: 58f6425c8b6c44c4c84b4818a4053d17, type: 3}
+    building: {fileID: 2643977928737511085, guid: 58f6425c8b6c44c4c84b4818a4053d17, type: 3}
   - type: 2
     centerOffset: {x: 0, y: 0}
     name: Mine
@@ -57,7 +57,7 @@ MonoBehaviour:
     keepUpCostWSFS: 
     startCostWSFS: 
     allowedTileTypes: 0100000002000000
-    building: {fileID: 2739175958242521987, guid: 80b0186fbe9ec1447aa15b0364a766d5, type: 3}
+    building: {fileID: 5167131309139135296, guid: 80b0186fbe9ec1447aa15b0364a766d5, type: 3}
   - type: 6
     centerOffset: {x: 0.4, y: -0.4}
     name: Outpost
@@ -69,7 +69,7 @@ MonoBehaviour:
     keepUpCostWSFS: 
     startCostWSFS: 
     allowedTileTypes: 000000000100000002000000
-    building: {fileID: 3670709343539403239, guid: 0d799d7fd2da0604b978eafb7f4e3859, type: 3}
+    building: {fileID: 6269123546353934552, guid: 0d799d7fd2da0604b978eafb7f4e3859, type: 3}
   - type: 5
     centerOffset: {x: 0, y: 0}
     name: Dock
@@ -81,7 +81,7 @@ MonoBehaviour:
     keepUpCostWSFS: 
     startCostWSFS: 
     allowedTileTypes: 0000000003000000
-    building: {fileID: 7520480951805961618, guid: f97c628e40ac8c742be8eec5551c3870, type: 3}
+    building: {fileID: 3201369498106564900, guid: f97c628e40ac8c742be8eec5551c3870, type: 3}
   - type: 3
     centerOffset: {x: 0, y: 0}
     name: Farm
@@ -92,7 +92,7 @@ MonoBehaviour:
     keepUpCostWSFS: 
     startCostWSFS: 
     allowedTileTypes: 00000000
-    building: {fileID: 5586797604444449447, guid: e5007346d9a5ef944b0e25d59e1be0bf, type: 3}
+    building: {fileID: 5393357137421281980, guid: e5007346d9a5ef944b0e25d59e1be0bf, type: 3}
   - type: 4
     centerOffset: {x: 0.4, y: -0.4}
     name: House
@@ -104,4 +104,4 @@ MonoBehaviour:
     keepUpCostWSFS: 
     startCostWSFS: 
     allowedTileTypes: 0000000001000000
-    building: {fileID: 2741476896568514531, guid: 96b5a450d2bf02a4d88ecff8f704f8fd, type: 3}
+    building: {fileID: 1840192149836013038, guid: 96b5a450d2bf02a4d88ecff8f704f8fd, type: 3}
