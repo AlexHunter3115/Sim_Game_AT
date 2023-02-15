@@ -47,8 +47,21 @@ public static class GeneralUtil
         openList.Add(start_node);
 
 
+        int iter = 0;
+
         while (openList.Count > 0)
         {
+
+
+
+            if (iter > 500) 
+            {
+                Debug.Log("this is too loong");
+                Debug.Log(end);
+                break;
+            }
+
+            iter++;
 
             AStar_Node currNode = openList[0];
             int currIndex = 0;
@@ -87,7 +100,6 @@ public static class GeneralUtil
                     pathOfBasicTiles.Add(tile.refToBasicTile);
                 }
 
-                Debug.Log($"{overallCost} is and the max allowed for this citizen is {maxTileDistPerAge[npc.currAge]}");
                 if (overallCost > maxTileDistPerAge[npc.currAge])
                 {
                     if (pathOfBasicTiles[0].tileType != TileType.ENTRANCE  && forced == false)
@@ -115,16 +127,17 @@ public static class GeneralUtil
                     }
                     else
                     {
-                        if (tileArray2D[node_position[0], node_position[1]].tileType == TileType.NULL  || tileArray2D[node_position[0], node_position[1]].tileType == TileType.BLOCKED) 
-                        {
-                        
-                        }
-                        else
-                        { 
-                            //here an if statment also saying that walkable 
-                            AStar_Node new_node = new AStar_Node(tileArray2D[node_position[0], node_position[1]]);
-                            children.Add(new_node);
-                        }
+                        //if (tileArray2D[node_position[0], node_position[1]].tileType == TileType.NULL  || tileArray2D[node_position[0], node_position[1]].tileType == TileType.BLOCKED) 
+                        //{
+
+                        //}
+                        //else
+                        //{ 
+
+                        AStar_Node new_node = new AStar_Node(tileArray2D[node_position[0], node_position[1]]);
+                        children.Add(new_node);
+
+                        //}
                     }
                 }
 
@@ -216,7 +229,7 @@ public static class GeneralUtil
     //the cost of pathfidnign for each tile
     public static Dictionary<TileType, float> tileCosts = new Dictionary<TileType, float>()
     {
-        {TileType.GRASS, 0.15f},
+        {TileType.GRASS, 0.12f},
         {TileType.HILL, 0.3f},
         {TileType.SNOW, 0.6f},
         {TileType.WATER, 0.9f},

@@ -134,6 +134,16 @@ public class TimeCycle : MonoBehaviour
                 currentHour = 0;
 
             SetDayTime();
+
+
+
+            foreach (var npc in GeneralUtil.dataBank.npcDict.Values)
+            {
+                npc.TickHourCycle();
+            }
+
+
+
         }
     }
 
@@ -143,11 +153,7 @@ public class TimeCycle : MonoBehaviour
         {
             yield return new WaitForSeconds(minuteCheck / timerMultiplier);
 
-            foreach (var npc in GeneralUtil.dataBank.npcDict.Values)
-            {
-                npc.TickHourCycle();
-            }
-
+           
 
             minuteTick.Invoke();
 

@@ -35,16 +35,15 @@ public class CouncilBuilding : MonoBehaviour
     {
         for (int i = 0; i < 4; i++)
         {
-
-            var destination = new Vector2Int(buildingId.buildingData.centerCoord.x + Random.Range(-10, 10), buildingId.buildingData.centerCoord.y + Random.Range(-10, 10));   //chooses the random pos to spawn on
+            //get the position to spawn the agents
+            var destination = new Vector2Int(buildingId.buildingData.centerCoord.x + Random.Range(-5, 5), buildingId.buildingData.centerCoord.y + Random.Range(-5, 5));   //chooses the random pos to spawn on
             if (destination.x < 0 || destination.y < 0 || destination.x >= GeneralUtil.map.tilesArray.GetLength(0) || destination.y >= GeneralUtil.map.tilesArray.GetLength(1))
             {
-                destination = buildingId.buildingData.entrancePoints[0];
+                destination = new Vector2Int(buildingId.buildingData.entrancePoints[0].x+3 , buildingId.buildingData.entrancePoints[0].y + 1);
             }
-
-            if (GeneralUtil.map.tilesArray[destination.x,destination.y].tileType == TileType.WATER) 
+            else if (GeneralUtil.map.tilesArray[destination.x,destination.y].tileType == TileType.WATER) 
             {
-                destination = buildingId.buildingData.entrancePoints[0];
+                destination = new Vector2Int(buildingId.buildingData.entrancePoints[0].x+3, buildingId.buildingData.entrancePoints[0].y + 1);
             }
 
 
@@ -55,6 +54,10 @@ public class CouncilBuilding : MonoBehaviour
 
             GeneralUtil.map.SpawnAgent(newCitizen.guid, GeneralUtil.map.tilesArray[destination.x,destination.y]);   //spawns the agent
 
+
+            newCitizen.SetAgentPathing(destination, buildingId.buildingData.entrancePoints[0], true);
+           
+            newCitizen.moving = true;
         }
     }
 
@@ -72,12 +75,20 @@ public class CouncilBuilding : MonoBehaviour
     {
         foreach (var worker in buildingId.buildingData.workers)
         {
-            if (worker.currAction == AgentData.CURRENT_ACTION.IDLE) 
+            //if (worker.currAction == AgentData.CURRENT_ACTION.IDLE)  // is there an agent in the builing, as the woker is set to idle
+            //{
+            //    Debug.Log($"There is someone idle");
+            //    worker.currAction = AgentData.CURRENT_ACTION.WORKING; // set it to working
+            //    GeneralUtil.map.SpawnAgent(worker.guid, GeneralUtil.map.tilesArray[buildingId.buildingData.entrancePoints[0].x, buildingId.buildingData.entrancePoints[0].y]);  //spawn the agent
+
+            //}
+            
+            if (worker.currAction == AgentData.CURRENT_ACTION.IDLE && worker.pathTile.Count>0) 
             {
                 worker.currAction = AgentData.CURRENT_ACTION.WORKING;
-                GeneralUtil.map.SpawnAgent(worker.guid, GeneralUtil.map.tilesArray[buildingId.buildingData.entrancePoints[0].x, buildingId.buildingData.entrancePoints[0].y]);
-
+                GeneralUtil.map.SpawnAgent(worker.guid, GeneralUtil.map.tilesArray[buildingId.buildingData.entrancePoints[0].x, buildingId.buildingData.entrancePoints[0].y]);  //spawn the agent
             }
+        
         }
     }
     private void DayTick() { }
@@ -90,20 +101,8 @@ public class CouncilBuilding : MonoBehaviour
     {
         if (test) 
         {
-            //test = false;
-
-            //foreach (var worker in buildingId.buildingData.workers)
-            //{
-            //    if (!worker.currAction != AgentData.CURRENT_ACTION.) 
-            //    {
-            //        GeneralUtil.map.SpawnAgent(worker.guid, GeneralUtil.map.tilesArray[buildingId.buildingData.entrancePoints[0].x, buildingId.buildingData.entrancePoints[0].y]);
-
-            //        GeneralUtil.dataBank.npcDict[worker.guid].pathTile = GeneralUtil.A_StarPathfinding(buildingId.buildingData.entrancePoints[0], buildingId.buildingData.tileInRange[Random.Range(0, buildingId.buildingData.tileInRange.Count)], GeneralUtil.dataBank.npcDict[worker.guid]);
-
-            //        worker.busy = true;
-            //        break;
-            //    }
-            //}
+            test = false;
+           HourTick();
             
         }
     }

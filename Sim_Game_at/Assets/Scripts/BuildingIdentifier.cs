@@ -33,7 +33,7 @@ public class BuildingIdentifier : MonoBehaviour
         foreach (var entrance in GeneralUtil.buildingScritpable.buildingStats[index].entrances)
         {
             entranceLocation.Add(new Vector2Int(entrance.x + buildingData.centerCoord.x, entrance.y + buildingData.centerCoord.y));
-            GeneralUtil.map.tilesArray[entrance.x + buildingData.centerCoord.x, entrance.y + buildingData.centerCoord.y].tileType = TileType.PATH;
+            GeneralUtil.map.tilesArray[entrance.x + buildingData.centerCoord.x, entrance.y + buildingData.centerCoord.y].tileType = TileType.ENTRANCE;
         }
 
         buildingData.entrancePoints = entranceLocation;

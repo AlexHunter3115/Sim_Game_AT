@@ -124,7 +124,7 @@ spawn the agent and if no worki then fuck about
 if no house at night then idle
 
 
-
+they are getting a null reference right, ofoucrse there can only be one concil
 
 the council is placed   - done 
 
@@ -148,4 +148,6 @@ sleep becasue of no house
 
 
 try to not use any foreach  use only for loops
+
+try to get the position in relation to the corners
  */

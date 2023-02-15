@@ -54,6 +54,9 @@ public class MapInteraction : MonoBehaviour
 
                             if (GeneralUtil.AABBCol(hit.point, GeneralUtil.map.tilesArray[row, col]))
                             {
+                                Debug.Log(row);
+                                Debug.Log(col);
+
                                 GeneralUtil.map.ClickedTile = GeneralUtil.map.tilesArray[row, col];
 
                                 var sel = GeneralUtil.buildingScritpable.buildingStats[selectedIndex].size;

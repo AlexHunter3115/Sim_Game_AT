@@ -22,7 +22,12 @@ public class AgentData : Entity
 
     //this can be just null if no hosue or work
     public BuildingData refToHouse;
+    public bool atHouse;
+
     public BuildingData refToWorkPlace;
+    public bool atWork;
+
+
 
     #region stats
 
@@ -54,13 +59,23 @@ public class AgentData : Entity
     }
     public CURRENT_ACTION currAction;
 
+    public int inventoryWood;
+    public int inventoryStone;
+    public int inventoryFood;
+
+
+
+    public bool moving;
+
+
     #endregion
 
 
     #region pathing
 
     public Tile tileDestination;
-    public List<Tile> pathTile;
+    public Tile tileStart;
+    public List<Tile> pathTile = new List<Tile>();
 
     #endregion
 
@@ -175,16 +190,20 @@ public class AgentData : Entity
                     //entrance point should be random
                     // could have a for loop with tries
 
-                    var path = GeneralUtil.A_StarPathfinding(refToWorkPlace.entrancePoints[0], refToWorkPlace.tileInRange[Random.Range(0, refToWorkPlace.tileInRange.Count)], this);
 
-                    if (GeneralUtil.PathContainsTileType(TileType.WATER, path))
+                    SetAgentPathing(refToWorkPlace.entrancePoints[0], refToWorkPlace.tileInRange[Random.Range(0, refToWorkPlace.tileInRange.Count)]);
+
+                    if (pathTile == null)
+                        return;
+
+                    if (GeneralUtil.PathContainsTileType(TileType.WATER, pathTile))
                     {
                         // nothing happens
                     }
                     else
                     {
-                        this.pathTile = path;
-                        this.currAction = CURRENT_ACTION.WORKING;
+                        //this.currAction = CURRENT_ACTION.WORKING;
+                        this.moving = true;
                     }
 
 
@@ -230,7 +249,12 @@ public class AgentData : Entity
     }
     #endregion
 
-
+    public void SetAgentPathing(Vector2Int start,  Vector2Int end, bool forced = false) 
+    {
+        pathTile = GeneralUtil.A_StarPathfinding(refToWorkPlace.entrancePoints[0], refToWorkPlace.tileInRange[Random.Range(0, refToWorkPlace.tileInRange.Count)], this,forced);
+        tileStart = GeneralUtil.map.tilesArray[start.x, start.y];
+        tileDestination = GeneralUtil.map.tilesArray[end.x, end.y];
+    }
 
 
 
