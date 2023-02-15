@@ -3,10 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class BuildingIdentifier : MonoBehaviour
 {
-   //this script is here to be fetched by others, this is because the actions of each building specifically will be held on another specilised script
+    //this script is here to be fetched by others, this is because the actions of each building specifically will be held on another specilised script
+
+
 
 
 
@@ -14,20 +17,20 @@ public class BuildingIdentifier : MonoBehaviour
     public string guid;
 
     [Header("the entrance point is based on the middle point")]
-    public List<Vector2Int> entrances = new List<Vector2Int>();  // this also gives the entrance of the building
-    public int ActionRange = 25;  
+    public int buildingIndex = 0;
     
 
-    public void init(Tile middleTile, Vector2Int size, List<Tile> controlledTiles)
+    public void init(Tile middleTile, Vector2Int size, List<Tile> controlledTiles, int index)
     {
-        buildingData = new BuildingData(BuildingData.BUILDING_TYPE.COUNCIL, size, middleTile.coord,ActionRange);
+        buildingIndex = index;
+        buildingData = new BuildingData(BuildingData.BUILDING_TYPE.COUNCIL, size, middleTile.coord, GeneralUtil.buildingScritpable.buildingStats[index].tileRange);
         this.guid = buildingData.guid;
         buildingData.takenTiles = controlledTiles;
         buildingData.buildingID = this;
 
         var entranceLocation = new List<Vector2Int>();
 
-        foreach (var entrance in entrances)
+        foreach (var entrance in GeneralUtil.buildingScritpable.buildingStats[index].entrances)
         {
             entranceLocation.Add(new Vector2Int(entrance.x + buildingData.centerCoord.x, entrance.y + buildingData.centerCoord.y));
             GeneralUtil.map.tilesArray[entrance.x + buildingData.centerCoord.x, entrance.y + buildingData.centerCoord.y].tileType = TileType.PATH;
@@ -36,18 +39,6 @@ public class BuildingIdentifier : MonoBehaviour
         buildingData.entrancePoints = entranceLocation;
 
     }
-    
-
-
-
-
-    public void MinuteCycle() 
-    {
-        
-    }
-    public void HourCycle() { }
-    public void DayCycle() { }
-
 
 
 

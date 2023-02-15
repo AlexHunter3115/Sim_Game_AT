@@ -17,9 +17,6 @@ public class BuildingData : Entity
     }
 
 
-
-
-
     public void LookForResroucesTilesInRange()
     {
 
@@ -80,7 +77,9 @@ public class BuildingData : Entity
         MINE,
         FARM,
         HOUSE,
-        DOCK
+        DOCK,
+        OUTPOST,
+        SHOP
     }
     public BUILDING_TYPE typeOfBuilding;
 
@@ -111,7 +110,7 @@ public class BuildingData : Entity
     #endregion
 
     public BuildingIdentifier buildingID;
-    public List<NpcData> workers = new List<NpcData>();
+    public List<AgentData> workers = new List<AgentData>();
     public int maxWorkers;
 
 
@@ -134,19 +133,14 @@ public class BuildingData : Entity
     {
         base.TickDailyCycle();
 
-
-        buildingID.DayCycle();
     }
     public override void TickMinuteCycle()
     {
-        base.TickMinuteCycle();
-        buildingID.MinuteCycle();
     }
     public override void TickHourCycle()
     {
         base.TickHourCycle();
 
-        buildingID.HourCycle();
     }
     #endregion
 

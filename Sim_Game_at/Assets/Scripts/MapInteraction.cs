@@ -22,13 +22,6 @@ public class MapInteraction : MonoBehaviour
 
     [SerializeField] int selectedIndex = 0;
 
-    [Space(30)]
-    [SerializeField] GameObject council;
-    [SerializeField] GameObject sawMill;
-    [SerializeField] GameObject mine;
-    [SerializeField] GameObject dock;
-    [SerializeField] GameObject house;
-
     private bool canSpawn = false;
 
     private string guid;
@@ -38,7 +31,7 @@ public class MapInteraction : MonoBehaviour
 
     private void Start()
     {
-        GeneralUtil.Ui.SetSelIndexText(GeneralUtil.buildingNames[(BuildingData.BUILDING_TYPE)selectedIndex]);
+        GeneralUtil.Ui.SetSelIndexText(GeneralUtil.buildingScritpable.buildingStats[selectedIndex].name);
     }
 
     void Update()
@@ -63,7 +56,7 @@ public class MapInteraction : MonoBehaviour
                             {
                                 GeneralUtil.map.ClickedTile = GeneralUtil.map.tilesArray[row, col];
 
-                                var sel = GeneralUtil.buildingSize[(BuildingData.BUILDING_TYPE)selectedIndex];
+                                var sel = GeneralUtil.buildingScritpable.buildingStats[selectedIndex].size;
                                 SpawnShowObj(GeneralUtil.map.ClickedTile, sel.x, sel.y);
 
                                 break;
@@ -107,7 +100,7 @@ public class MapInteraction : MonoBehaviour
                     //    return;
 
                     var success = SpawnBuilding();
-                    ClearSection();
+                    ClearSection(true);
 
 
                     if (success)
@@ -130,20 +123,31 @@ public class MapInteraction : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.UpArrow)) 
         {
-            if (selectedIndex + 1>= GeneralUtil.allowedDict.Count) { selectedIndex = 0; }
+            if (selectedIndex + 1>= GeneralUtil.buildingScritpable.buildingStats.Count) { selectedIndex = 0; }
             else { selectedIndex += 1; }
 
-            ClearSection();
-            GeneralUtil.Ui.SetSelIndexText(GeneralUtil.buildingNames[(BuildingData.BUILDING_TYPE)selectedIndex]);
+            ClearSection(false);
+
+
+            var sel = GeneralUtil.buildingScritpable.buildingStats[selectedIndex].size;
+            SpawnShowObj(GeneralUtil.map.ClickedTile, sel.x, sel.y);
+
+
+            GeneralUtil.Ui.SetSelIndexText(GeneralUtil.buildingScritpable.buildingStats[selectedIndex].name);
         }
         if (Input.GetKeyDown(KeyCode.DownArrow))
         {
-            if (selectedIndex -1  < 0) { selectedIndex = GeneralUtil.allowedDict.Count -1; }
+            if (selectedIndex -1  < 0) { selectedIndex = GeneralUtil.buildingScritpable.buildingStats.Count - 1; }
             else { selectedIndex -= 1; }
 
-            ClearSection();
+            ClearSection(false);
 
-            GeneralUtil.Ui.SetSelIndexText(GeneralUtil.buildingNames[(BuildingData.BUILDING_TYPE)selectedIndex]);
+
+
+            var sel = GeneralUtil.buildingScritpable.buildingStats[selectedIndex].size;
+            SpawnShowObj(GeneralUtil.map.ClickedTile, sel.x, sel.y);
+
+            GeneralUtil.Ui.SetSelIndexText(GeneralUtil.buildingScritpable.buildingStats[selectedIndex].name);
 
         }
 
@@ -164,9 +168,9 @@ public class MapInteraction : MonoBehaviour
 
 
 
-    private bool CheckEnoughResources(BuildingData.BUILDING_TYPE type) 
+    private bool CheckEnoughResources() 
     {
-        var list = GeneralUtil.ResourcesWSFSStart[type];
+        var list = GeneralUtil.buildingScritpable.buildingStats[selectedIndex].startCostWSFS;
 
         int wood = list[0];
         int stone = list[1];
@@ -203,26 +207,20 @@ public class MapInteraction : MonoBehaviour
 
 
 
-
-
-
-
-    //this doesnt work something is not turning them into blocked
     private bool SpawnBuilding() 
     {
-
         foreach (var cord in selectedCoords)
         {
             GeneralUtil.map.tilesArray[cord.coord.x, cord.coord.y].tileType = TileType.BLOCKED;
         }
 
-        var objRef = Instantiate(council, middleTile.midCoord, Quaternion.identity);
+        var objRef = Instantiate(GeneralUtil.buildingScritpable.buildingStats[selectedIndex].building, new Vector3(middleTile.midCoord.x  + GeneralUtil.buildingScritpable.buildingStats[selectedIndex].centerOffset.x, middleTile.midCoord.y, middleTile.midCoord.z + GeneralUtil.buildingScritpable.buildingStats[selectedIndex].centerOffset.y)   , Quaternion.identity);
         var BID = objRef.GetComponent<BuildingIdentifier>();
-        BID.init(middleTile, GeneralUtil.buildingSize[(BuildingData.BUILDING_TYPE)selectedIndex],selectedCoords);
+        BID.init(middleTile, GeneralUtil.buildingScritpable.buildingStats[selectedIndex].size, selectedCoords,selectedIndex);
 
         GeneralUtil.dataBank.buildingDict.Add(BID.guid, BID.buildingData);
 
-       
+        GeneralUtil.map.UpdateMapTexture();
         return true;
     }
 
@@ -265,7 +263,7 @@ public class MapInteraction : MonoBehaviour
                 bool typeCheck = false;
 
 
-                foreach (var type in GeneralUtil.allowedDict[0])
+                foreach (var type in GeneralUtil.buildingScritpable.buildingStats[selectedIndex].allowedTileTypes)
                 {
                     if (GeneralUtil.map.tilesArray[x, y].tileType == (TileType)type) 
                     {
@@ -306,14 +304,16 @@ public class MapInteraction : MonoBehaviour
     }
 
 
-    private void ClearSection() 
+    private void ClearSection(bool delResources) 
     {
-
-        foreach (var tiles in selectedCoords)
+        if (delResources)
         {
-            GeneralUtil.map.tilesArray[tiles.coord.x, tiles.coord.y].busy = false;
-            if (GeneralUtil.map.tilesArray[tiles.coord.x, tiles.coord.y].tileObject != null)
-                Destroy(GeneralUtil.map.tilesArray[tiles.coord.x, tiles.coord.y].tileObject);
+            foreach (var tiles in selectedCoords)
+            {
+                GeneralUtil.map.tilesArray[tiles.coord.x, tiles.coord.y].busy = false;
+                if (GeneralUtil.map.tilesArray[tiles.coord.x, tiles.coord.y].tileObject != null)
+                    Destroy(GeneralUtil.map.tilesArray[tiles.coord.x, tiles.coord.y].tileObject);
+            }
         }
 
         ClearShowObj();
@@ -353,23 +353,30 @@ public class MapInteraction : MonoBehaviour
 
 
         GUI.Box(new Rect(5, 5, 160, 120), "");
-        GUI.Label(new Rect(10, 10, 100, 20), "name");
+        GUI.Label(new Rect(10, 10, 100, 20), $"Name: {npcData.name}");
 
 
-        GUI.Label(new Rect(10, 20, 100, 20), "stamina");
-        GUI.Label(new Rect(10, 30, 100, 20), "health");
-        GUI.Label(new Rect(10, 40, 100, 20), "hunger");
-        GUI.Label(new Rect(10, 50, 100, 20), "gender");
-        GUI.Label(new Rect(10, 60, 100, 20), "speed");
+        GUI.Label(new Rect(10, 20, 100, 20), $"Health: {npcData.health}");
+        GUI.Label(new Rect(10, 30, 100, 20), $"Stamina: {npcData.stamina}");
+        GUI.Label(new Rect(10, 40, 100, 20), $"Hunger: {npcData.hunger}");
+        GUI.Label(new Rect(10, 50, 100, 20), $"Gender: {npcData.gender}");
+        GUI.Label(new Rect(10, 60, 100, 20), $"Speed: {npcData.speed}");
 
 
-        GUI.Label(new Rect(10, 70, 100, 20), "age state");
+        GUI.Label(new Rect(10, 70, 100, 20), $"Age: {npcData.name}");
 
-        if (npcData.refToWorkPlace != null)
-            GUI.Label(new Rect(10, 80, 100, 20), "job guid");
+        if (npcData.refToWorkPlace != null) 
+        {
+            GUI.Label(new Rect(10, 80, 100, 20), $"Work: {npcData.refToWorkPlace.guid}");
 
-        if (npcData.refToHouse != null)
-            GUI.Label(new Rect(10, 90, 100, 20), "house guid");
+        }
+
+        if (npcData.refToHouse != null) 
+        {
+
+            GUI.Label(new Rect(10, 90, 100, 20), $"House: {npcData.refToHouse.guid}");
+
+        }
 
 
         GUI.Label(new Rect(10, 100, 100, 20), "mother");

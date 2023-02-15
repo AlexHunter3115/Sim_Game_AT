@@ -77,6 +77,7 @@ public class MapCreation : MonoBehaviour
     private void Awake()
     {
         GeneralUtil.map = this;
+        GeneralUtil.buildingScritpable = Resources.Load("buildingTypes") as BuildingTypes;
     }
 
     private void Start()

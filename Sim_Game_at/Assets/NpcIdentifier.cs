@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class NpcIdentifier : MonoBehaviour
 {
-    public NpcData buildingData;
+    public AgentData buildingData;
     public string guid;
 
     // Start is called before the first frame update

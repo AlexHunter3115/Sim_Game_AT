@@ -1,6 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
+
 using UnityEngine;
+using static UnityEditor.PlayerSettings;
 
 public class CouncilBuilding : MonoBehaviour
 {
@@ -15,36 +15,90 @@ public class CouncilBuilding : MonoBehaviour
         InitiateCouncil();
     }
 
+
+    private void OnEnable()
+    {
+        GeneralUtil.timeCycle.dayTick.AddListener(DayTick);
+        GeneralUtil.timeCycle.minuteTick.AddListener(MinuteTick);
+        GeneralUtil.timeCycle.hourTick.AddListener(HourTick);
+    }
+
+    private void OnDisable()
+    {
+        GeneralUtil.timeCycle.dayTick.RemoveListener(DayTick);
+        GeneralUtil.timeCycle.hourTick.RemoveListener(HourTick);
+        GeneralUtil.timeCycle.minuteTick.RemoveListener(MinuteTick);
+    }
+
+
     public void InitiateCouncil() 
     {
         for (int i = 0; i < 4; i++)
         {
-            var newCitizen = new NpcData(NpcData.AGE_STATE.ADULT, buildingId.buildingData);
-            GeneralUtil.dataBank.npcDict.Add(newCitizen.guid, newCitizen);
-            newCitizen.refToWorkPlace = buildingId.buildingData;
-            buildingId.buildingData.workers.Add(newCitizen);
+
+            var destination = new Vector2Int(buildingId.buildingData.centerCoord.x + Random.Range(-10, 10), buildingId.buildingData.centerCoord.y + Random.Range(-10, 10));   //chooses the random pos to spawn on
+            if (destination.x < 0 || destination.y < 0 || destination.x >= GeneralUtil.map.tilesArray.GetLength(0) || destination.y >= GeneralUtil.map.tilesArray.GetLength(1))
+            {
+                destination = new Vector2Int(buildingId.buildingData.centerCoord.x + Random.Range(-1, 1), buildingId.buildingData.centerCoord.y + Random.Range(-1, 1));
+            }
+
+
+            var newCitizen = new AgentData(AgentData.AGE_STATE.ADULT);     // initiates the class
+            GeneralUtil.dataBank.npcDict.Add(newCitizen.guid, newCitizen);   // adds it to the dict
+            newCitizen.refToWorkPlace = buildingId.buildingData;    //sets the workplace to the council
+            buildingId.buildingData.workers.Add(newCitizen);    // adds the worker to the council
+
+            GeneralUtil.map.SpawnAgent(newCitizen.guid, GeneralUtil.map.tilesArray[destination.x,destination.y]);   //spawns the agent
+
         }
     }
+
+
+
+
+
+
+
+    private void MinuteTick() 
+    {
+        Debug.Log("called on the building");
+    }
+    private void HourTick() 
+    {
+        foreach (var worker in buildingId.buildingData.workers)
+        {
+            if (worker.currAction == AgentData.CURRENT_ACTION.IDLE) 
+            {
+                worker.currAction = AgentData.CURRENT_ACTION.WORKING;
+                GeneralUtil.map.SpawnAgent(worker.guid, GeneralUtil.map.tilesArray[buildingId.buildingData.entrancePoints[0].x, buildingId.buildingData.entrancePoints[0].y]);
+
+            }
+        }
+    }
+    private void DayTick() { }
+
+
+
 
 
     private void Update()
     {
         if (test) 
         {
-            test = false;
+            //test = false;
 
-            foreach (var worker in buildingId.buildingData.workers)
-            {
-                if (!worker.busy) 
-                {
-                    GeneralUtil.map.SpawnAgent(worker.guid, GeneralUtil.map.tilesArray[buildingId.buildingData.entrancePoints[0].x, buildingId.buildingData.entrancePoints[0].y]);
+            //foreach (var worker in buildingId.buildingData.workers)
+            //{
+            //    if (!worker.currAction != AgentData.CURRENT_ACTION.) 
+            //    {
+            //        GeneralUtil.map.SpawnAgent(worker.guid, GeneralUtil.map.tilesArray[buildingId.buildingData.entrancePoints[0].x, buildingId.buildingData.entrancePoints[0].y]);
 
-                    GeneralUtil.dataBank.npcDict[worker.guid].pathTile = GeneralUtil.A_StarPathfinding(buildingId.buildingData.entrancePoints[0], buildingId.buildingData.tileInRange[Random.Range(0, buildingId.buildingData.tileInRange.Count)], GeneralUtil.dataBank.npcDict[worker.guid]);
+            //        GeneralUtil.dataBank.npcDict[worker.guid].pathTile = GeneralUtil.A_StarPathfinding(buildingId.buildingData.entrancePoints[0], buildingId.buildingData.tileInRange[Random.Range(0, buildingId.buildingData.tileInRange.Count)], GeneralUtil.dataBank.npcDict[worker.guid]);
 
-                    worker.busy = true;
-                    break;
-                }
-            }
+            //        worker.busy = true;
+            //        break;
+            //    }
+            //}
             
         }
     }

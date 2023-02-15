@@ -7,7 +7,7 @@ public static class GeneralUtil
 {
 
     #region names
-    public static string[] femaleNames = new string[] { "Emily", "Emma", "Olivia", "Ava", "Isabella", "Sophia", "Mia", "Charlotte", "Amelia", "Harper", "Evelyn", "Abigail", "Emily", "Elizabeth", "Sofia", "Avery", "Ella", "Madison", "Scarlett", "Victoria", "Aria", "Grace", "Chloe", "Camila", "Penelope", "Riley", "Layla", "Lillian", "Natalie", "Hazel", "Aubrey", "Lucy", "Audrey", "Sadie", "Makayla", "Aaliyah", "Aurora", "Ellie", "Arianna", "Allison", "Savannah", "Nora", "Reagan", "Adalynn", "Brooklynn", "Leah", "Anna", "Aurora", "Scarlet", "Mila", "Everly" };
+    public static string[] femaleNames = new string[] { "Emma", "Olivia", "Ava", "Isabella", "Sophia", "Mia", "Charlotte", "Amelia", "Evelyn", "Abigail", "Harper", "Emily", "Elizabeth", "Avery", "Sofia", "Ella", "Madison", "Scarlett", "Victoria", "Aria", "Grace", "Chloe", "Camila", "Penelope", "Riley", "Layla", "Lillian", "Nora", "Zoey", "Mila", "Aubrey", "Hannah", "Lily", "Addison", "Eleanor", "Natalie", "Luna", "Savannah", "Brooklyn", "Leah", "Zoe", "Stella", "Hazel", "Ellie", "Paisley", "Audrey", "Skylar", "Violet", "Claire" };
 
     public static string[] maleNames = new string[] { "Liam", "Noah", "William", "James", "Oliver", "Benjamin", "Elijah", "Lucas", "Mason", "Logan", "Alexander", "Ethan", "Jacob", "Michael", "Daniel", "Henry", "Jackson", "Sebastian", "Aiden", "Matthew", "Samuel", "David", "Joseph", "Carter", "Owen", "Wyatt", "John", "Jack", "Luke", "Jayden", "Dylan", "Grayson", "Levi", "Isaac", "Gabriel", "Julian", "Mateo", "Anthony", "Jaxon", "Lincoln", "Joshua", "Christopher", "Andrew", "Theodore", "Caleb", "Ryan", "Asher", "Nathan", "Thomas", "Leo" };
 
@@ -23,9 +23,12 @@ public static class GeneralUtil
     public static MapCreation map;
     public static ResourceBank bank;
     public static DataHolder dataBank;
-    
-    
-    public static List<Tile> A_StarPathfinding(Vector2Int start, Vector2Int end, NpcData npc)
+    public static TimeCycle timeCycle;
+
+    public static BuildingTypes buildingScritpable;
+
+
+    public static List<Tile> A_StarPathfinding(Vector2Int start, Vector2Int end, AgentData npc, bool forced = false)
     {
         var tileArray2D = map.tilesArray;
 
@@ -41,22 +44,11 @@ public static class GeneralUtil
 
         childPosArry = childPosArry4Side;
 
-
-
         openList.Add(start_node);
 
-        int iter = 0;
 
         while (openList.Count > 0)
         {
-
-
-            if (iter > 1000) 
-            {
-                //break;
-            }
-
-            //iter++;
 
             AStar_Node currNode = openList[0];
             int currIndex = 0;
@@ -91,14 +83,15 @@ public static class GeneralUtil
 
                 foreach (var tile in path)
                 {
-                    overallCost += tile.f;
+                    overallCost += tileCosts[tile.refToBasicTile.tileType];
                     pathOfBasicTiles.Add(tile.refToBasicTile);
                 }
 
-
+                Debug.Log($"{overallCost} is and the max allowed for this citizen is {maxTileDistPerAge[npc.currAge]}");
                 if (overallCost > maxTileDistPerAge[npc.currAge])
                 {
-                    return null;
+                    if (pathOfBasicTiles[0].tileType != TileType.ENTRANCE  && forced == false)
+                        return null;
                 }
 
                 pathOfBasicTiles.Reverse();
@@ -195,60 +188,30 @@ public static class GeneralUtil
     }
 
 
+    /// <summary>
+    /// returns true if it contain the wanted type
+    /// </summary>
+    /// <param name="type"></param>
+    /// <param name="path"></param>
+    /// <returns></returns>
+    public static bool PathContainsTileType(TileType type, List<Tile> path) 
+    {
+        foreach (var tile in path)
+        {
+            if (tile.tileType == type)
+                return true;
+        }
+
+
+        return false;
+    }
 
 
 
 
 
     #region Dicts
-    /// <summary>
-    /// the needed resource per buidling to keep it up
-    /// </summary>
-    public static Dictionary<BuildingData.BUILDING_TYPE, List<int>> ResourcesWSFSUpKeep = new Dictionary<BuildingData.BUILDING_TYPE, List<int>>
-    {
-        {BuildingData.BUILDING_TYPE.COUNCIL, new List<int>() {20,5,2,2 }  },
-        {BuildingData.BUILDING_TYPE.HOUSE, new List<int>() {0,0,0,0 }  },
-        {BuildingData.BUILDING_TYPE.SAWMILL, new List<int>() {0,0,0,0 }  },
-        {BuildingData.BUILDING_TYPE.MINE, new List<int>() {0,0,0,0 }  },
-        {BuildingData.BUILDING_TYPE.DOCK, new List<int>() {0,0,0,0 }  },
-        {BuildingData.BUILDING_TYPE.FARM, new List<int>() {0,0,0,0 }  },
-    };
-
-
-    /// <summary>
-    /// the needed resrouces to start the building process
-    /// </summary>
-    public static Dictionary<BuildingData.BUILDING_TYPE, List<int>> ResourcesWSFSStart = new Dictionary<BuildingData.BUILDING_TYPE, List<int>>
-    {
-        {BuildingData.BUILDING_TYPE.COUNCIL, new List<int>() {250,30,20,10 }  },
-        {BuildingData.BUILDING_TYPE.HOUSE, new List<int>() {0,0,0,0 }  },
-        {BuildingData.BUILDING_TYPE.SAWMILL, new List<int>() {0,0,0,0 }  },
-        {BuildingData.BUILDING_TYPE.MINE, new List<int>() {0,0,0,0 }  },
-        {BuildingData.BUILDING_TYPE.DOCK, new List<int>() {0,0,0,0 }  },
-        {BuildingData.BUILDING_TYPE.FARM, new List<int>() {0,0,0,0 }  },
-    };
-
-    // the types of tiles allowed to build on specific to that buidling
-    public static Dictionary<BuildingData.BUILDING_TYPE, List<int>> allowedDict = new Dictionary<BuildingData.BUILDING_TYPE, List<int>>()
-    {
-        {BuildingData.BUILDING_TYPE.COUNCIL, new List<int>() {0,1 }  },
-        {BuildingData.BUILDING_TYPE.FARM, new List<int>() {0 }  },
-        {BuildingData.BUILDING_TYPE.MINE, new List<int>() {1,2 }  },
-        {BuildingData.BUILDING_TYPE.HOUSE, new List<int>() {0,1 }  },
-        {BuildingData.BUILDING_TYPE.SAWMILL, new List<int>() {0 }  },
-        {BuildingData.BUILDING_TYPE.DOCK, new List<int>() {0,3 }  }
-    };
-
-    // the size of each buidling
-    public static Dictionary<BuildingData.BUILDING_TYPE, Vector2Int> buildingSize = new Dictionary<BuildingData.BUILDING_TYPE, Vector2Int>()
-    {
-        {BuildingData.BUILDING_TYPE.COUNCIL, new Vector2Int(5,5)  },
-        {BuildingData.BUILDING_TYPE.FARM,  new Vector2Int(5,10)  },
-        {BuildingData.BUILDING_TYPE.MINE,  new Vector2Int(3,5)  },
-        {BuildingData.BUILDING_TYPE.HOUSE,  new Vector2Int(5,5)  },
-        {BuildingData.BUILDING_TYPE.SAWMILL,  new Vector2Int(3,5)  },
-        {BuildingData.BUILDING_TYPE.DOCK,  new Vector2Int(3,7)  }
-    };
+ 
 
     //the cost of pathfidnign for each tile
     public static Dictionary<TileType, float> tileCosts = new Dictionary<TileType, float>()
@@ -258,34 +221,20 @@ public static class GeneralUtil
         {TileType.SNOW, 0.6f},
         {TileType.WATER, 0.9f},
         {TileType.NULL, 10000f},
-        {TileType.PATH, 0},
-        {TileType.BLOCKED, 10000f}
+        {TileType.PATH, 0.03f},
+        {TileType.BLOCKED, 10000f},
+        {TileType.ENTRANCE, 0f}
     };
 
 
 
-    public static Dictionary<NpcData.AGE_STATE, float> maxTileDistPerAge = new Dictionary<NpcData.AGE_STATE, float>()
+    public static Dictionary<AgentData.AGE_STATE, float> maxTileDistPerAge = new Dictionary<AgentData.AGE_STATE, float>()
     {
-        {NpcData.AGE_STATE.BABY, 3},
-        {NpcData.AGE_STATE.TEEN, 10},
-        {NpcData.AGE_STATE.ADULT, 15},
-        {NpcData.AGE_STATE.ELDER, 7}
+        {AgentData.AGE_STATE.BABY, 3},
+        {AgentData.AGE_STATE.TEEN, 10},
+        {AgentData.AGE_STATE.ADULT, 15},
+        {AgentData.AGE_STATE.ELDER, 7}
     };
-
-
-
-    public static Dictionary<BuildingData.BUILDING_TYPE, string> buildingNames = new Dictionary<BuildingData.BUILDING_TYPE, string>()
-    {
-        {BuildingData.BUILDING_TYPE.COUNCIL, "Council"},
-        {BuildingData.BUILDING_TYPE.FARM, "Farm"},
-        {BuildingData.BUILDING_TYPE.DOCK, "Dock"},
-        {BuildingData.BUILDING_TYPE.HOUSE, "House"},
-        {BuildingData.BUILDING_TYPE.MINE, "Mine"},
-        {BuildingData.BUILDING_TYPE.SAWMILL, "Sawmill"},
-    };
-
-
-
 
 
     #endregion

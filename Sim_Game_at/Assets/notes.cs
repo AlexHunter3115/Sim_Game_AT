@@ -1,5 +1,5 @@
 /*
-//game idea
+//completly fucked
 
 every day the buildings require a up keep cost
 
@@ -108,26 +108,41 @@ every buidling has its own storage, council act as a food
 
 build a path on every built building so the pathing doesnt fuckup
 
-CUNT
 
 
 
 actual thigns to do either way:
 
-max the tiles or distance allowed to go based on age, need a way to notice when its coming back, we could have a tile type called entrance  ---  this has been set as the overall cost fo the path
-this is so the ntrance and the path tiles dont need to be check also takes out some complexity, for example if the overall path is 20 tiles long but its on a apth tile its fine
-but i might still add a force check on the destination if its an entrance tile
-
-get the new buidlings to spawn with their classes
 
 agents without houses need to patroll around 
 this also goes with the time cycle, when at night they stop moving and recharge if no house they recharge half,
 
 
-the arrow key shit should delete the thing and that it also delete the resources
 
-setup the scriptable object
+spawn the agent and if no worki then fuck about
 
+if no house at night then idle
+
+
+
+
+the council is placed
+
+4 people are spawned in 
+
+they are spawned around
+
+the job is set as the council
+
+they get into the concil 
+
+start working
+
+ngiht time goes 
+
+they leave wit a radnom dest
+
+sleep becasue of no house
 
 
  */
