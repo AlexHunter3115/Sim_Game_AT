@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 1191632702207870011}
   - component: {fileID: 3993972590170747121}
   - component: {fileID: 3090540349787011475}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Dock
   m_TagString: Untagged
   m_Icon: {fileID: 0}

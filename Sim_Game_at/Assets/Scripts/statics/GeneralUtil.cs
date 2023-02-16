@@ -219,6 +219,29 @@ public static class GeneralUtil
         return false;
     }
 
+    /// <summary>
+    /// given a world position returns a tile object corresponding to that cord
+    /// </summary>
+    /// <param name="point"></param>
+    /// <returns></returns>
+    public static Tile WorldTileCoord(Vector3 point) 
+    {
+        for (int i = 0; i < map.tilesArray.Length; i++)
+        {
+            int row = i / map.textSize;
+            int col = i % map.textSize;
+
+            if (AABBCol(point, map.tilesArray[row, col]))
+            {
+                return map.tilesArray[row, col];
+            }
+        }
+
+        return null;
+    }
+
+
+    public static Tile Vector2Tile(Vector2Int cord) { return map.tilesArray[cord.x, cord.y]; }
 
 
 

@@ -150,4 +150,17 @@ sleep becasue of no house
 try to not use any foreach  use only for loops
 
 try to get the position in relation to the corners
+
+
+its not ignoreing the shadow objects
+
+
+interfaces 
+
+ 
+ 
+ every buiilding is going to contrinute towards a max possible kept resource so if we have like 1 council and 2 sawmill max is 1500 wood and so on, the shops take that from them
+ 
+ 
+ 
  */

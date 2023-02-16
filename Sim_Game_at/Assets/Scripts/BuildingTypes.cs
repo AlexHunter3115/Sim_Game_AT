@@ -25,4 +25,5 @@ public class BuildingStatistics
     public int[] startCostWSFS = new int[4];
     public List<int> allowedTileTypes = new List<int>();
     public GameObject building;
+    public int maxWorkers;
 }

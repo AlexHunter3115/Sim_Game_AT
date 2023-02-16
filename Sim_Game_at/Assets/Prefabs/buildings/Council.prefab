@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 8404477830627208033}
   - component: {fileID: 7850126539007217033}
   - component: {fileID: 8307660064223196632}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Council
   m_TagString: Untagged
   m_Icon: {fileID: 0}

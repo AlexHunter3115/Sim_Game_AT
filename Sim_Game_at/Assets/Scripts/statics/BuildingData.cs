@@ -23,7 +23,7 @@ public class BuildingData : Entity
         int halfWidth = range / 2;
         int halfHeight = range / 2;
 
-
+        //fibonacci thing 
         for (int y = centerCoord.y - (range - halfHeight); y < centerCoord.y + halfHeight; y++)
         {
             for (int x = centerCoord.x - (range - halfWidth); x < centerCoord.x + halfWidth; x++)
@@ -64,6 +64,11 @@ public class BuildingData : Entity
                 }
             }
         }
+
+
+
+
+
     }
 
 

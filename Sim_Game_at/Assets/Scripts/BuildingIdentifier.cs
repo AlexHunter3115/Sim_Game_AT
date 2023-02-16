@@ -28,6 +28,8 @@ public class BuildingIdentifier : MonoBehaviour
         buildingData.takenTiles = controlledTiles;
         buildingData.buildingID = this;
 
+        buildingData.maxWorkers = GeneralUtil.buildingScritpable.buildingStats[index].maxWorkers;
+
         var entranceLocation = new List<Vector2Int>();
 
         foreach (var entrance in GeneralUtil.buildingScritpable.buildingStats[index].entrances)
@@ -37,7 +39,48 @@ public class BuildingIdentifier : MonoBehaviour
         }
 
         buildingData.entrancePoints = entranceLocation;
+    }
 
+
+
+
+
+    /// <summary>
+    /// Add a worker
+    /// </summary>
+    /// <param name="guid"></param>
+    /// <returns>Returns false if it failed to add a worker</returns>
+    public bool AddWorker(string guid) 
+    {
+        var worker = GeneralUtil.dataBank.npcDict[guid];
+
+        if (buildingData.workers.Contains(worker))
+            return false;
+        if (buildingData.maxWorkers == buildingData.workers.Count)
+            return false;
+
+        buildingData.workers.Add(worker);
+        worker.currJob = AgentData.OCCUPATION.FOREGER;
+
+        return true;
+    }
+    /// <summary>
+    /// remove the given worker
+    /// </summary>
+    /// <param name="guid"></param>
+    /// <returns>reutrns false if it fails to remove the worker</returns>
+    public bool RemoveWorker(string guid) 
+    {
+        var worker = GeneralUtil.dataBank.npcDict[guid];
+
+        if (buildingData.workers.Contains(worker)) 
+        {
+            buildingData.workers.Remove(worker);
+            return true;
+        }
+
+        worker.currJob = AgentData.OCCUPATION.JOBLESS;
+        return false;
     }
 
 

@@ -8,9 +8,12 @@ using static UnityEditor.PlayerSettings;
 
 public class AgentData : Entity
 {
+
+    #region work and life stuff
     public enum OCCUPATION 
     {
-        JOBLESS,
+        JOBLESS = 0,
+        FOREGER,
         WOOD_GUY,
         MINER,
         FISHER,
@@ -22,11 +25,12 @@ public class AgentData : Entity
 
     //this can be just null if no hosue or work
     public BuildingData refToHouse;
-    public bool atHouse;
+    public bool atHouse = false;
 
     public BuildingData refToWorkPlace;
-    public bool atWork;
-
+    public bool atWork =false;
+    public bool readyToWork = false;
+    #endregion
 
 
     #region stats
@@ -46,7 +50,7 @@ public class AgentData : Entity
         ELDER = 30
     }
     public AGE_STATE currAge;
-    public int dayAlive;
+    public int daysAlive;
 
     public enum CURRENT_ACTION
     {
@@ -54,19 +58,16 @@ public class AgentData : Entity
         SLEEPING,   // in house or outside just not avaialable  this at night
         WONDERING,  // no job no thing useless citizen not at night 
         RETURNING,   // gcoming back from somewhere
-        IDLE,    //if its working and got nothgin to do
-        MOVING
+            //if its working and got nothgin to do
+        MOVING,
+        TRANSITION
     }
     public CURRENT_ACTION currAction;
+    public CURRENT_ACTION hardSetAction;
 
     public int inventoryWood;
     public int inventoryStone;
     public int inventoryFood;
-
-
-
-    public bool moving;
-
 
     #endregion
 
@@ -94,7 +95,7 @@ public class AgentData : Entity
     #endregion
 
 
-
+    public GameObject agentObj;
     public bool dead;
 
     //constructor
@@ -115,12 +116,100 @@ public class AgentData : Entity
     }
 
 
-    //night time setup
-    //this is called when to age up
+
+
+    #region time tickers overrides
+    public override void TickDailyCycle()
+    {
+        base.TickDailyCycle();
+
+        AgeUp();
+        //we take out health for not having a house at night
+      
+    }
+    public override void TickMinuteCycle()
+    {
+        base.TickMinuteCycle();
+    }
+    public override void TickHourCycle() // this ticks every hour
+    {
+        base.TickHourCycle();
+        
+        if (GeneralUtil.timeCycle.currentDayState == TIME.NIGHT && !atHouse) //if its night time and not in his house
+        {
+
+            Debug.Log($"Getting called on the night setup");
+            currAction = CURRENT_ACTION.TRANSITION;
+            if (refToHouse == null) 
+            {
+                //pick a random position from the entrance of work and sleep there
+                hardSetAction = CURRENT_ACTION.WONDERING;
+            }
+            else 
+            {
+                //you are going to your house
+                if (refToWorkPlace != null) 
+                {
+                    GeneralUtil.map.SpawnAgent(guid, GeneralUtil.Vector2Tile(refToWorkPlace.entrancePoints[0]));
+                    SetAgentPathing(refToWorkPlace.entrancePoints[0], refToHouse.entrancePoints[0], true);
+                }
+                else //if he doesnt have a job he is already out there fore
+                {
+                    var tile = GeneralUtil.WorldTileCoord(agentObj.transform.position);   //gets the world pos of this currently there agent
+                    SetAgentPathing(tile.coord, refToHouse.entrancePoints[0], true);   //sets the pathing
+                }
+
+                hardSetAction = CURRENT_ACTION.SLEEPING;
+            }
+
+            atHouse = true;
+            atWork = false;
+        }
+        else if (GeneralUtil.timeCycle.currentDayState != TIME.NIGHT && !atWork) // if its not night time and its not at work then
+        {
+            Debug.Log($"Getting called on the day setup");
+            currAction = CURRENT_ACTION.TRANSITION;
+            if (refToWorkPlace == null)
+            {
+                //set the char to wonder
+                hardSetAction = CURRENT_ACTION.WONDERING;
+            }
+            else
+            {
+                //you are going to your house
+                if (refToHouse != null)
+                {
+                    GeneralUtil.map.SpawnAgent(guid, GeneralUtil.Vector2Tile(refToHouse.entrancePoints[0]));
+                    SetAgentPathing(refToHouse.entrancePoints[0], refToWorkPlace.entrancePoints[0], true);
+                }
+                else //if he doesnt have a house he is already out there fore
+                {
+                    var tile = GeneralUtil.WorldTileCoord(agentObj.transform.position);   //gets the world pos of this currently there agent
+                    SetAgentPathing(tile.coord, refToWorkPlace.entrancePoints[0], true);   //sets the pathing
+                }
+                hardSetAction = CURRENT_ACTION.WORKING;
+                readyToWork = true;
+            }
+
+            atHouse = false;
+            atWork = true;
+        }
+
+
+    }
+    #endregion
+
+
+
+
+    /// <summary>
+    /// this is used to set the age of the npc, similar to the time of day thing, should be called every new day
+    /// </summary>
+    /// <returns></returns>
     public bool AgeUp()
     {
 
-        dayAlive++;
+        daysAlive++;
 
         //if ((int)AGE_STATE.BABY <= dayAlive)
         //{
@@ -147,111 +236,24 @@ public class AgentData : Entity
         return true;
     }
 
-    public void SetDead() 
+    public void SetDead()
     {
-        
+
     }
 
 
 
 
-    #region overrides
-    // this is the ticks to trickle down health
-    public override void TickDailyCycle()
-    {
-        base.TickDailyCycle();
 
-        //if ()
-
-        // should check if there is a house for free
-        // shoudl check if there is a work for free
-
-      
-    }
-    public override void TickMinuteCycle()
-    {
-        base.TickMinuteCycle();
-    }
-    public override void TickHourCycle()
-    {
-        base.TickHourCycle();
-        // if at work, if in path to something or doing something then no
-        // if at work and doing nothing than  quick perc liek 0.9% will do somehi
-        //also stamina has a choice
-
-
-        if (GeneralUtil.timeCycle.currentDayState != TimeCycle.TIME.NIGHT)
-        {
-
-            if (refToWorkPlace != null)
-            {
-                if (this.currAction == CURRENT_ACTION.IDLE)   // idle means at work but doing nothing
-                {
-                    //entrance point should be random
-                    // could have a for loop with tries
-
-
-                    SetAgentPathing(refToWorkPlace.entrancePoints[0], refToWorkPlace.tileInRange[Random.Range(0, refToWorkPlace.tileInRange.Count)]);
-
-                    if (pathTile == null)
-                        return;
-
-                    if (GeneralUtil.PathContainsTileType(TileType.WATER, pathTile))
-                    {
-                        // nothing happens
-                    }
-                    else
-                    {
-                        //this.currAction = CURRENT_ACTION.WORKING;
-                        this.moving = true;
-                    }
-
-
-                }
-            }
-        }
-        else 
-        {
-
-            if (refToHouse != null)
-            {
-                //has a house
-            }
-            else 
-            {
-                //doesnt have a house
-                currAction = CURRENT_ACTION.MOVING;
-
-
-
-                for (int i = 0; i < 5; i++)
-                {
-                    var destination = new Vector2Int(refToWorkPlace.entrancePoints[0].x + Random.Range(-10, 10), refToWorkPlace.entrancePoints[0].y + Random.Range(-10, 10));
-                    if (destination.x < 0 || destination.y < 0 || destination.x >= GeneralUtil.map.tilesArray.GetLength(0) || destination.y >= GeneralUtil.map.tilesArray.GetLength(1))
-                    {
-                        continue;
-                    }
-
-                    var path = GeneralUtil.A_StarPathfinding(refToWorkPlace.entrancePoints[0], destination, this);
-
-                    if (GeneralUtil.PathContainsTileType(TileType.WATER, path))
-                    {
-                        continue;
-                    }
-                    else
-                    {
-                        this.pathTile = path;
-
-                    }
-                }
-            }
-        }
-    }
-    #endregion
-
+    /// <summary>
+    /// given the start and end of the pathing sets all the vars
+    /// </summary>
+    /// <param name="start"></param>
+    /// <param name="end"></param>
+    /// <param name="forced"></param>
     public void SetAgentPathing(Vector2Int start,  Vector2Int end, bool forced = false) 
     {
-        pathTile = GeneralUtil.A_StarPathfinding(refToWorkPlace.entrancePoints[0], refToWorkPlace.tileInRange[Random.Range(0, refToWorkPlace.tileInRange.Count)], this,forced);
+        pathTile = GeneralUtil.A_StarPathfinding(start, end, this,forced);
         tileStart = GeneralUtil.map.tilesArray[start.x, start.y];
         tileDestination = GeneralUtil.map.tilesArray[end.x, end.y];
     }

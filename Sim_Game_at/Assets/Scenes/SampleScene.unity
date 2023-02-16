@@ -443,7 +443,7 @@ MonoBehaviour:
   percOfStoneOnHill: 0.05
   regions: 3
   percOfBushInGrass: 0.05
-  agent: {fileID: 1235643946228168190, guid: e64284195e4303343aced973d5b9ffb9, type: 3}
+  agent: {fileID: 5980260466511874757, guid: e64284195e4303343aced973d5b9ffb9, type: 3}
   plane: {fileID: 0}
 --- !u!4 &221688226
 Transform:
@@ -931,6 +931,7 @@ MonoBehaviour:
     m_Bits: 64
   selectionGridSize: {x: 5, y: 5}
   selectedIndex: 0
+  testCoord: {x: 0, y: 0}
 --- !u!114 &963194230
 MonoBehaviour:
   m_ObjectHideFlags: 0

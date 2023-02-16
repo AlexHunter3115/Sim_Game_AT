@@ -28,6 +28,7 @@ public class MapInteraction : MonoBehaviour
     private int typeSelected = 0;
     private bool showToolTip = false;
 
+    public Vector2Int testCoord = new Vector2Int(0, 0);
 
     private void Start()
     {
@@ -47,24 +48,13 @@ public class MapInteraction : MonoBehaviour
                 switch (hit.transform.gameObject.layer)
                 {
                     case 6:  //map
-                        for (int i = 0; i < GeneralUtil.map.tilesArray.Length; i++)
-                        {
-                            int row = i / GeneralUtil.map.textSize;
-                            int col = i % GeneralUtil.map.textSize;
+                        var sel = GeneralUtil.buildingScritpable.buildingStats[selectedIndex].size;
 
-                            if (GeneralUtil.AABBCol(hit.point, GeneralUtil.map.tilesArray[row, col]))
-                            {
-                                Debug.Log(row);
-                                Debug.Log(col);
+                        GeneralUtil.map.ClickedTile = GeneralUtil.WorldTileCoord(hit.point);
 
-                                GeneralUtil.map.ClickedTile = GeneralUtil.map.tilesArray[row, col];
+                        Debug.Log(GeneralUtil.map.ClickedTile.coord);
 
-                                var sel = GeneralUtil.buildingScritpable.buildingStats[selectedIndex].size;
-                                SpawnShowObj(GeneralUtil.map.ClickedTile, sel.x, sel.y);
-
-                                break;
-                            }
-                        }
+                        SpawnShowObj(GeneralUtil.map.ClickedTile, sel.x, sel.y);
                         typeSelected = 0;
                         break;
                     case 8:  //building
@@ -324,8 +314,6 @@ public class MapInteraction : MonoBehaviour
     }
 
 
-
-
     private void OnGUI()
     {
         if (showToolTip == true) 
@@ -345,8 +333,6 @@ public class MapInteraction : MonoBehaviour
             }
         }
     }
-
-
 
 
     private void GuiAgent() 
@@ -444,4 +430,14 @@ public class MapInteraction : MonoBehaviour
 
     }
 
+
+
+
+
+
+    private void OnDrawGizmos()
+    {
+        if (dataHolder != null)
+            Gizmos.DrawSphere(GeneralUtil.map.tilesArray[testCoord.x, testCoord.y].midCoord, 0.5f);
+    }
 }

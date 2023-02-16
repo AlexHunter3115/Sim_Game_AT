@@ -25,57 +25,50 @@ public class Agent : MonoBehaviour
     }
 
 
-
+    /// <summary>
+    /// loads the data for this agent to use using the guid
+    /// </summary>
+    /// <param name="guid"></param>
     public void LoadData(string guid)
     {
         data = GeneralUtil.dataBank.npcDict[guid];
         agentName = data.name;
         guid = data.guid;
+        data.agentObj = this.gameObject;
     }
 
+
+    /// <summary>
+    /// hard sets the current position of the selected agent
+    /// </summary>
+    /// <param name="tilePos"></param>
     public void SetPosition(Tile tilePos) => this.transform.position = new Vector3(tilePos.midCoord.x, 0.1f, tilePos.midCoord.z);
 
 
 
-    //when we want the agent to go somewhere we set the movign thing to 
+
+
+
+
+
+
     private void Update()
     {
-        if (data == null)
-            return;
-
-        if (data.pathTile.Count > 0 && data.moving == true) 
+        if (data.pathTile.Count > 0) 
         {
-            if (data.pathTile != null)
-                PathFinding();
-        }
-        else
-        {
-            switch (data.currAction)
-            {
-                case AgentData.CURRENT_ACTION.WORKING: // is it working therefore is he on a entrance tile or is he on a resouce tile
-                    StartCoroutine(AccessingResource());
-                    break;
-                case AgentData.CURRENT_ACTION.SLEEPING:     // just sleep and wait
-                    break;
-                case AgentData.CURRENT_ACTION.WONDERING:   // set a new path afyter a while
-                    StartCoroutine(WonderingCall());
-                    break;
-                case AgentData.CURRENT_ACTION.RETURNING:   // dont know
-                    break;
-                case AgentData.CURRENT_ACTION.IDLE:   // state for the builing
-                    break;
-                case AgentData.CURRENT_ACTION.MOVING:   // dont know
-                    break;
-                default:
-                    break;
-            }
-
+            PathingCall();
         }
     }
 
-    public void PathFinding()
+
+
+
+    public void PathingCall() 
     {
+
         animator.SetBool("Walking", true);
+        bool stillPathing = true;
+
         if (!GeneralUtil.AABBCol(this.transform.position, data.pathTile[0]))   // if it has yet to touch the tile
         {                                                                                                                                                     // tile modifier goes in here for the speed
             this.transform.position = Vector3.MoveTowards(this.transform.position, new Vector3(data.pathTile[0].midCoord.x, 0.05f, data.pathTile[0].midCoord.z), speed * Time.deltaTime);
@@ -91,114 +84,76 @@ public class Agent : MonoBehaviour
             data.pathTile.RemoveAt(0);
 
             if (data.pathTile.Count == 0)
-                data.moving = false;
+                stillPathing = false;
 
         }
 
 
-
-        if (data.moving == false)
+        if (!stillPathing)   //if he has done pathing
         {
-            ReachedEntrance(lastTile);
+            animator.SetBool("Walking", false);
+
+            switch (data.currAction)
+            {
+                case AgentData.CURRENT_ACTION.WORKING:
+
+                    if (data.tileDestination.tileType == TileType.ENTRANCE) //he is back at work
+                    {
+                        data.readyToWork = true;
+                        Destroy(gameObject);
+                    }
+                    else 
+                    {
+                        StartCoroutine(AccessingResource());
+                    }
+
+                    break;
+                case AgentData.CURRENT_ACTION.SLEEPING:
+                    break;
+                case AgentData.CURRENT_ACTION.WONDERING:
+                    break;
+                case AgentData.CURRENT_ACTION.RETURNING:
+                    break;
+                case AgentData.CURRENT_ACTION.MOVING:
+                    break;
+                case AgentData.CURRENT_ACTION.TRANSITION:
+
+                    data.currAction = data.hardSetAction;
+
+                    switch (data.currAction)
+                    {
+                        case AgentData.CURRENT_ACTION.WORKING:
+
+                            Debug.Log("is it getting here");
+                            data.readyToWork = true;
+                            Destroy(gameObject);
+                            break;
+                        case AgentData.CURRENT_ACTION.SLEEPING:
+                            break;
+                        case AgentData.CURRENT_ACTION.WONDERING:
+                            break;
+                        case AgentData.CURRENT_ACTION.RETURNING:
+                            break;
+                        case AgentData.CURRENT_ACTION.MOVING:
+                            break;
+                        case AgentData.CURRENT_ACTION.TRANSITION:
+                            break;
+                        default:
+                            break;
+                    }
+
+                    break;
+                default:
+                    break;
+            }
         }
-
-        //else
-        //{
-
-
-        //    animator.SetBool("Walking", false);
-        //    waiting = true;
-
-
-        //switch (data.currAction)
-        //{
-        //    case AgentData.CURRENT_ACTION.WORKING:
-        //        StartCoroutine(AccessingResource());
-        //        break;
-        //    case AgentData.CURRENT_ACTION.SLEEPING:
-        //        break;
-        //    case AgentData.CURRENT_ACTION.WONDERING:
-        //        StartCoroutine(WonderingCall());
-        //        break;
-        //    case AgentData.CURRENT_ACTION.RETURNING:
-        //        break;
-        //    case AgentData.CURRENT_ACTION.IDLE:
-        //        break;
-        //    case AgentData.CURRENT_ACTION.MOVING:
-        //        break;
-        //    default:
-        //        break;
-        //}
-        //}
-
-
-        //if (lastTile.tileType == TileType.ENTRANCE)
-        //{
-        //    Destroy(gameObject);
-        //}
-
     }
 
-    private void ReachedEntrance(Tile currTile)
-    {
-        Debug.Log(currTile.tileType);
-        if (currTile.tileType == TileType.ENTRANCE)   //it reached work
-        {
-            Debug.Log("called");
-            data.currAction = AgentData.CURRENT_ACTION.IDLE;
-            Destroy(gameObject);
-                //GeneralUtil.bank.ChangeFoodAmount(comp.foodAmount);
-                //GeneralUtil.bank.ChangeStoneAmount(comp.stoneAmount);
-                //GeneralUtil.bank.ChangeWoodAmount(comp.woodAmount);
-            //give the resource to the building
-        }
-    }
 
-
-
-
-    //wondering is for the hobos nothing to do in the day they just choose a ranomd place to go
+   
     private IEnumerator WonderingCall()
     {
         yield return new WaitForSeconds(timeTaken * 2);
-
-        var pos = new Vector2Int();
-
-        for (int i = 0; i < GeneralUtil.map.tilesArray.Length; i++)
-        {
-            int row = i / GeneralUtil.map.textSize;
-            int col = i % GeneralUtil.map.textSize;
-
-            if (GeneralUtil.AABBCol(transform.position, GeneralUtil.map.tilesArray[row, col]))
-            {
-                pos = new Vector2Int(row, col);
-                break;
-            }
-        }
-
-
-
-        for (int i = 0; i < 5; i++)
-        {
-            var destination = new Vector2Int(pos.x + Random.Range(-10, 10), pos.y + Random.Range(-10, 10));
-            if (destination.x < 0 || destination.y < 0 || destination.x >= GeneralUtil.map.tilesArray.GetLength(0) || destination.y >= GeneralUtil.map.tilesArray.GetLength(1))
-            {
-                continue;
-            }
-
-            var path = GeneralUtil.A_StarPathfinding(pos, destination, this.data);
-
-            if (GeneralUtil.PathContainsTileType(TileType.WATER, path))
-            {
-                continue;
-            }
-            else
-            {
-                data.pathTile = path;
-
-                waiting = false;
-            }
-        }
     }
 
     // this is for the workers
@@ -211,12 +166,10 @@ public class Agent : MonoBehaviour
 
         animator.SetBool("Working", false);
 
-        Debug.Log(GeneralUtil.map.tilesArray[lastTile.coord.x, lastTile.coord.y].tileObject);
-        Debug.Log(lastTile.coord);
 
-        if (GeneralUtil.map.tilesArray[lastTile.coord.x, lastTile.coord.y].tileObject != null)
+        if (GeneralUtil.map.tilesArray[data.tileDestination.coord.x, data.tileDestination.coord.y].tileObject != null)
         {
-            var obj = GeneralUtil.map.tilesArray[lastTile.coord.x, lastTile.coord.y].tileObject;
+            var obj = GeneralUtil.map.tilesArray[data.tileDestination.coord.x, data.tileDestination.coord.y].tileObject;
             if (obj != null)
             {
                 var comp = obj.GetComponent<Resource>();
@@ -227,18 +180,16 @@ public class Agent : MonoBehaviour
                 GeneralUtil.bank.ChangeStoneAmount(comp.stoneAmount);
                 GeneralUtil.bank.ChangeWoodAmount(comp.woodAmount);
             }
-            waiting = false;
+           // waiting = false;
 
 
 
-            GeneralUtil.map.tilesArray[lastTile.coord.x, lastTile.coord.y].tileObject = null;
+            GeneralUtil.map.tilesArray[data.tileDestination.coord.x, data.tileDestination.coord.y].tileObject = null;
             Destroy(obj);
-
 
         }
 
-        data.SetAgentPathing(lastTile.coord, data.refToWorkPlace.entrancePoints[0], true);
-       
+        data.SetAgentPathing(data.tileDestination.coord, data.refToWorkPlace.entrancePoints[0], true);
     }
 
 

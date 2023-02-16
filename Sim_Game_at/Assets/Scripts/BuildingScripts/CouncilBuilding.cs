@@ -1,6 +1,4 @@
-
 using UnityEngine;
-using static UnityEditor.PlayerSettings;
 
 public class CouncilBuilding : MonoBehaviour
 {
@@ -31,6 +29,7 @@ public class CouncilBuilding : MonoBehaviour
     }
 
 
+    //the council is the starting point its where the player gets its first 4 people
     public void InitiateCouncil() 
     {
         for (int i = 0; i < 4; i++)
@@ -50,14 +49,17 @@ public class CouncilBuilding : MonoBehaviour
             var newCitizen = new AgentData(AgentData.AGE_STATE.ADULT);     // initiates the class
             GeneralUtil.dataBank.npcDict.Add(newCitizen.guid, newCitizen);   // adds it to the dict
             newCitizen.refToWorkPlace = buildingId.buildingData;    //sets the workplace to the council
-            buildingId.buildingData.workers.Add(newCitizen);    // adds the worker to the council
+           var some = buildingId.AddWorker(newCitizen.guid); //set the place to work in
+
+            Debug.Log(some);
+
 
             GeneralUtil.map.SpawnAgent(newCitizen.guid, GeneralUtil.map.tilesArray[destination.x,destination.y]);   //spawns the agent
 
 
-            newCitizen.SetAgentPathing(destination, buildingId.buildingData.entrancePoints[0], true);
+            //newCitizen.SetAgentPathing(destination, buildingId.buildingData.entrancePoints[0], true);  //sets the pathing to the workplace
            
-            newCitizen.moving = true;
+           // newCitizen.moving = true;
         }
     }
 
@@ -69,26 +71,22 @@ public class CouncilBuilding : MonoBehaviour
 
     private void MinuteTick() 
     {
-        Debug.Log("called on the building");
     }
     private void HourTick() 
     {
+
+        Debug.Log(buildingId.buildingData.workers.Count); 
         foreach (var worker in buildingId.buildingData.workers)
         {
-            //if (worker.currAction == AgentData.CURRENT_ACTION.IDLE)  // is there an agent in the builing, as the woker is set to idle
-            //{
-            //    Debug.Log($"There is someone idle");
-            //    worker.currAction = AgentData.CURRENT_ACTION.WORKING; // set it to working
-            //    GeneralUtil.map.SpawnAgent(worker.guid, GeneralUtil.map.tilesArray[buildingId.buildingData.entrancePoints[0].x, buildingId.buildingData.entrancePoints[0].y]);  //spawn the agent
-
-            //}
-            
-            if (worker.currAction == AgentData.CURRENT_ACTION.IDLE && worker.pathTile.Count>0) 
+            Debug.Log(worker.readyToWork);
+            Debug.Log(worker.currAction);
+            if (worker.readyToWork == true && worker.currAction == AgentData.CURRENT_ACTION.WORKING) 
             {
-                worker.currAction = AgentData.CURRENT_ACTION.WORKING;
-                GeneralUtil.map.SpawnAgent(worker.guid, GeneralUtil.map.tilesArray[buildingId.buildingData.entrancePoints[0].x, buildingId.buildingData.entrancePoints[0].y]);  //spawn the agent
-            }
-        
+                worker.SetAgentPathing(buildingId.buildingData.entrancePoints[0], buildingId.buildingData.tileInRange[Random.Range(0, buildingId.buildingData.tileInRange.Count)]);
+                GeneralUtil.map.SpawnAgent(worker.guid, GeneralUtil.map.tilesArray[buildingId.buildingData.entrancePoints[0].x, buildingId.buildingData.entrancePoints[0].y]);
+                worker.readyToWork = false;
+                Debug.Log("awdjiwiiwe");
+            } 
         }
     }
     private void DayTick() { }

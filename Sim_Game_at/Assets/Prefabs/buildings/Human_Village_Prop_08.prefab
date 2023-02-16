@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 7980778229658772963}
   - component: {fileID: 5270791347415781673}
   - component: {fileID: 3891531797992577310}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Human_Village_Prop_08
   m_TagString: Untagged
   m_Icon: {fileID: 0}

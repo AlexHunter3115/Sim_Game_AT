@@ -383,7 +383,6 @@ public class MapCreation : MonoBehaviour
         }
     }
 
-
     public void SpawnAgent(string guid, Tile exitPoint) 
     {
         var objRef = Instantiate(agent, transform);
