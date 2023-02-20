@@ -98,4 +98,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   woodAmount: 0
   stoneAmount: 75
-  available: 0
+  foodAmount: 0
+  available: 1

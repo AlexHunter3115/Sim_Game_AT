@@ -6,7 +6,7 @@ using UnityEngine;
 using static TimeCycle;
 using static UnityEditor.PlayerSettings;
 
-public class AgentData : Entity
+public class AgentData : Entity, ITimeTickers
 {
 
     #region work and life stuff
@@ -57,10 +57,7 @@ public class AgentData : Entity
         WORKING,   // working
         SLEEPING,   // in house or outside just not avaialable  this at night
         WONDERING,  // no job no thing useless citizen not at night 
-        RETURNING,   // gcoming back from somewhere
-            //if its working and got nothgin to do
-        MOVING,
-        TRANSITION
+        HOMELESS
     }
     public CURRENT_ACTION currAction;
     public CURRENT_ACTION hardSetAction;
@@ -118,90 +115,6 @@ public class AgentData : Entity
 
 
 
-    #region time tickers overrides
-    public override void TickDailyCycle()
-    {
-        base.TickDailyCycle();
-
-        AgeUp();
-        //we take out health for not having a house at night
-      
-    }
-    public override void TickMinuteCycle()
-    {
-        base.TickMinuteCycle();
-    }
-    public override void TickHourCycle() // this ticks every hour
-    {
-        base.TickHourCycle();
-        
-        if (GeneralUtil.timeCycle.currentDayState == TIME.NIGHT && !atHouse) //if its night time and not in his house
-        {
-
-            Debug.Log($"Getting called on the night setup");
-            currAction = CURRENT_ACTION.TRANSITION;
-            if (refToHouse == null) 
-            {
-                //pick a random position from the entrance of work and sleep there
-                hardSetAction = CURRENT_ACTION.WONDERING;
-            }
-            else 
-            {
-                //you are going to your house
-                if (refToWorkPlace != null) 
-                {
-                    GeneralUtil.map.SpawnAgent(guid, GeneralUtil.Vector2Tile(refToWorkPlace.entrancePoints[0]));
-                    SetAgentPathing(refToWorkPlace.entrancePoints[0], refToHouse.entrancePoints[0], true);
-                }
-                else //if he doesnt have a job he is already out there fore
-                {
-                    var tile = GeneralUtil.WorldTileCoord(agentObj.transform.position);   //gets the world pos of this currently there agent
-                    SetAgentPathing(tile.coord, refToHouse.entrancePoints[0], true);   //sets the pathing
-                }
-
-                hardSetAction = CURRENT_ACTION.SLEEPING;
-            }
-
-            atHouse = true;
-            atWork = false;
-        }
-        else if (GeneralUtil.timeCycle.currentDayState != TIME.NIGHT && !atWork) // if its not night time and its not at work then
-        {
-            Debug.Log($"Getting called on the day setup");
-            currAction = CURRENT_ACTION.TRANSITION;
-            if (refToWorkPlace == null)
-            {
-                //set the char to wonder
-                hardSetAction = CURRENT_ACTION.WONDERING;
-            }
-            else
-            {
-                //you are going to your house
-                if (refToHouse != null)
-                {
-                    GeneralUtil.map.SpawnAgent(guid, GeneralUtil.Vector2Tile(refToHouse.entrancePoints[0]));
-                    SetAgentPathing(refToHouse.entrancePoints[0], refToWorkPlace.entrancePoints[0], true);
-                }
-                else //if he doesnt have a house he is already out there fore
-                {
-                    var tile = GeneralUtil.WorldTileCoord(agentObj.transform.position);   //gets the world pos of this currently there agent
-                    SetAgentPathing(tile.coord, refToWorkPlace.entrancePoints[0], true);   //sets the pathing
-                }
-                hardSetAction = CURRENT_ACTION.WORKING;
-                readyToWork = true;
-            }
-
-            atHouse = false;
-            atWork = true;
-        }
-
-
-    }
-    #endregion
-
-
-
-
     /// <summary>
     /// this is used to set the age of the npc, similar to the time of day thing, should be called every new day
     /// </summary>
@@ -251,11 +164,51 @@ public class AgentData : Entity
     /// <param name="start"></param>
     /// <param name="end"></param>
     /// <param name="forced"></param>
-    public void SetAgentPathing(Vector2Int start,  Vector2Int end, bool forced = false) 
+    public bool SetAgentPathing(Vector2Int start,  Vector2Int end, bool forced = false) 
     {
         pathTile = GeneralUtil.A_StarPathfinding(start, end, this,forced);
+
+        if (pathTile == null)
+            return false;
+
         tileStart = GeneralUtil.map.tilesArray[start.x, start.y];
         tileDestination = GeneralUtil.map.tilesArray[end.x, end.y];
+
+        return true;
+    }
+
+
+
+    // i dont like the atHouse toggle thign
+    public void HourTick()
+    {
+        if (GeneralUtil.timeCycle.isNightTime) // if its night time 
+        {
+            if (refToHouse == null) // and has no house then this llogic takes over
+            {
+                //this needs to take over
+            }
+
+        }
+        else // if its day time and no job this takes over
+        {
+            if (refToWorkPlace == null) 
+            {
+            
+            }
+        }
+
+    }
+
+    public void DayTick()
+    {
+       // AgeUp();
+       // Debug.Log("Day tick in the npc data class");
+    }
+
+    public void MinuteTick()
+    {
+        //Debug.Log("minute tick in the npc data class");
     }
 
 

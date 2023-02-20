@@ -25,6 +25,9 @@ public class Agent : MonoBehaviour
     }
 
 
+    Vector3 destinationCoord = new Vector3(0, 0, 0);
+
+
     /// <summary>
     /// loads the data for this agent to use using the guid
     /// </summary>
@@ -69,23 +72,36 @@ public class Agent : MonoBehaviour
         animator.SetBool("Walking", true);
         bool stillPathing = true;
 
+        //if (!GeneralUtil.AABBCol(this.transform.position, data.pathTile[0]))   // if it has yet to touch the tile
+        //{                                                                                                                                                     // tile modifier goes in here for the speed
+        //    this.transform.position = Vector3.MoveTowards(this.transform.position, new Vector3(data.pathTile[0].midCoord.x, 0.05f, data.pathTile[0].midCoord.z), speed * Time.deltaTime);
+
+        //    transform.LookAt(new Vector3(data.pathTile[0].midCoord.x, 0.05f, data.pathTile[0].midCoord.z));
+        //    transform.eulerAngles = new Vector3(0.0f, transform.eulerAngles.y, 0.0f);
+        //}
+
+
         if (!GeneralUtil.AABBCol(this.transform.position, data.pathTile[0]))   // if it has yet to touch the tile
         {                                                                                                                                                     // tile modifier goes in here for the speed
-            this.transform.position = Vector3.MoveTowards(this.transform.position, new Vector3(data.pathTile[0].midCoord.x, 0.05f, data.pathTile[0].midCoord.z), speed * Time.deltaTime);
-
+            this.transform.position = Vector3.MoveTowards(this.transform.position, new Vector3(data.pathTile[0].midCoord.x + Random.Range(-0.4f, 0.4f), 0.05f, data.pathTile[0].midCoord.z + Random.Range(-0.4f, 0.4f)), speed * Time.deltaTime);
 
             transform.LookAt(new Vector3(data.pathTile[0].midCoord.x, 0.05f, data.pathTile[0].midCoord.z));
             transform.eulerAngles = new Vector3(0.0f, transform.eulerAngles.y, 0.0f);
-
         }
         else
         {
+
             lastTile = data.pathTile[0];
             data.pathTile.RemoveAt(0);
 
-            if (data.pathTile.Count == 0)
+            if (data.pathTile.Count == 0) 
+            {
                 stillPathing = false;
-
+                if (GeneralUtil.entranceTileDict.ContainsKey(data.tileDestination)) 
+                {
+                    GeneralUtil.entranceTileDict[data.tileDestination].LandedOn(this.data);
+                }
+            }
         }
 
 
@@ -96,56 +112,92 @@ public class Agent : MonoBehaviour
             switch (data.currAction)
             {
                 case AgentData.CURRENT_ACTION.WORKING:
-
                     if (data.tileDestination.tileType == TileType.ENTRANCE) //he is back at work
                     {
-                        data.readyToWork = true;
-                        Destroy(gameObject);
+                        
                     }
-                    else 
+                    else
                     {
-                        StartCoroutine(AccessingResource());
+                        StartCoroutine(MiningResource());
                     }
 
                     break;
                 case AgentData.CURRENT_ACTION.SLEEPING:
+                    //he is at home and has a home
                     break;
                 case AgentData.CURRENT_ACTION.WONDERING:
+
+                    //has no job
+                    StartCoroutine(WonderingCall());
+
                     break;
-                case AgentData.CURRENT_ACTION.RETURNING:
-                    break;
-                case AgentData.CURRENT_ACTION.MOVING:
-                    break;
-                case AgentData.CURRENT_ACTION.TRANSITION:
+                case AgentData.CURRENT_ACTION.HOMELESS:
 
-                    data.currAction = data.hardSetAction;
-
-                    switch (data.currAction)
-                    {
-                        case AgentData.CURRENT_ACTION.WORKING:
-
-                            Debug.Log("is it getting here");
-                            data.readyToWork = true;
-                            Destroy(gameObject);
-                            break;
-                        case AgentData.CURRENT_ACTION.SLEEPING:
-                            break;
-                        case AgentData.CURRENT_ACTION.WONDERING:
-                            break;
-                        case AgentData.CURRENT_ACTION.RETURNING:
-                            break;
-                        case AgentData.CURRENT_ACTION.MOVING:
-                            break;
-                        case AgentData.CURRENT_ACTION.TRANSITION:
-                            break;
-                        default:
-                            break;
-                    }
-
+                    //its night time and there is not home
                     break;
                 default:
                     break;
             }
+
+
+
+
+
+
+
+            //switch (data.currAction)
+            //{
+            //    case AgentData.CURRENT_ACTION.WORKING:
+
+            //        if (data.tileDestination.tileType == TileType.ENTRANCE) //he is back at work
+            //        {
+            //            //data.readyToWork = true;
+            //            //Destroy(gameObject);
+            //        }
+            //        else 
+            //        {
+            //            StartCoroutine(MiningResource());
+            //        }
+
+            //        break;
+            //    case AgentData.CURRENT_ACTION.SLEEPING:
+            //        break;
+            //    case AgentData.CURRENT_ACTION.WONDERING:
+            //        break;
+            //    case AgentData.CURRENT_ACTION.RETURNING:
+            //        break;
+            //    case AgentData.CURRENT_ACTION.MOVING:
+            //        break;
+            //    case AgentData.CURRENT_ACTION.TRANSITION:
+
+            //        data.currAction = data.hardSetAction;
+
+            //        switch (data.currAction)
+            //        {
+            //            case AgentData.CURRENT_ACTION.WORKING:
+
+            //                Debug.Log("is it getting here");
+            //                data.readyToWork = true;
+            //                Destroy(gameObject);
+            //                break;
+            //            case AgentData.CURRENT_ACTION.SLEEPING:
+            //                break;
+            //            case AgentData.CURRENT_ACTION.WONDERING:
+            //                break;
+            //            case AgentData.CURRENT_ACTION.RETURNING:
+            //                break;
+            //            case AgentData.CURRENT_ACTION.MOVING:
+            //                break;
+            //            case AgentData.CURRENT_ACTION.TRANSITION:
+            //                break;
+            //            default:
+            //                break;
+            //        }
+
+            //        break;
+            //    default:
+            //        break;
+            //}
         }
     }
 
@@ -154,10 +206,25 @@ public class Agent : MonoBehaviour
     private IEnumerator WonderingCall()
     {
         yield return new WaitForSeconds(timeTaken * 2);
+
+
+        for (int i = 0; i < 5; i++)
+        {
+            var path = GeneralUtil.A_StarPathfinding(lastTile.coord, new Vector2Int(lastTile.coord.x + Random.Range(-10, 10), lastTile.coord.y + Random.Range(-10, 10)), this.data, true);
+
+            if (path != null) 
+            {
+                if (!GeneralUtil.PathContainsTileType(TileType.WATER, path))
+                {
+                    data.pathTile = path;
+                }
+            }
+         
+        }
     }
 
     // this is for the workers
-    private IEnumerator AccessingResource()
+    private IEnumerator MiningResource()
     {
         animator.SetBool("Working", true);
 
@@ -179,17 +246,15 @@ public class Agent : MonoBehaviour
                 GeneralUtil.bank.ChangeFoodAmount(comp.foodAmount);
                 GeneralUtil.bank.ChangeStoneAmount(comp.stoneAmount);
                 GeneralUtil.bank.ChangeWoodAmount(comp.woodAmount);
+
             }
-           // waiting = false;
 
-
-
-            GeneralUtil.map.tilesArray[data.tileDestination.coord.x, data.tileDestination.coord.y].tileObject = null;
             Destroy(obj);
-
+            GeneralUtil.map.tilesArray[data.tileDestination.coord.x, data.tileDestination.coord.y].tileObject = null;
         }
 
         data.SetAgentPathing(data.tileDestination.coord, data.refToWorkPlace.entrancePoints[0], true);
+
     }
 
 

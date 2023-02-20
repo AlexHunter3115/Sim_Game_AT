@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 7980778229658772963}
   - component: {fileID: 5270791347415781673}
   - component: {fileID: 3891531797992577310}
+  - component: {fileID: -8854445149167664078}
   m_Layer: 8
   m_Name: Human_Village_Prop_08
   m_TagString: Untagged
@@ -100,3 +101,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   guid: 
   buildingIndex: 0
+--- !u!65 &-8854445149167664078
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5919243653557268732}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1.5221472, y: 2.0619195, z: 1.6907606}
+  m_Center: {x: 0.021683812, y: 1.0309597, z: 0}

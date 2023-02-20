@@ -15,6 +15,9 @@ public class BuildingIdentifier : MonoBehaviour
 
     public BuildingData buildingData;
     public string guid;
+    public IAgentInteractions agentActions;
+    public IBuildingActions buildingActions;
+    public ITimeTickers buildingTimer;
 
     [Header("the entrance point is based on the middle point")]
     public int buildingIndex = 0;
@@ -36,6 +39,8 @@ public class BuildingIdentifier : MonoBehaviour
         {
             entranceLocation.Add(new Vector2Int(entrance.x + buildingData.centerCoord.x, entrance.y + buildingData.centerCoord.y));
             GeneralUtil.map.tilesArray[entrance.x + buildingData.centerCoord.x, entrance.y + buildingData.centerCoord.y].tileType = TileType.ENTRANCE;
+
+            GeneralUtil.entranceTileDict.Add(GeneralUtil.map.tilesArray[entrance.x + buildingData.centerCoord.x, entrance.y + buildingData.centerCoord.y], this);
         }
 
         buildingData.entrancePoints = entranceLocation;
@@ -43,6 +48,10 @@ public class BuildingIdentifier : MonoBehaviour
 
 
 
+    public void LandedOn(AgentData agent)
+    {
+        agentActions.LandedOnEntrance(agent);
+    }
 
 
     /// <summary>
@@ -83,10 +92,15 @@ public class BuildingIdentifier : MonoBehaviour
         return false;
     }
 
-
-
+   
+    //remmeebr to delete the dict entrance   i thik i alredy do this 
+    /// <summary>
+    /// what this does it moslty restores the map back to what it was for the pathing
+    /// </summary>
     public void DeleteBuilding()
     {
+        DeleteBuidlingInterfaceCall(buildingActions);
+
         MeshRenderer meshRenderer = GeneralUtil.map.plane.GetComponent<MeshRenderer>();
         Material material = meshRenderer.material;
         Texture2D texture = (Texture2D)material.mainTexture;
@@ -108,6 +122,13 @@ public class BuildingIdentifier : MonoBehaviour
 
         Destroy(gameObject);
     }
+
+    private void DeleteBuidlingInterfaceCall(IBuildingActions timeInterface) => timeInterface.DeleteBuilding();
+
+
+
+
+
 }
 
 

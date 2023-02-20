@@ -8,6 +8,6 @@ public class Resource : MonoBehaviour
     public int stoneAmount;
     public int foodAmount;
 
-    public bool available;
+    public bool available = true;
 
 }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -13,7 +14,8 @@ public class TimeCycle : MonoBehaviour
 
     public float timerMultiplier = 1;
     private bool timeOn = true;   //deal with this later
-    
+
+    public bool isNightTime; 
 
     public enum TIME 
     {
@@ -41,32 +43,6 @@ public class TimeCycle : MonoBehaviour
 
 
     [SerializeField] Light sunLight;
-
-
-
-
-
-
-
-
-    [HideInInspector]
-    public UnityEvent minuteTick;
-
-    [HideInInspector]
-    public UnityEvent hourTick;
-
-    [HideInInspector] 
-    public UnityEvent dayTick;
-
-
-    public void MinuteCycle() => minuteTick.Invoke();
-    public void HourCycle() => hourTick.Invoke();
-    public void DayCycle() => dayTick.Invoke();
-
-
-
-
-
 
 
 
@@ -103,7 +79,7 @@ public class TimeCycle : MonoBehaviour
 
     private void Update()
     {
-        if (changing) 
+        if (changing)    // this is for the color swap
         {
             timeElapsed += Time.deltaTime;
             float t = Mathf.Clamp01(timeElapsed / colorLerpDur);
@@ -115,12 +91,23 @@ public class TimeCycle : MonoBehaviour
         }
     }
 
-
+    //the daily ruotuine should not exist it should just be the hour and then once 0 call it as that is midnight
     private IEnumerator DailyCycleCorutine()
     {
         while (timeOn)
         {
             yield return new WaitForSeconds(dayCheck/timerMultiplier);
+
+
+            for (int i = 0; i < GeneralUtil.dataBank.buildingDict.Count; i++)
+            {
+                CallDayInterface(GeneralUtil.dataBank.buildingDict.Values.ElementAt(i).buildingID.buildingTimer);
+            }
+
+            for (int i = 0; i < GeneralUtil.dataBank.npcDict.Count; i++)
+            {
+                CallDayInterface(GeneralUtil.dataBank.npcDict.Values.ElementAt(i));
+            }
         }
     }
 
@@ -134,15 +121,16 @@ public class TimeCycle : MonoBehaviour
                 currentHour = 0;
 
             SetDayTime();
-
-
-
-            foreach (var npc in GeneralUtil.dataBank.npcDict.Values)
+            
+            for (int i = 0; i < GeneralUtil.dataBank.buildingDict.Count; i++)
             {
-                npc.TickHourCycle();
+                CallHourInterface(GeneralUtil.dataBank.buildingDict.Values.ElementAt(i).buildingID.buildingTimer);
             }
 
-
+            for (int i = 0; i < GeneralUtil.dataBank.npcDict.Count; i++)
+            {
+                CallHourInterface(GeneralUtil.dataBank.npcDict.Values.ElementAt(i));
+            }
 
         }
     }
@@ -153,17 +141,15 @@ public class TimeCycle : MonoBehaviour
         {
             yield return new WaitForSeconds(minuteCheck / timerMultiplier);
 
-           
+            for (int i = 0; i < GeneralUtil.dataBank.buildingDict.Count; i++)
+            {
+                CallMinuteInterface(GeneralUtil.dataBank.buildingDict.Values.ElementAt(i).buildingID.buildingTimer);
+            }
 
-            minuteTick.Invoke();
-
-
-            //foreach (var building in GeneralUtil.dataBank.buildingDict.Values)
-            //{
-            //    building.TickMinuteCycle();
-            //}
-
-
+            for (int i = 0; i < GeneralUtil.dataBank.npcDict.Count; i++)
+            {
+                CallMinuteInterface(GeneralUtil.dataBank.npcDict.Values.ElementAt(i));
+            }
         }
     }
 
@@ -177,6 +163,8 @@ public class TimeCycle : MonoBehaviour
             endColor = nightColor;
 
             currentDayState = TIME.NIGHT;
+
+            isNightTime = true;
         }
 
         if ((int)TIME.MORNING >= currentHour)
@@ -185,6 +173,8 @@ public class TimeCycle : MonoBehaviour
             endColor = morningColor;
 
             currentDayState = TIME.MORNING;
+
+            isNightTime = false;
         }
 
         if ((int)TIME.DAY <= currentHour && (int)TIME.AFTERNOON > currentHour)
@@ -193,6 +183,7 @@ public class TimeCycle : MonoBehaviour
             endColor = dayColor;
 
             currentDayState = TIME.DAY;
+            isNightTime = false;
         }
 
         if ((int)TIME.AFTERNOON <= currentHour && (int)TIME.NIGHT > currentHour)
@@ -201,6 +192,7 @@ public class TimeCycle : MonoBehaviour
             endColor = afternoonColor;
 
             currentDayState = TIME.AFTERNOON;
+            isNightTime = false;
         }
 
 
@@ -212,6 +204,11 @@ public class TimeCycle : MonoBehaviour
     }
 
 
+
+
+    private void CallMinuteInterface(ITimeTickers timeInterface) => timeInterface.MinuteTick();
+    private void CallHourInterface(ITimeTickers timeInterface) => timeInterface.HourTick();
+    private void CallDayInterface(ITimeTickers timeInterface) => timeInterface.DayTick();
 
 
 }

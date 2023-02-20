@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 7774459389331240391}
   - component: {fileID: 5476547392001605901}
   - component: {fileID: 3290805672065688590}
+  - component: {fileID: -4453674606884169856}
   m_Layer: 8
   m_Name: OutPost
   m_TagString: Untagged
@@ -100,3 +101,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   guid: 
   buildingIndex: 0
+--- !u!65 &-4453674606884169856
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6269123546353934552}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1.6153197, y: 3.2810247, z: 1.691793}
+  m_Center: {x: -0.00000014901161, y: 1.6402146, z: 0.000000029802322}

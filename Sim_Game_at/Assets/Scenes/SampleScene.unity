@@ -444,7 +444,8 @@ MonoBehaviour:
   regions: 3
   percOfBushInGrass: 0.05
   agent: {fileID: 5980260466511874757, guid: e64284195e4303343aced973d5b9ffb9, type: 3}
-  plane: {fileID: 0}
+  plane: {fileID: 1247182433}
+  resourceHolder: {fileID: 1247182433}
 --- !u!4 &221688226
 Transform:
   m_ObjectHideFlags: 0
@@ -456,7 +457,8 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 1247182434}
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -495,7 +497,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: -270.7, y: -13}
+  m_AnchoredPosition: {x: -162.3, y: -27.3}
   m_SizeDelta: {x: 60, y: 15}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &325116658
@@ -932,6 +934,7 @@ MonoBehaviour:
   selectionGridSize: {x: 5, y: 5}
   selectedIndex: 0
   testCoord: {x: 0, y: 0}
+  maxNum: 10
 --- !u!114 &963194230
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -946,8 +949,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   minuteCheck: 4
   hourCheck: 8
-  dayCheck: 12
+  dayCheck: 192
   timerMultiplier: 1
+  isNightTime: 0
   currentDayState: 0
   morningColor: {r: 1, g: 0.9408171, b: 0.5613208, a: 0}
   dayColor: {r: 1, g: 0.97726136, b: 0.9103774, a: 0}
@@ -955,15 +959,6 @@ MonoBehaviour:
   afternoonColor: {r: 1, g: 0.6600757, b: 0.36320752, a: 0}
   colorLerpDur: 1
   sunLight: {fileID: 705507994}
-  minuteTick:
-    m_PersistentCalls:
-      m_Calls: []
-  hourTick:
-    m_PersistentCalls:
-      m_Calls: []
-  dayTick:
-    m_PersistentCalls:
-      m_Calls: []
 --- !u!1 &1084521085
 GameObject:
   m_ObjectHideFlags: 0
@@ -1228,6 +1223,37 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1244617580}
   m_CullTransparentMesh: 1
+--- !u!1 &1247182433
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1247182434}
+  m_Layer: 0
+  m_Name: MapObj
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1247182434
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1247182433}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 221688226}
+  m_RootOrder: -1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1557926655
 GameObject:
   m_ObjectHideFlags: 0

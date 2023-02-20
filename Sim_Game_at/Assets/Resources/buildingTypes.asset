@@ -19,7 +19,7 @@ MonoBehaviour:
     size: {x: 5, y: 5}
     entrances:
     - {x: 2, y: 1}
-    tileRange: 25
+    tileRange: 10
     keepUpCostWSFS: 14000000050000000200000002000000
     startCostWSFS: fa0000001e000000140000000a000000
     allowedTileTypes: 0000000001000000
@@ -31,7 +31,7 @@ MonoBehaviour:
     size: {x: 4, y: 3}
     entrances:
     - {x: 0, y: 1}
-    tileRange: 0
+    tileRange: 5
     keepUpCostWSFS: 
     startCostWSFS: 
     allowedTileTypes: 00000000
@@ -112,4 +112,4 @@ MonoBehaviour:
     startCostWSFS: 
     allowedTileTypes: 0000000001000000
     building: {fileID: 1840192149836013038, guid: 96b5a450d2bf02a4d88ecff8f704f8fd, type: 3}
-    maxWorkers: 0
+    maxWorkers: 2

@@ -1,6 +1,6 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public static class GeneralUtil
@@ -28,17 +28,30 @@ public static class GeneralUtil
     public static BuildingTypes buildingScritpable;
 
 
+
+    public static Dictionary<Tile, BuildingIdentifier> entranceTileDict = new Dictionary<Tile, BuildingIdentifier>();
+
     public static List<Tile> A_StarPathfinding(Vector2Int start, Vector2Int end, AgentData npc, bool forced = false)
     {
         var tileArray2D = map.tilesArray;
 
+
+        if (end.x < 0 || end.y < 0 || end.x >= tileArray2D.GetLength(1) || end.y >= tileArray2D.GetLength(0))
+        {
+            return null;
+        }
+
+
+
+
+
         List<AStar_Node> openList = new List<AStar_Node>();
         List<AStar_Node> closedList = new List<AStar_Node>();
 
-        AStar_Node start_node = new AStar_Node(tileArray2D[start.x,start.y]);
+        AStar_Node start_node = new AStar_Node(tileArray2D[start.x, start.y]);
         start_node.parent = null;
 
-        AStar_Node end_node = new AStar_Node(tileArray2D[end.x,end.y]);
+        AStar_Node end_node = new AStar_Node(tileArray2D[end.x, end.y]);
 
         int[,] childPosArry = new int[0, 0];
 
@@ -54,7 +67,7 @@ public static class GeneralUtil
 
 
 
-            if (iter > 500) 
+            if (iter > 500)
             {
                 Debug.Log("this is too loong");
                 Debug.Log(end);
@@ -102,7 +115,7 @@ public static class GeneralUtil
 
                 if (overallCost > maxTileDistPerAge[npc.currAge])
                 {
-                    if (pathOfBasicTiles[0].tileType != TileType.ENTRANCE  && forced == false)
+                    if (pathOfBasicTiles[0].tileType != TileType.ENTRANCE && forced == false)
                         return null;
                 }
 
@@ -155,12 +168,8 @@ public static class GeneralUtil
                     child.g = currNode.g + 0.5f;
                     child.h = EuclideanDistance2D(new Vector2(end_node.refToBasicTile.coord.x, end_node.refToBasicTile.coord.y), new Vector2(child.refToBasicTile.coord.x, child.refToBasicTile.coord.y));
 
-
-
                     child.f = child.g + child.h + tileCosts[child.refToBasicTile.tileType];   //added value here
                     child.parent = currNode;
-                    
-                   
 
 
                     foreach (var openListItem in openList)
@@ -176,9 +185,7 @@ public static class GeneralUtil
                 }
             }
         }
-
         return null;
-
     }
 
 
@@ -207,7 +214,7 @@ public static class GeneralUtil
     /// <param name="type"></param>
     /// <param name="path"></param>
     /// <returns></returns>
-    public static bool PathContainsTileType(TileType type, List<Tile> path) 
+    public static bool PathContainsTileType(TileType type, List<Tile> path)
     {
         foreach (var tile in path)
         {
@@ -224,7 +231,7 @@ public static class GeneralUtil
     /// </summary>
     /// <param name="point"></param>
     /// <returns></returns>
-    public static Tile WorldTileCoord(Vector3 point) 
+    public static Tile WorldTileCoord(Vector3 point)
     {
         for (int i = 0; i < map.tilesArray.Length; i++)
         {
@@ -246,8 +253,100 @@ public static class GeneralUtil
 
 
 
+
+    public static List<Tile> GetResourcesCloseSpiral(Vector2Int start, int range)
+    {
+        var tileCloseBy = new List<Tile>();
+
+        int dir = 0;
+        // 0 right
+        // 1 up
+        // 2 left
+        // 3 down
+        
+        int countingDirection = 0;  // this counts the amoutn of ups
+        bool countedThisCycle = false;
+
+
+        int currentDirectionCycle = -1;
+        int step = 1;
+        //untill counting direction is biggar than range
+        var currentHeadPos = start;
+
+        while (true)
+        {
+
+            if (countingDirection >= range) 
+                break;
+
+            currentDirectionCycle++;    
+
+            for (int i = 0; i < step; i++)
+            {
+                switch (dir)
+                {
+                    case 0:
+                        currentHeadPos = new Vector2Int(currentHeadPos.x + 1, currentHeadPos.y);
+
+                        if (countedThisCycle == false)
+                        {
+                            countingDirection++;
+                            countedThisCycle = true;
+                        }
+
+                        break;
+
+                    case 1:
+                        currentHeadPos = new Vector2Int(currentHeadPos.x, currentHeadPos.y + 1);
+                        countedThisCycle = false;
+                        break;
+
+                    case 2:
+                        currentHeadPos = new Vector2Int(currentHeadPos.x - 1, currentHeadPos.y);
+
+                        break;
+
+                    case 3:
+                        currentHeadPos = new Vector2Int(currentHeadPos.x, currentHeadPos.y - 1);
+
+                        break;
+
+                    default:
+                        break;
+                }
+
+
+                if (currentHeadPos.x < 0 || currentHeadPos.y < 0 || currentHeadPos.x >= map.tilesArray.GetLength(1) || currentHeadPos.y >= map.tilesArray.GetLength(0)) { }
+                else
+                {
+                    if (map.tilesArray[currentHeadPos.x, currentHeadPos.y].tileObject != null)
+                        tileCloseBy.Add(map.tilesArray[currentHeadPos.x, currentHeadPos.y]);
+                }
+
+            }
+            dir++;
+
+            if (dir >= 4)
+                dir = 0;
+
+            if (currentDirectionCycle == 1)
+            {
+                currentDirectionCycle = -1;
+                step++;
+
+            }
+        }
+
+        return tileCloseBy;
+    }
+
+
+
+
+
+
     #region Dicts
- 
+
 
     //the cost of pathfidnign for each tile
     public static Dictionary<TileType, float> tileCosts = new Dictionary<TileType, float>()

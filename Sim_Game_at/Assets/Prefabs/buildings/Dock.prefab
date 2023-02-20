@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 1191632702207870011}
   - component: {fileID: 3993972590170747121}
   - component: {fileID: 3090540349787011475}
+  - component: {fileID: 5585465988718725019}
   m_Layer: 8
   m_Name: Dock
   m_TagString: Untagged
@@ -99,3 +100,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   guid: 
   buildingIndex: 0
+--- !u!65 &5585465988718725019
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3201369498106564900}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 2.3418355, y: 3.2436898, z: 1.5098984}
+  m_Center: {x: 0.25823185, y: 1.6218449, z: -0.00000008940697}

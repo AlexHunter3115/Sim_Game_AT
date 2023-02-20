@@ -28,18 +28,22 @@ public class MapInteraction : MonoBehaviour
     private int typeSelected = 0;
     private bool showToolTip = false;
 
+    public List<Tile> debugTiles = new List<Tile>();
+
     public Vector2Int testCoord = new Vector2Int(0, 0);
+
+    public int maxNum = 10;
 
     private void Start()
     {
         GeneralUtil.Ui.SetSelIndexText(GeneralUtil.buildingScritpable.buildingStats[selectedIndex].name);
+        debugTiles = GeneralUtil.GetResourcesCloseSpiral(new Vector2Int(10, 10), 5);
     }
 
     void Update()
     {
         if (Input.GetMouseButtonDown(0))
         {
-            // Debug.Log("pressed the right mous but");
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
 
@@ -62,7 +66,6 @@ public class MapInteraction : MonoBehaviour
                         showToolTip = true;
                         var compBuilding = hit.transform.GetComponent<BuildingIdentifier>();
                         guid = compBuilding.buildingData.guid;
-
                         typeSelected = 2;
 
                         break;
@@ -205,6 +208,12 @@ public class MapInteraction : MonoBehaviour
         foreach (var cord in selectedCoords)
         {
             GeneralUtil.map.tilesArray[cord.coord.x, cord.coord.y].tileType = TileType.BLOCKED;
+
+            if (GeneralUtil.map.tilesArray[cord.coord.x, cord.coord.y].tileObject != null)
+            {
+                Destroy(GeneralUtil.map.tilesArray[cord.coord.x, cord.coord.y].tileObject);
+                GeneralUtil.map.tilesArray[cord.coord.x, cord.coord.y].tileObject = null;
+            }
         }
 
         var objRef = Instantiate(GeneralUtil.buildingScritpable.buildingStats[selectedIndex].building, new Vector3(middleTile.midCoord.x  + GeneralUtil.buildingScritpable.buildingStats[selectedIndex].centerOffset.x, middleTile.midCoord.y, middleTile.midCoord.z + GeneralUtil.buildingScritpable.buildingStats[selectedIndex].centerOffset.y)   , Quaternion.identity);
@@ -431,6 +440,8 @@ public class MapInteraction : MonoBehaviour
     }
 
 
+    
+
 
 
 
@@ -439,5 +450,12 @@ public class MapInteraction : MonoBehaviour
     {
         if (dataHolder != null)
             Gizmos.DrawSphere(GeneralUtil.map.tilesArray[testCoord.x, testCoord.y].midCoord, 0.5f);
+
+
+        if (debugTiles.Count >0)
+        for (int i = 0; i < maxNum; i++)
+        {
+            //Gizmos.DrawSphere(debugTiles[i].midCoord, 0.5f);
+        }
     }
 }

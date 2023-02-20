@@ -61,8 +61,8 @@ public class MapCreation : MonoBehaviour
     public GameObject agent;
 
     public GameObject plane;
-    
 
+    public GameObject resourceHolder;
     private Vector3 bottomLeft = new Vector3();
     private Vector3 bottomRight = new Vector3();
 
@@ -130,17 +130,12 @@ public class MapCreation : MonoBehaviour
 
         plane.transform.Rotate(new Vector3(0, 180, 0));    // this is a temp fix but i think the issue is with the for loop above cheking x first other than y
 
-        //this is what to do for the pathfinding
-        //var paths = GeneralUtil.A_StarPathfinding(tilesArray, new Vector2Int(0, 0), new Vector2Int(10, 10));
-
-
-        //foreach (var pathTile in paths.Item1)
-        //{
-        //    pathTile.tileType = TileType.NULL;
-        //}
-
-        //UpdateMapTexture();
         GenerateResources();
+        //thedistance between the two   0.78125
+
+        //Debug.Log(  Vector3.Distance  (tilesArray[0,0].BotLeft, tilesArray[0, 0].BotRight));
+
+
     }
 
 
@@ -274,7 +269,6 @@ public class MapCreation : MonoBehaviour
     {
 
         var voronoiOutcome = Voronoi();
-
         var regionsOfGreen = voronoiOutcome.Length / 3;
 
         for (int i = 0; i < regionsOfGreen; i++)//this is how many will have the trees
@@ -290,7 +284,7 @@ public class MapCreation : MonoBehaviour
                     {
                         voronoiOutcome[i][j].busy = true;
                         var objRef = Instantiate(trees.Count == 0 ? trees[0] : trees[Random.Range(0, trees.Count)]);
-                        objRef.transform.parent = this.transform;
+                        objRef.transform.parent = resourceHolder.transform;
                         objRef.transform.position = new Vector3(voronoiOutcome[i][j].midCoord.x, 0, voronoiOutcome[i][j].midCoord.z);
 
                         voronoiOutcome[i][j].tileObject = objRef;
@@ -318,7 +312,7 @@ public class MapCreation : MonoBehaviour
                         {
                             tile.busy = true;
                             var objRef = Instantiate(bushes.Count == 0 ? bushes[0] : bushes[Random.Range(0, bushes.Count)]);
-                            objRef.transform.parent = this.transform;
+                            objRef.transform.parent = resourceHolder.transform;
                             objRef.transform.position = new Vector3(tile.midCoord.x, 0.1f, tile.midCoord.z);
 
                             objRef.transform.rotation = Quaternion.Euler(0, Random.Range(0, 360), 0);
@@ -332,7 +326,7 @@ public class MapCreation : MonoBehaviour
                             {
                                 tile.busy = true;
                                 var objRef = Instantiate(trees.Count == 0 ? trees[0] : trees[Random.Range(0, trees.Count)]);
-                                objRef.transform.parent = this.transform;
+                                objRef.transform.parent = resourceHolder.transform;
                                 objRef.transform.position = new Vector3(tile.midCoord.x, 0f, tile.midCoord.z);
 
                                 tile.tileObject = objRef;
@@ -345,7 +339,7 @@ public class MapCreation : MonoBehaviour
                             {
                                 tile.busy = true;
                                 var objRef = Instantiate(rocks.Count == 0 ? rocks[0] : rocks[Random.Range(0, rocks.Count)]);
-                                objRef.transform.parent = this.transform;
+                                objRef.transform.parent = resourceHolder.transform;
                                 objRef.transform.position = new Vector3(tile.midCoord.x, 0.25f, tile.midCoord.z);
                                 tile.tileObject = objRef;
 
@@ -366,7 +360,7 @@ public class MapCreation : MonoBehaviour
                         {
                             tile.busy = true;
                             var objRef = Instantiate(rocks.Count == 0 ? rocks[0] : rocks[Random.Range(0, rocks.Count)]);
-                            objRef.transform.parent = this.transform;
+                            objRef.transform.parent = resourceHolder.transform;
                             objRef.transform.position = new Vector3(tile.midCoord.x, 0.25f, tile.midCoord.z);
 
                             tile.tileObject = objRef;

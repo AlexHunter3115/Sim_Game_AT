@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 6231168634726558510}
   - component: {fileID: 8186833366046105572}
   - component: {fileID: 5621585776393043056}
+  - component: {fileID: -8248350900570093844}
   m_Layer: 8
   m_Name: SawMill
   m_TagString: Untagged
@@ -98,3 +99,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   guid: 
   buildingIndex: 0
+--- !u!65 &-8248350900570093844
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7682443745824996913}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 2.4263086, y: 1.631228, z: 1.5098984}
+  m_Center: {x: -0.24457243, y: 0.815614, z: 0.00000008940697}

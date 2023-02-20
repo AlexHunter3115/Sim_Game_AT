@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 8404477830627208033}
   - component: {fileID: 7850126539007217033}
   - component: {fileID: 8307660064223196632}
+  - component: {fileID: -2329094866972186155}
   m_Layer: 8
   m_Name: Council
   m_TagString: Untagged
@@ -115,3 +116,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   test: 0
   beforeTest: 0
+--- !u!65 &-2329094866972186155
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8044071594055797428}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 3.5333848, y: 3.2814457, z: 3.3188515}
+  m_Center: {x: -0.029979289, y: 1.6407229, z: 0.48792547}
