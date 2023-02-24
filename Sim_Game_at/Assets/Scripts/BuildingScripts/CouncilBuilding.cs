@@ -145,7 +145,15 @@ public class CouncilBuilding : MonoBehaviour, IAgentInteractions, ITimeTickers, 
         buildingId.DeleteBuilding();
         Debug.Log($"Deliting this buidling");
         // this is where the deletion of the workers should go
+        for (int i = 0; i < buildingId.buildingData.workers.Count; i++)
+        {
+            buildingId.buildingData.workers[i].refToWorkPlace = null;
 
+            if (buildingId.buildingData.workers[i].atWork) 
+            {
+                GeneralUtil.map.SpawnAgent(buildingId.buildingData.workers[i].guid, GeneralUtil.map.tilesArray[buildingId.buildingData.entrancePoints[i].x, buildingId.buildingData.entrancePoints[0].y]);
+            }
+        }
 
 
     }
