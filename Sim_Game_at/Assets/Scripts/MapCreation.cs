@@ -138,8 +138,6 @@ public class MapCreation : MonoBehaviour
 
     }
 
-
-
     // in a way the setting of the weight can be here as we are redrawin the map but should theroatically be put somewhere else
     public void UpdateMapTexture()
     {
@@ -186,6 +184,7 @@ public class MapCreation : MonoBehaviour
 
         plane.GetComponent<Renderer>().material.mainTexture =  texture;
     }
+
     public Tile[,] PerlinNoise2D(float scale, int octaves, float persistance, float lacu, int offsetX, int offsetY)
     {
 
@@ -267,7 +266,6 @@ public class MapCreation : MonoBehaviour
 
     public void GenerateResources() 
     {
-
         var voronoiOutcome = Voronoi();
         var regionsOfGreen = voronoiOutcome.Length / 3;
 
@@ -284,6 +282,8 @@ public class MapCreation : MonoBehaviour
                     {
                         voronoiOutcome[i][j].busy = true;
                         var objRef = Instantiate(trees.Count == 0 ? trees[0] : trees[Random.Range(0, trees.Count)]);
+                        objRef.GetComponent<Resource>().tile = voronoiOutcome[i][j];
+
                         objRef.transform.parent = resourceHolder.transform;
                         objRef.transform.position = new Vector3(voronoiOutcome[i][j].midCoord.x, 0, voronoiOutcome[i][j].midCoord.z);
 
@@ -304,14 +304,12 @@ public class MapCreation : MonoBehaviour
 
                         ran = Random.Range(0.000f, 1.000f);
 
-
-
-
-
                         if (ran < percOfBushInGrass)
                         {
                             tile.busy = true;
                             var objRef = Instantiate(bushes.Count == 0 ? bushes[0] : bushes[Random.Range(0, bushes.Count)]);
+                            objRef.GetComponent<Resource>().tile = tile;
+
                             objRef.transform.parent = resourceHolder.transform;
                             objRef.transform.position = new Vector3(tile.midCoord.x, 0.1f, tile.midCoord.z);
 
@@ -326,6 +324,8 @@ public class MapCreation : MonoBehaviour
                             {
                                 tile.busy = true;
                                 var objRef = Instantiate(trees.Count == 0 ? trees[0] : trees[Random.Range(0, trees.Count)]);
+                                objRef.GetComponent<Resource>().tile = tile;
+
                                 objRef.transform.parent = resourceHolder.transform;
                                 objRef.transform.position = new Vector3(tile.midCoord.x, 0f, tile.midCoord.z);
 
@@ -339,6 +339,8 @@ public class MapCreation : MonoBehaviour
                             {
                                 tile.busy = true;
                                 var objRef = Instantiate(rocks.Count == 0 ? rocks[0] : rocks[Random.Range(0, rocks.Count)]);
+                                objRef.GetComponent<Resource>().tile = tile;
+
                                 objRef.transform.parent = resourceHolder.transform;
                                 objRef.transform.position = new Vector3(tile.midCoord.x, 0.25f, tile.midCoord.z);
                                 tile.tileObject = objRef;

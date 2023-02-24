@@ -41,10 +41,6 @@ public static class GeneralUtil
             return null;
         }
 
-
-
-
-
         List<AStar_Node> openList = new List<AStar_Node>();
         List<AStar_Node> closedList = new List<AStar_Node>();
 
@@ -188,7 +184,6 @@ public static class GeneralUtil
         return null;
     }
 
-
     public static float EuclideanDistance2D(Vector2 point1, Vector2 point2)
     {
         return MathF.Sqrt(MathF.Pow((point1.x - point2.x), 2) + MathF.Pow((point1.y - point2.y), 2));
@@ -206,7 +201,6 @@ public static class GeneralUtil
 
         return false;
     }
-
 
     /// <summary>
     /// returns true if it contain the wanted type
@@ -247,12 +241,7 @@ public static class GeneralUtil
         return null;
     }
 
-
     public static Tile Vector2Tile(Vector2Int cord) { return map.tilesArray[cord.x, cord.y]; }
-
-
-
-
 
     public static List<Tile> GetResourcesCloseSpiral(Vector2Int start, int range)
     {
@@ -319,8 +308,7 @@ public static class GeneralUtil
                 if (currentHeadPos.x < 0 || currentHeadPos.y < 0 || currentHeadPos.x >= map.tilesArray.GetLength(1) || currentHeadPos.y >= map.tilesArray.GetLength(0)) { }
                 else
                 {
-                    if (map.tilesArray[currentHeadPos.x, currentHeadPos.y].tileObject != null)
-                        tileCloseBy.Add(map.tilesArray[currentHeadPos.x, currentHeadPos.y]);
+                    tileCloseBy.Add(map.tilesArray[currentHeadPos.x, currentHeadPos.y]);
                 }
 
             }
@@ -339,10 +327,6 @@ public static class GeneralUtil
 
         return tileCloseBy;
     }
-
-
-
-
 
 
     #region Dicts
@@ -377,13 +361,26 @@ public static class GeneralUtil
 
 }
 
+public class DistanceComparer : IComparer<Collider>
+{
+    private Transform referenceTransform;
 
+    public DistanceComparer(Transform referenceTransform)
+    {
+        this.referenceTransform = referenceTransform;
+    }
 
+    public int Compare(Collider a, Collider b)
+    {
+        float distanceToA = Vector3.Distance(referenceTransform.position, a.transform.position);
+        float distanceToB = Vector3.Distance(referenceTransform.position, b.transform.position);
 
+        return distanceToA.CompareTo(distanceToB);
+    }
+}
 
 public class AStar_Node
 {
-
     public Tile refToBasicTile;
     public AStar_Node parent;
 
@@ -395,5 +392,4 @@ public class AStar_Node
     {
         refToBasicTile = basicTile;
     }
-
 }

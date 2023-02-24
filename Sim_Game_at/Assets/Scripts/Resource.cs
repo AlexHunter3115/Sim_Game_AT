@@ -9,5 +9,5 @@ public class Resource : MonoBehaviour
     public int foodAmount;
 
     public bool available = true;
-
+    public Tile tile;
 }

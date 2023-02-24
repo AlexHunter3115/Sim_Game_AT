@@ -5,23 +5,23 @@ using UnityEngine;
 
 public class BuildingData : Entity
 {
-    public BuildingData(BUILDING_TYPE typeOfBuilding, Vector2Int size, Vector2Int mid, int range )
+    public BuildingData( Vector2Int mid, BuildingStatistics stats )
     {
-        this.typeOfBuilding = typeOfBuilding;
-        buildingSize = size;
+        typeOfBuilding = stats.type;
+        buildingSize = stats.size;
         centerCoord = mid;
-        this.range = range;
+        range = stats.tileRange;
 
-        //LoadCloseResources();
+        upKeepFoodCost = stats.keepUpCostWSFS[2];
+        upKeepStoneCost = stats.keepUpCostWSFS[1];
+        upKeepSandCost = stats.keepUpCostWSFS[3];
+        upKeepWoodCost = stats.keepUpCostWSFS[0];
 
     }
 
-
-    public void LoadCloseResources() => tileInRange = GeneralUtil.GetResourcesCloseSpiral(centerCoord, range);
-
+    public void LoadCloseResources() => tilesWithResourcesInRange = GeneralUtil.GetResourcesCloseSpiral(centerCoord, range);
 
     public bool shut;
-
 
     public enum BUILDING_TYPE 
     {
@@ -44,9 +44,6 @@ public class BuildingData : Entity
         BROKEN
     }
     public BUILDING_STATUS buildingStatus;
-
-
-
 
 
     #region map pos stuff
@@ -75,7 +72,8 @@ public class BuildingData : Entity
 
     public float buildTime;
 
-    public List<Tile> tileInRange = new List<Tile>();
+    public List<Tile> tilesInRange = new List<Tile>();
+    public List<Tile> tilesWithResourcesInRange = new List<Tile>();
 
 
 }

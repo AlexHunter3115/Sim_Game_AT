@@ -12,12 +12,13 @@ GameObject:
   - component: {fileID: 9016339771463026865}
   - component: {fileID: 5058344250278709096}
   - component: {fileID: -8058170045936507625}
+  - component: {fileID: -5512184856265024201}
   m_Layer: 0
   m_Name: pineTree
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &1587107893496770522
 Transform:
@@ -101,3 +102,17 @@ MonoBehaviour:
   stoneAmount: 0
   foodAmount: 0
   available: 1
+  index: {x: 0, y: 0}
+--- !u!65 &-5512184856265024201
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7138016484143298565}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 6.9587517, y: 6.9587502, z: 4.2833934}
+  m_Center: {x: 0, y: 0, z: 2.178264}

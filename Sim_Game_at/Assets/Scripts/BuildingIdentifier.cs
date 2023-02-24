@@ -1,17 +1,13 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using UnityEngine;
 using UnityEngine.Events;
 
 public class BuildingIdentifier : MonoBehaviour
 {
-    //this script is here to be fetched by others, this is because the actions of each building specifically will be held on another specilised script
-
-
-
-
 
     public BuildingData buildingData;
     public string guid;
@@ -26,7 +22,7 @@ public class BuildingIdentifier : MonoBehaviour
     public void init(Tile middleTile, Vector2Int size, List<Tile> controlledTiles, int index)
     {
         buildingIndex = index;
-        buildingData = new BuildingData(BuildingData.BUILDING_TYPE.COUNCIL, size, middleTile.coord, GeneralUtil.buildingScritpable.buildingStats[index].tileRange);
+        buildingData = new BuildingData( middleTile.coord, GeneralUtil.buildingScritpable.buildingStats[index]);
         this.guid = buildingData.guid;
         buildingData.takenTiles = controlledTiles;
         buildingData.buildingID = this;
@@ -92,8 +88,6 @@ public class BuildingIdentifier : MonoBehaviour
         return false;
     }
 
-   
-    //remmeebr to delete the dict entrance   i thik i alredy do this 
     /// <summary>
     /// what this does it moslty restores the map back to what it was for the pathing
     /// </summary>
@@ -125,10 +119,47 @@ public class BuildingIdentifier : MonoBehaviour
 
     private void DeleteBuidlingInterfaceCall(IBuildingActions timeInterface) => timeInterface.DeleteBuilding();
 
+    public void GetResourceNearby() 
+    {
+        Collider[] hitColliders = Physics.OverlapSphere(transform.position, 10);
 
+        Array.Sort(hitColliders, new DistanceComparer(transform));
 
+        Debug.Log($"{hitColliders.Length}");
 
+        buildingData.tilesWithResourcesInRange.Clear();
 
+        foreach (var tiles in hitColliders)
+        {
+            if (tiles.GetComponent<Resource>()) 
+            {
+                var comp = tiles.GetComponent<Resource>();
+
+                bool addThisResource = false;
+
+                if (buildingData.upKeepFoodCost > 0) 
+                {
+                    if (comp.foodAmount > 0)
+                        addThisResource = true;
+                }
+
+                if (buildingData.upKeepStoneCost > 0)
+                {
+                    if (comp.stoneAmount > 0)
+                        addThisResource = true;
+                }
+
+                if (buildingData.upKeepWoodCost > 0)
+                {
+                    if (comp.woodAmount > 0)
+                        addThisResource = true;
+                }
+
+                if (addThisResource)
+                    buildingData.tilesWithResourcesInRange.Add(comp.tile);
+            }
+        }
+    }
 }
 
 

@@ -12,12 +12,13 @@ GameObject:
   - component: {fileID: 3837701842830024625}
   - component: {fileID: 8941936311019641115}
   - component: {fileID: 3010264967260184687}
+  - component: {fileID: -2610688867968564029}
   m_Layer: 0
   m_Name: Bush
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &9157664551009691995
 Transform:
@@ -102,3 +103,17 @@ MonoBehaviour:
   stoneAmount: 0
   foodAmount: 50
   available: 1
+  index: {x: 0, y: 0}
+--- !u!65 &-2610688867968564029
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 206635724849184401}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 3.639624, y: 3.4930587, z: 4.6030974}
+  m_Center: {x: -0.81981206, y: 0.37990683, z: 1.3015487}

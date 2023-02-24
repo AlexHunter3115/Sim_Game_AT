@@ -12,12 +12,13 @@ GameObject:
   - component: {fileID: 271645111720550792}
   - component: {fileID: 7440861515319782589}
   - component: {fileID: -7845117315764761284}
+  - component: {fileID: -4813106936268496777}
   m_Layer: 0
   m_Name: Rock
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &1524720606803283455
 Transform:
@@ -100,3 +101,17 @@ MonoBehaviour:
   stoneAmount: 75
   foodAmount: 0
   available: 1
+  index: {x: 0, y: 0}
+--- !u!65 &-4813106936268496777
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3593481755819213432}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 2, y: 2.0000005, z: 2.0000005}
+  m_Center: {x: 0, y: 0, z: 0}

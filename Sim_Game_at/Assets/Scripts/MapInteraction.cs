@@ -163,7 +163,10 @@ public class MapInteraction : MonoBehaviour
 
 
 
-
+    /// <summary>
+    /// returns true if there are enough resrouces avaialble to build 
+    /// </summary>
+    /// <returns></returns>
     private bool CheckEnoughResources() 
     {
         var list = GeneralUtil.buildingScritpable.buildingStats[selectedIndex].startCostWSFS;
@@ -406,16 +409,13 @@ public class MapInteraction : MonoBehaviour
             return;
         }
 
-
-
         GUI.Box(new Rect(5, 5, 160, 250), "");
+
         GUI.Label(new Rect(10, 10, 100, 20), "building type");
 
         GUI.Label(new Rect(10, 20, 100, 20), "building status");
 
-
         GUI.Label(new Rect(10, 30, 100, 20), "list of workers");
-
 
         for (int i = 0; i < buildingData.workers.Count; i++)
         {
@@ -426,11 +426,7 @@ public class MapInteraction : MonoBehaviour
             }
         }
         
-        
-
-
         GUI.Label(new Rect(10, 180 , 100, 20), "building age");
-
 
         if (GUI.Button(new Rect(10, 220, 100, 20), "Delete Me"))
         {
@@ -443,19 +439,16 @@ public class MapInteraction : MonoBehaviour
     
 
 
-
-
-
     private void OnDrawGizmos()
     {
-        if (dataHolder != null)
-            Gizmos.DrawSphere(GeneralUtil.map.tilesArray[testCoord.x, testCoord.y].midCoord, 0.5f);
+        //if (dataHolder != null)
+        //    Gizmos.DrawSphere(GeneralUtil.map.tilesArray[testCoord.x, testCoord.y].midCoord, 0.5f);
 
 
-        if (debugTiles.Count >0)
-        for (int i = 0; i < maxNum; i++)
-        {
-            //Gizmos.DrawSphere(debugTiles[i].midCoord, 0.5f);
-        }
+        //if (debugTiles.Count >0)
+        //for (int i = 0; i < maxNum; i++)
+        //{
+        //    //Gizmos.DrawSphere(debugTiles[i].midCoord, 0.5f);
+        //}
     }
 }

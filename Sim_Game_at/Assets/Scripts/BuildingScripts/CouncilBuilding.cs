@@ -76,6 +76,9 @@ public class CouncilBuilding : MonoBehaviour, IAgentInteractions, ITimeTickers, 
 
     public void HourTick()
     {
+        buildingId.GetResourceNearby();
+        Debug.Log($"{buildingId.buildingData.tilesWithResourcesInRange.Count}");
+
         if (GeneralUtil.timeCycle.isNightTime)
         {
 
@@ -106,18 +109,18 @@ public class CouncilBuilding : MonoBehaviour, IAgentInteractions, ITimeTickers, 
                 {
                     if (worker.readyToWork == true && worker.currAction == AgentData.CURRENT_ACTION.WORKING)
                     {
-                        for (int i = 0; i < buildingId.buildingData.tileInRange.Count; i++)
+                        for (int i = 0; i < buildingId.buildingData.tilesWithResourcesInRange.Count; i++)
                         {
-                            Debug.Log(buildingId.buildingData.tileInRange[i].coord);
-                            if (buildingId.buildingData.tileInRange[i].tileObject.GetComponent<Resource>().available)
+                            Debug.Log(buildingId.buildingData.tilesWithResourcesInRange[i].coord);
+                            if (buildingId.buildingData.tilesWithResourcesInRange[i].tileObject.GetComponent<Resource>().available)
                             {
-                                buildingId.buildingData.tileInRange[i].tileObject.GetComponent<Resource>().available = false;
-                                if (worker.SetAgentPathing(buildingId.buildingData.entrancePoints[0], buildingId.buildingData.tileInRange[i].coord))
+                                buildingId.buildingData.tilesWithResourcesInRange[i].tileObject.GetComponent<Resource>().available = false;
+                                if (worker.SetAgentPathing(buildingId.buildingData.entrancePoints[0], buildingId.buildingData.tilesWithResourcesInRange[i].coord))
                                 {
                                     GeneralUtil.map.SpawnAgent(worker.guid, GeneralUtil.map.tilesArray[buildingId.buildingData.entrancePoints[0].x, buildingId.buildingData.entrancePoints[0].y]);
                                     worker.readyToWork = false;
                                 }
-                                buildingId.buildingData.tileInRange.RemoveAt(i);
+                                buildingId.buildingData.tilesWithResourcesInRange.RemoveAt(i);
                                 break;
 
                             }
