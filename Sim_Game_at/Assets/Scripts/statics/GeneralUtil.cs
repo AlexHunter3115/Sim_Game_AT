@@ -24,6 +24,7 @@ public static class GeneralUtil
     public static ResourceBank bank;
     public static DataHolder dataBank;
     public static TimeCycle timeCycle;
+    public static Graph graphRef;
 
     public static BuildingTypes buildingScritpable;
 

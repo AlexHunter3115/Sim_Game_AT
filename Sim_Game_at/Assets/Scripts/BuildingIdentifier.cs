@@ -21,6 +21,7 @@ public class BuildingIdentifier : MonoBehaviour
 
     public void init(Tile middleTile, Vector2Int size, List<Tile> controlledTiles, int index)
     {
+
         buildingIndex = index;
         buildingData = new BuildingData( middleTile.coord, GeneralUtil.buildingScritpable.buildingStats[index]);
         this.guid = buildingData.guid;
@@ -121,7 +122,10 @@ public class BuildingIdentifier : MonoBehaviour
 
     public void GetResourceNearby() 
     {
-        Collider[] hitColliders = Physics.OverlapSphere(transform.position, 10);
+
+
+
+        Collider[] hitColliders = Physics.OverlapSphere(transform.position, 10, LayerMask.GetMask("Resources"));
 
         Array.Sort(hitColliders, new DistanceComparer(transform));
 
@@ -131,8 +135,6 @@ public class BuildingIdentifier : MonoBehaviour
 
         foreach (var tiles in hitColliders)
         {
-            if (tiles.GetComponent<Resource>()) 
-            {
                 var comp = tiles.GetComponent<Resource>();
 
                 bool addThisResource = false;
@@ -157,7 +159,7 @@ public class BuildingIdentifier : MonoBehaviour
 
                 if (addThisResource)
                     buildingData.tilesWithResourcesInRange.Add(comp.tile);
-            }
+            
         }
     }
 }

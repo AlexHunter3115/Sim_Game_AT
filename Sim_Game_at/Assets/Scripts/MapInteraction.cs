@@ -11,8 +11,6 @@ public class MapInteraction : MonoBehaviour
     [SerializeField] Material transparentError;
     [SerializeField] GameObject showObj;
 
-    public LayerMask mapLayer;
-
     private List<GameObject> spawnedShowObj = new List<GameObject>();
     public Vector2Int selectionGridSize = new Vector2Int(0, 0);
 
@@ -28,16 +26,9 @@ public class MapInteraction : MonoBehaviour
     private int typeSelected = 0;
     private bool showToolTip = false;
 
-    public List<Tile> debugTiles = new List<Tile>();
-
-    public Vector2Int testCoord = new Vector2Int(0, 0);
-
-    public int maxNum = 10;
-
     private void Start()
     {
         GeneralUtil.Ui.SetSelIndexText(GeneralUtil.buildingScritpable.buildingStats[selectedIndex].name);
-        debugTiles = GeneralUtil.GetResourcesCloseSpiral(new Vector2Int(10, 10), 5);
     }
 
     void Update()
@@ -47,7 +38,7 @@ public class MapInteraction : MonoBehaviour
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
 
-            if (Physics.Raycast(ray, out hit))
+            if (Physics.Raycast(ray, out hit,Mathf.Infinity, ~LayerMask.GetMask("Resources")))
             {
                 switch (hit.transform.gameObject.layer)
                 {
@@ -76,8 +67,6 @@ public class MapInteraction : MonoBehaviour
                         guid = compAgent.data.guid;
                         typeSelected = 1;
                         break;
-
-
 
                     default:
                         break;
@@ -110,12 +99,8 @@ public class MapInteraction : MonoBehaviour
             }
         }
 
-
-
         if (Input.GetKeyDown(KeyCode.Escape))
             showToolTip = false;
-
-
 
         if (Input.GetKeyDown(KeyCode.UpArrow)) 
         {
@@ -147,7 +132,6 @@ public class MapInteraction : MonoBehaviour
 
         }
 
-
         if (Input.GetMouseButtonDown(1))
         {
             //deselect everything
@@ -157,10 +141,46 @@ public class MapInteraction : MonoBehaviour
 
             typeSelected = 0;
         }
+
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            if (GeneralUtil.graphRef.MainGraph.gameObject.activeSelf) 
+            {
+                GeneralUtil.graphRef.MainGraph.gameObject.SetActive(false);
+            }
+            else 
+            {
+                GeneralUtil.graphRef.MainGraph.gameObject.SetActive(true);
+
+                var list1 = GenerateRandomIntegers();
+                var list2 = GenerateRandomIntegers();
+
+
+                GeneralUtil.graphRef.DrawGraph(list1, list2);
+            }
+
+
+        }
+
+
     }
 
+    //to dleete
+    public static List<int> GenerateRandomIntegers()
+    {
+        // Initialize an empty list to store the random integers
+        List<int> randomIntegers = new List<int>();
 
+        // Generate 20 random integers between 1 and 40 (inclusive) using a loop
+        for (int i = 0; i < Random.Range(1, 12); i++)
+        {
+            int randomInt = Random.Range(1, 30);
+            randomIntegers.Add(randomInt);
+        }
 
+        // Return the list of random integers
+        return randomIntegers;
+    }
 
 
     /// <summary>

@@ -1080,13 +1080,8 @@ MonoBehaviour:
   transparent: {fileID: 2100000, guid: bfaa0086723db034382a85f0f88630aa, type: 2}
   transparentError: {fileID: 2100000, guid: fbd341f37cae9214db231f0d1f7106fa, type: 2}
   showObj: {fileID: 6913699009249884795, guid: 17dac486ed7bbb642835b728b6ec0735, type: 3}
-  mapLayer:
-    serializedVersion: 2
-    m_Bits: 64
   selectionGridSize: {x: 5, y: 5}
   selectedIndex: 0
-  testCoord: {x: 0, y: 0}
-  maxNum: 10
 --- !u!114 &963194230
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1456,6 +1451,7 @@ GameObject:
   - component: {fileID: 1557926657}
   - component: {fileID: 1557926656}
   - component: {fileID: 1557926660}
+  - component: {fileID: 1557926661}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -1570,6 +1566,25 @@ MonoBehaviour:
   sandResourcesText: {fileID: 25979603}
   foodResourcesText: {fileID: 1244617582}
   peopleAmountText: {fileID: 1780135770}
+--- !u!114 &1557926661
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1557926655}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2034d174362d8c148b475d11a4eb2c15, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  graphContainer: {fileID: 1154378781}
+  MainGraph: {fileID: 1759548528}
+  dotRedSprite: {fileID: 6910882022907072728, guid: 54e08943b62bb2743b3ccf82320243ba, type: 3}
+  dotBlueSprite: {fileID: 4997348489553866477, guid: 47264610748fef749a53501362ef6a53, type: 3}
+  resolutionGraph: 20
+  gapInPoints: 5
+  LineWidth: 1.5
 --- !u!1 &1759548527
 GameObject:
   m_ObjectHideFlags: 0
@@ -1579,7 +1594,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1759548528}
-  - component: {fileID: 1759548529}
   m_Layer: 5
   m_Name: Graph
   m_TagString: Untagged
@@ -1609,21 +1623,6 @@ RectTransform:
   m_AnchoredPosition: {x: -118.9, y: -113.57}
   m_SizeDelta: {x: 229.94, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &1759548529
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1759548527}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2034d174362d8c148b475d11a4eb2c15, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  graphContainer: {fileID: 1154378781}
-  dotRedSprite: {fileID: 6910882022907072728, guid: 54e08943b62bb2743b3ccf82320243ba, type: 3}
-  dotBlueSprite: {fileID: 4997348489553866477, guid: 47264610748fef749a53501362ef6a53, type: 3}
 --- !u!1 &1780135768
 GameObject:
   m_ObjectHideFlags: 0

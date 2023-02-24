@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 5058344250278709096}
   - component: {fileID: -8058170045936507625}
   - component: {fileID: -5512184856265024201}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: pineTree
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -102,7 +102,6 @@ MonoBehaviour:
   stoneAmount: 0
   foodAmount: 0
   available: 1
-  index: {x: 0, y: 0}
 --- !u!65 &-5512184856265024201
 BoxCollider:
   m_ObjectHideFlags: 0

@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 8941936311019641115}
   - component: {fileID: 3010264967260184687}
   - component: {fileID: -2610688867968564029}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Bush
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -103,7 +103,6 @@ MonoBehaviour:
   stoneAmount: 0
   foodAmount: 50
   available: 1
-  index: {x: 0, y: 0}
 --- !u!65 &-2610688867968564029
 BoxCollider:
   m_ObjectHideFlags: 0
