@@ -159,7 +159,6 @@ try to get the position in relation to the corners
  every buiilding is going to contrinute towards a max possible kept resource so if we have like 1 council and 2 sawmill max is 1500 wood and so on, the shops take that from them
  
  
-
 // the issue is that every house? it keeps redoing them, 
 need to fi the clumping whihc is more a visual thing but get a random location in the confinments of the tiles and then get a distance check instead o f n AABB check
  
@@ -172,5 +171,7 @@ when they got back home but there is not enough time // skill issue, if not back
 
 the big thing is the checking what the agents do at night and day, there is also the fact that some 
 when
+
+remember that every building adds to the overall max keeping of the resources preferably if
 
  */

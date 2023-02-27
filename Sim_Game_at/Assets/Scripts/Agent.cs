@@ -61,15 +61,6 @@ public class Agent : MonoBehaviour
         animator.SetBool("Walking", true);
         bool stillPathing = true;
 
-        //if (!GeneralUtil.AABBCol(this.transform.position, data.pathTile[0]))   // if it has yet to touch the tile
-        //{                                                                                                                                                     // tile modifier goes in here for the speed
-        //    this.transform.position = Vector3.MoveTowards(this.transform.position, new Vector3(data.pathTile[0].midCoord.x, 0.05f, data.pathTile[0].midCoord.z), speed * Time.deltaTime);
-
-        //    transform.LookAt(new Vector3(data.pathTile[0].midCoord.x, 0.05f, data.pathTile[0].midCoord.z));
-        //    transform.eulerAngles = new Vector3(0.0f, transform.eulerAngles.y, 0.0f);
-        //}
-
-
         if (!GeneralUtil.AABBCol(this.transform.position, data.pathTile[0]))   // if it has yet to touch the tile
         {                                                                                                                                                     // tile modifier goes in here for the speed
             this.transform.position = Vector3.MoveTowards(this.transform.position, new Vector3(data.pathTile[0].midCoord.x + Random.Range(-0.4f, 0.4f), 0.05f, data.pathTile[0].midCoord.z + Random.Range(-0.4f, 0.4f)), speed * Time.deltaTime);
@@ -79,7 +70,6 @@ public class Agent : MonoBehaviour
         }
         else
         {
-
             lastTile = data.pathTile[0];
             data.pathTile.RemoveAt(0);
 
@@ -128,65 +118,6 @@ public class Agent : MonoBehaviour
                     break;
             }
 
-
-
-
-
-
-
-            //switch (data.currAction)
-            //{
-            //    case AgentData.CURRENT_ACTION.WORKING:
-
-            //        if (data.tileDestination.tileType == TileType.ENTRANCE) //he is back at work
-            //        {
-            //            //data.readyToWork = true;
-            //            //Destroy(gameObject);
-            //        }
-            //        else 
-            //        {
-            //            StartCoroutine(MiningResource());
-            //        }
-
-            //        break;
-            //    case AgentData.CURRENT_ACTION.SLEEPING:
-            //        break;
-            //    case AgentData.CURRENT_ACTION.WONDERING:
-            //        break;
-            //    case AgentData.CURRENT_ACTION.RETURNING:
-            //        break;
-            //    case AgentData.CURRENT_ACTION.MOVING:
-            //        break;
-            //    case AgentData.CURRENT_ACTION.TRANSITION:
-
-            //        data.currAction = data.hardSetAction;
-
-            //        switch (data.currAction)
-            //        {
-            //            case AgentData.CURRENT_ACTION.WORKING:
-
-            //                Debug.Log("is it getting here");
-            //                data.readyToWork = true;
-            //                Destroy(gameObject);
-            //                break;
-            //            case AgentData.CURRENT_ACTION.SLEEPING:
-            //                break;
-            //            case AgentData.CURRENT_ACTION.WONDERING:
-            //                break;
-            //            case AgentData.CURRENT_ACTION.RETURNING:
-            //                break;
-            //            case AgentData.CURRENT_ACTION.MOVING:
-            //                break;
-            //            case AgentData.CURRENT_ACTION.TRANSITION:
-            //                break;
-            //            default:
-            //                break;
-            //        }
-
-            //        break;
-            //    default:
-            //        break;
-            //}
         }
     }
 
@@ -195,21 +126,10 @@ public class Agent : MonoBehaviour
     private IEnumerator WonderingCall()
     {
         yield return new WaitForSeconds(timeTaken * 2);
-
-
-        for (int i = 0; i < 5; i++)
-        {
-            var path = GeneralUtil.A_StarPathfinding(lastTile.coord, new Vector2Int(lastTile.coord.x + Random.Range(-10, 10), lastTile.coord.y + Random.Range(-10, 10)), this.data, true);
-
-            if (path != null) 
-            {
-                if (!GeneralUtil.PathContainsTileType(TileType.WATER, path))
-                {
-                    data.pathTile = path;
-                }
-            }
-         
-        }
+        //the issue is the courutine still will call even if the wait time is gone so this is the check for that
+        if (data.currAction == AgentData.CURRENT_ACTION.WONDERING)
+            data.SetAgentPathing(GeneralUtil.WorldTileNoLoop(this.transform.position).coord, GeneralUtil.RandomTileAround(4, GeneralUtil.WorldTileNoLoop(this.transform.position).coord, new List<int> { 0, 1 }, 10).coord, true);
+      
     }
 
     // this is for the workers
@@ -219,9 +139,7 @@ public class Agent : MonoBehaviour
 
         yield return new WaitForSeconds(timeTaken);
 
-
         animator.SetBool("Working", false);
-
 
         if (GeneralUtil.map.tilesArray[data.tileDestination.coord.x, data.tileDestination.coord.y].tileObject != null)
         {
@@ -235,7 +153,6 @@ public class Agent : MonoBehaviour
                 GeneralUtil.bank.ChangeFoodAmount(comp.foodAmount);
                 GeneralUtil.bank.ChangeStoneAmount(comp.stoneAmount);
                 GeneralUtil.bank.ChangeWoodAmount(comp.woodAmount);
-
             }
 
             Destroy(obj);

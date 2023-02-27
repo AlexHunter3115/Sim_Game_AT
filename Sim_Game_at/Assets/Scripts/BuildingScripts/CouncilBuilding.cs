@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Events;
 
 public class CouncilBuilding : MonoBehaviour, IAgentInteractions, ITimeTickers, IBuildingActions
 {
@@ -15,6 +16,7 @@ public class CouncilBuilding : MonoBehaviour, IAgentInteractions, ITimeTickers, 
         buildingId.buildingActions = this;
         buildingId.buildingTimer = this;
         InitiateCouncil();
+        //stuff.AddListener(GeneralUtil.timeCycle.DayChangeStateEvent);
     }
 
 
@@ -42,14 +44,10 @@ public class CouncilBuilding : MonoBehaviour, IAgentInteractions, ITimeTickers, 
 
             GeneralUtil.map.SpawnAgent(newCitizen.guid, GeneralUtil.map.tilesArray[destination.x, destination.y]);   //spawns the agent
 
-
-
             newCitizen.SetAgentPathing(destination, buildingId.buildingData.entrancePoints[0], true);  //sets the pathing to the workplace at the start
 
-            // newCitizen.moving = true;
         }
 
-        buildingId.buildingData.LoadCloseResources();
 
     }
 
@@ -60,7 +58,7 @@ public class CouncilBuilding : MonoBehaviour, IAgentInteractions, ITimeTickers, 
         if (test)
         {
             test = false;
-            HourTick();
+            DeleteBuilding();
         }
     }
 
@@ -129,6 +127,15 @@ public class CouncilBuilding : MonoBehaviour, IAgentInteractions, ITimeTickers, 
         }
     }
 
+    public UnityEvent stuff;
+
+    //public void CheckingEvent() 
+    //{
+    //    Debug.Log("this is calle dint he council building ");
+    //}
+
+
+
     public void DayTick()
     {
     }
@@ -140,7 +147,7 @@ public class CouncilBuilding : MonoBehaviour, IAgentInteractions, ITimeTickers, 
 
     public void DeleteBuilding()
     {
-        buildingId.DeleteBuilding();
+       // buildingId.DeleteBuilding();
         Debug.Log($"Deliting this buidling");
         // this is where the deletion of the workers should go
         for (int i = 0; i < buildingId.buildingData.workers.Count; i++)
@@ -149,10 +156,16 @@ public class CouncilBuilding : MonoBehaviour, IAgentInteractions, ITimeTickers, 
 
             if (buildingId.buildingData.workers[i].atWork) 
             {
-                GeneralUtil.map.SpawnAgent(buildingId.buildingData.workers[i].guid, GeneralUtil.map.tilesArray[buildingId.buildingData.entrancePoints[i].x, buildingId.buildingData.entrancePoints[0].y]);
+                GeneralUtil.map.SpawnAgent(buildingId.buildingData.workers[i].guid, GeneralUtil.map.tilesArray[buildingId.buildingData.entrancePoints[0].x, buildingId.buildingData.entrancePoints[0].y]);
             }
-        }
 
+            buildingId.buildingData.workers[i].pathTile.Clear();
+            buildingId.buildingData.workers[i].SetToWonder();
+
+
+        }
+        Destroy(gameObject);
+        GeneralUtil.dataBank.buildingDict.Remove(buildingId.buildingData.guid);
 
     }
 }

@@ -45,23 +45,23 @@ MonoBehaviour:
     - {x: 1, y: 1}
     - {x: 0, y: 1}
     tileRange: 0
-    keepUpCostWSFS: 
-    startCostWSFS: 
+    keepUpCostWSFS: 05000000000000000500000000000000
+    startCostWSFS: 28000000050000000a00000000000000
     allowedTileTypes: 000000000100000002000000
     building: {fileID: 2643977928737511085, guid: 58f6425c8b6c44c4c84b4818a4053d17, type: 3}
-    maxWorkers: 0
+    maxWorkers: 1
   - type: 2
     centerOffset: {x: 0, y: 0}
     name: Mine
     size: {x: 3, y: 3}
     entrances:
     - {x: 0, y: 1}
-    tileRange: 0
-    keepUpCostWSFS: 
-    startCostWSFS: 
+    tileRange: 10
+    keepUpCostWSFS: 050000000f0000000a00000005000000
+    startCostWSFS: 1e00000032000000050000000a000000
     allowedTileTypes: 0100000002000000
     building: {fileID: 5167131309139135296, guid: 80b0186fbe9ec1447aa15b0364a766d5, type: 3}
-    maxWorkers: 0
+    maxWorkers: 2
   - type: 6
     centerOffset: {x: 0.4, y: -0.4}
     name: Outpost
@@ -70,11 +70,11 @@ MonoBehaviour:
     - {x: 1, y: 0}
     - {x: 0, y: 0}
     tileRange: 0
-    keepUpCostWSFS: 
-    startCostWSFS: 
+    keepUpCostWSFS: 05000000050000000500000000000000
+    startCostWSFS: 640000001e0000000500000000000000
     allowedTileTypes: 000000000100000002000000
     building: {fileID: 6269123546353934552, guid: 0d799d7fd2da0604b978eafb7f4e3859, type: 3}
-    maxWorkers: 0
+    maxWorkers: 1
   - type: 5
     centerOffset: {x: 0, y: 0}
     name: Dock
@@ -82,24 +82,24 @@ MonoBehaviour:
     entrances:
     - {x: 0, y: 1}
     - {x: 0, y: -1}
-    tileRange: 0
-    keepUpCostWSFS: 
-    startCostWSFS: 
+    tileRange: 1
+    keepUpCostWSFS: 0a0000000a0000000f0000000a000000
+    startCostWSFS: 32000000640000000a00000005000000
     allowedTileTypes: 0000000003000000
     building: {fileID: 3201369498106564900, guid: f97c628e40ac8c742be8eec5551c3870, type: 3}
-    maxWorkers: 0
+    maxWorkers: 2
   - type: 3
     centerOffset: {x: 0, y: 0}
     name: Farm
     size: {x: 5, y: 3}
     entrances:
     - {x: 0, y: 1}
-    tileRange: 0
-    keepUpCostWSFS: 
-    startCostWSFS: 
+    tileRange: 10
+    keepUpCostWSFS: 0a00000005000000050000000a000000
+    startCostWSFS: 640000000a0000000500000000000000
     allowedTileTypes: 00000000
     building: {fileID: 5393357137421281980, guid: e5007346d9a5ef944b0e25d59e1be0bf, type: 3}
-    maxWorkers: 0
+    maxWorkers: 2
   - type: 4
     centerOffset: {x: 0.4, y: -0.4}
     name: House
@@ -107,8 +107,8 @@ MonoBehaviour:
     entrances:
     - {x: 0, y: 0}
     - {x: 1, y: 0}
-    tileRange: 0
-    keepUpCostWSFS: 00000000000000000a00000000000000
+    tileRange: 2
+    keepUpCostWSFS: 0a000000000000000a00000000000000
     startCostWSFS: 64000000140000001400000000000000
     allowedTileTypes: 0000000001000000
     building: {fileID: 1840192149836013038, guid: 96b5a450d2bf02a4d88ecff8f704f8fd, type: 3}

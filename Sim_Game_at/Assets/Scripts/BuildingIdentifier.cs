@@ -43,8 +43,6 @@ public class BuildingIdentifier : MonoBehaviour
         buildingData.entrancePoints = entranceLocation;
     }
 
-
-
     public void LandedOn(AgentData agent)
     {
         agentActions.LandedOnEntrance(agent);
@@ -122,14 +120,11 @@ public class BuildingIdentifier : MonoBehaviour
 
     public void GetResourceNearby() 
     {
-
-
-
         Collider[] hitColliders = Physics.OverlapSphere(transform.position, 10, LayerMask.GetMask("Resources"));
 
         Array.Sort(hitColliders, new DistanceComparer(transform));
 
-        Debug.Log($"{hitColliders.Length}");
+        //Debug.Log($"{hitColliders.Length}");
 
         buildingData.tilesWithResourcesInRange.Clear();
 

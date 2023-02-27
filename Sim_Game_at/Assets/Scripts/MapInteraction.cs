@@ -48,7 +48,7 @@ public class MapInteraction : MonoBehaviour
                         GeneralUtil.map.ClickedTile = GeneralUtil.WorldTileNoLoop(hit.point);
                         //GeneralUtil.map.ClickedTile = GeneralUtil.WorldTileCoord(hit.point);
 
-                        Debug.Log(GeneralUtil.map.ClickedTile.coord);
+                        //Debug.Log(GeneralUtil.map.ClickedTile.coord);
 
                         SpawnShowObj(GeneralUtil.map.ClickedTile, sel.x, sel.y);
                         typeSelected = 0;

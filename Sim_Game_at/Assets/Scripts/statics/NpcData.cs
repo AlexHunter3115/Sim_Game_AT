@@ -95,6 +95,12 @@ public class AgentData : Entity, ITimeTickers
     public GameObject agentObj;
     public bool dead;
 
+    private bool lastTime = false;
+
+
+
+
+
     //constructor
     public AgentData(AGE_STATE age)  
     {
@@ -110,6 +116,10 @@ public class AgentData : Entity, ITimeTickers
             gender = 1;
             name = GeneralUtil.maleNames[Random.Range(0, 49)];
         }
+
+
+        GeneralUtil.timeCycle.OnFunctionCalled.AddListener(EndOfDayCall);
+
     }
 
 
@@ -182,23 +192,108 @@ public class AgentData : Entity, ITimeTickers
     // i dont like the atHouse toggle thign
     public void HourTick()
     {
+
+        //if (GeneralUtil.timeCycle.isNightTime != lastTime)
+        //{
+        //    lastTime = GeneralUtil.timeCycle.isNightTime;
+
+        //    if (GeneralUtil.timeCycle.isNightTime) // if its night time 
+        //    {
+        //        if (refToHouse == null) // and has no house then this llogic takes over
+        //        {
+        //            Debug.Log("call on the first time for agent at night");
+        //            //this needs to take over
+        //        }
+
+        //    }
+        //    else // if its day time and no job this takes over
+        //    {
+        //        if (refToWorkPlace == null)
+        //        {
+
+        //        }
+        //    }
+        //}
+
+
+
+
+
+        //if (GeneralUtil.timeCycle.isNightTime) // if its night time 
+        //{
+        //    if (refToHouse == null) // and has no house then this llogic takes over
+        //    {
+        //        //this needs to take over
+        //        if (agentObj == null) 
+        //        {
+        //            GeneralUtil.map.SpawnAgent(this.guid, GeneralUtil.ReturnTile(refToWorkPlace.entrancePoints[0]));
+        //        }
+
+        //        pathTile = GeneralUtil.A_StarPathfinding(GeneralUtil.ReturnTile(refToWorkPlace.entrancePoints[0]).coord, GeneralUtil.RandomTileAround(5, GeneralUtil.ReturnTile(refToWorkPlace.entrancePoints[0]).coord, new List<int> { 0, 1 }).coord, this);
+        //    }
+        //}
+        //else // if its day time and no job this takes over
+        //{
+        //    if (refToWorkPlace == null) 
+        //    {
+                
+        //    }
+        //}
+
+    }
+
+
+
+    private void EndOfDayCall() 
+    {
         if (GeneralUtil.timeCycle.isNightTime) // if its night time 
         {
             if (refToHouse == null) // and has no house then this llogic takes over
             {
-                //this needs to take over
+                SetToSleeping(GeneralUtil.ReturnTile(refToWorkPlace.entrancePoints[0])); 
             }
-
         }
         else // if its day time and no job this takes over
         {
-            if (refToWorkPlace == null) 
+            if (refToWorkPlace == null)
             {
-            
+                SetToWonder(GeneralUtil.ReturnTile(refToHouse.entrancePoints[0]));
             }
         }
+    }
+
+
+
+
+    public void SetToWonder(Tile tile = null) 
+    {
+        currAction = CURRENT_ACTION.WONDERING;
+
+        if (agentObj == null)
+        {
+            GeneralUtil.map.SpawnAgent(this.guid, tile);
+        }
+
+
+        pathTile = GeneralUtil.A_StarPathfinding(GeneralUtil.ReturnTile(refToWorkPlace.entrancePoints[0]).coord, GeneralUtil.RandomTileAround(5,  GeneralUtil.WorldTileNoLoop(agentObj.transform.position).coord, new List<int> { 0, 1 }).coord, this);
+    }
+
+
+    public void SetToSleeping(Tile tile) 
+    {
+        currAction = CURRENT_ACTION.SLEEPING;
+        //this needs to take over
+        if (agentObj == null)
+        {
+            GeneralUtil.map.SpawnAgent(this.guid,tile);
+        }
+
+        pathTile = GeneralUtil.A_StarPathfinding(GeneralUtil.ReturnTile(refToWorkPlace.entrancePoints[0]).coord, GeneralUtil.RandomTileAround(5, GeneralUtil.WorldTileNoLoop(agentObj.transform.position).coord, new List<int> { 0, 1 }).coord, this);
 
     }
+
+
+
 
     public void DayTick()
     {

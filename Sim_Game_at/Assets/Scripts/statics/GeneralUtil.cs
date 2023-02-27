@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public static class GeneralUtil
 {
@@ -203,6 +204,70 @@ public static class GeneralUtil
         return false;
     }
 
+
+
+
+    public static Tile ReturnTile(Vector2Int pos) 
+    {
+        return map.tilesArray[pos.x, pos.y];
+    }
+
+
+    public static Tile RandomTileAround(int range, Vector2Int centerPos, List<int> AllowedTypes = null, int tries = 10) 
+    {
+        for (int i = 0; i < tries; i++)
+        {
+            int ranAdditionX = Random.Range(-range, range);
+            int ranAdditionY = Random.Range(-range, range);
+
+            var newDesiredPos = new Vector2Int(centerPos.x + ranAdditionX, centerPos.y + ranAdditionY);
+
+            if (newDesiredPos.x < 0  ||  newDesiredPos.y < 0 ||  newDesiredPos.x >= map.tilesArray.GetLength(0) || newDesiredPos.y >= map.tilesArray.GetLength(0)) 
+            {
+                // out of range
+            }
+            else 
+            {
+                var tile = ReturnTile(newDesiredPos);
+                if (AllowedTypes.Count == 0) // prb not needed as i can just for loop and does it its self
+                {
+                    return tile;
+                }
+                else 
+                {
+                    for (int j = 0; j < AllowedTypes.Count; j++)
+                    {
+                        if ((int)tile.tileType == AllowedTypes[j]) 
+                        {
+                            return tile;
+                        }
+                    }
+                }
+            }
+        }
+
+        return ReturnTile(centerPos);
+    }
+
+
+
+
+
+
+
+
+    public static int GetRandomNumberExcludingRange(int min, int max, int excludeStart, int excludeEnd)
+    {
+        int randomNumber = Random.Range(min, max);
+
+        while (randomNumber >= excludeStart && randomNumber <= excludeEnd)
+        {
+            randomNumber = Random.Range(min, max);
+        }
+
+        return randomNumber;
+    }
+
     /// <summary>
     /// returns true if it contain the wanted type
     /// </summary>
@@ -216,7 +281,6 @@ public static class GeneralUtil
             if (tile.tileType == type)
                 return true;
         }
-
 
         return false;
     }

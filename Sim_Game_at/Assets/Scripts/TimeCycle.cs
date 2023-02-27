@@ -45,6 +45,7 @@ public class TimeCycle : MonoBehaviour
     [SerializeField] Light sunLight;
 
 
+    public UnityEvent OnFunctionCalled;
 
 
     private delegate IEnumerator DailyCycleCorutineVar();
@@ -67,6 +68,8 @@ public class TimeCycle : MonoBehaviour
         _updateHourCheck = HourCycleCorutine;
         _updateDayCheck = DailyCycleCorutine;
         SetDayTime();
+
+
     }
 
     private void Start()
@@ -200,10 +203,19 @@ public class TimeCycle : MonoBehaviour
         {
             timeElapsed = 0;
             changing = true;
+            if (currentDayState == TIME.NIGHT)
+            {
+                DayChangeStateEvent();
+            }
         }
     }
 
+    public void DayChangeStateEvent()
+    {
+       // Debug.Log("Called on the time cuycle");
 
+        OnFunctionCalled?.Invoke();
+    }
 
 
     private void CallMinuteInterface(ITimeTickers timeInterface) => timeInterface.MinuteTick();
