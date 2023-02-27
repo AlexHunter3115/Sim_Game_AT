@@ -31,12 +31,12 @@ MonoBehaviour:
     size: {x: 4, y: 3}
     entrances:
     - {x: 0, y: 1}
-    tileRange: 5
-    keepUpCostWSFS: 
-    startCostWSFS: 
+    tileRange: 8
+    keepUpCostWSFS: 14000000000000000000000000000000
+    startCostWSFS: 960000001e0000001400000000000000
     allowedTileTypes: 00000000
     building: {fileID: 7682443745824996913, guid: 80992b63c3f74bd41ae008cfce31f538, type: 3}
-    maxWorkers: 0
+    maxWorkers: 2
   - type: 7
     centerOffset: {x: 0, y: 0}
     name: Shop
@@ -108,8 +108,8 @@ MonoBehaviour:
     - {x: 0, y: 0}
     - {x: 1, y: 0}
     tileRange: 0
-    keepUpCostWSFS: 00000000000000000500000000000000
-    startCostWSFS: 
+    keepUpCostWSFS: 00000000000000000a00000000000000
+    startCostWSFS: 64000000140000001400000000000000
     allowedTileTypes: 0000000001000000
     building: {fileID: 1840192149836013038, guid: 96b5a450d2bf02a4d88ecff8f704f8fd, type: 3}
     maxWorkers: 2

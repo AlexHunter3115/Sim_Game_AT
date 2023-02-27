@@ -45,7 +45,8 @@ public class MapInteraction : MonoBehaviour
                     case 6:  //map
                         var sel = GeneralUtil.buildingScritpable.buildingStats[selectedIndex].size;
 
-                        GeneralUtil.map.ClickedTile = GeneralUtil.WorldTileCoord(hit.point);
+                        GeneralUtil.map.ClickedTile = GeneralUtil.WorldTileNoLoop(hit.point);
+                        //GeneralUtil.map.ClickedTile = GeneralUtil.WorldTileCoord(hit.point);
 
                         Debug.Log(GeneralUtil.map.ClickedTile.coord);
 
@@ -122,8 +123,6 @@ public class MapInteraction : MonoBehaviour
             else { selectedIndex -= 1; }
 
             ClearSection(false);
-
-
 
             var sel = GeneralUtil.buildingScritpable.buildingStats[selectedIndex].size;
             SpawnShowObj(GeneralUtil.map.ClickedTile, sel.x, sel.y);
@@ -371,11 +370,8 @@ public class MapInteraction : MonoBehaviour
     {
         var npcData = GeneralUtil.dataBank.npcDict[guid];
 
-
-
         GUI.Box(new Rect(5, 5, 160, 120), "");
         GUI.Label(new Rect(10, 10, 100, 20), $"Name: {npcData.name}");
-
 
         GUI.Label(new Rect(10, 20, 100, 20), $"Health: {npcData.health}");
         GUI.Label(new Rect(10, 30, 100, 20), $"Stamina: {npcData.stamina}");
@@ -383,36 +379,32 @@ public class MapInteraction : MonoBehaviour
         GUI.Label(new Rect(10, 50, 100, 20), $"Gender: {npcData.gender}");
         GUI.Label(new Rect(10, 60, 100, 20), $"Speed: {npcData.speed}");
 
-
         GUI.Label(new Rect(10, 70, 100, 20), $"Age: {npcData.name}");
 
         if (npcData.refToWorkPlace != null) 
         {
             GUI.Label(new Rect(10, 80, 100, 20), $"Work: {npcData.refToWorkPlace.guid}");
-
         }
 
         if (npcData.refToHouse != null) 
         {
-
             GUI.Label(new Rect(10, 90, 100, 20), $"House: {npcData.refToHouse.guid}");
-
         }
-
 
         GUI.Label(new Rect(10, 100, 100, 20), "mother");
         GUI.Label(new Rect(10, 100, 100, 20), "father");
 
         GUI.Label(new Rect(10, 110, 100, 20), "list of children");
 
-        if (npcData.children.Count > 0) 
-        {
-            for (int i = 0; i < npcData.children.Count; i++)
+      
+            if (npcData.children.Count > 0)
             {
-                GUI.Label(new Rect(10, 120 + (i * 10), 100, 20), "child");
+                for (int i = 0; i < npcData.children.Count; i++)
+                {
+                    GUI.Label(new Rect(10, 120 + (i * 10), 100, 20), "child");
+                }
             }
-        }
-       
+        
 
     }
 

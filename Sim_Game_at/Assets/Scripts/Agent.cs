@@ -47,14 +47,6 @@ public class Agent : MonoBehaviour
     /// <param name="tilePos"></param>
     public void SetPosition(Tile tilePos) => this.transform.position = new Vector3(tilePos.midCoord.x, 0.1f, tilePos.midCoord.z);
 
-
-
-
-
-
-
-
-
     private void Update()
     {
         if (data.pathTile.Count > 0) 
@@ -62,9 +54,6 @@ public class Agent : MonoBehaviour
             PathingCall();
         }
     }
-
-
-
 
     public void PathingCall() 
     {

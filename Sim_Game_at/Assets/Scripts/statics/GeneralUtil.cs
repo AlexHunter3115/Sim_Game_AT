@@ -242,6 +242,27 @@ public static class GeneralUtil
         return null;
     }
 
+
+
+
+
+
+    public static Tile WorldTileNoLoop(Vector3 point) 
+    {
+
+        // var verticeList = map.plane.GetComponent<MeshFilter>().sharedMesh.vertices;
+        float pointX = point.x;
+        float pointY = point.z;
+
+        float tileSize = Vector3.Distance( map.tilesArray[1,1].BotRight, map.tilesArray[1, 1].BotLeft);
+        int tileX = Mathf.FloorToInt(pointX / tileSize);
+        int tileY = Mathf.FloorToInt(pointY / tileSize);
+
+        return map.tilesArray[tileX, tileY];
+    }
+
+
+
     public static Tile Vector2Tile(Vector2Int cord) { return map.tilesArray[cord.x, cord.y]; }
 
     public static List<Tile> GetResourcesCloseSpiral(Vector2Int start, int range)

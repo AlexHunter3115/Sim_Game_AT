@@ -164,13 +164,13 @@ try to get the position in relation to the corners
 need to fi the clumping whihc is more a visual thing but get a random location in the confinments of the tiles and then get a distance check instead o f n AABB check
  
 
-iif they are out when the sun goes down new ones spawn this is where the is idle shoudl come in the issue is that this in comb with the is at house bool shoudl diatcte witlh all of that
-
-
+if they are out when the sun goes down new ones spawn this is where the is idle shoudl come in the issue is that this in comb with the is at house bool shoudl diatcte witlh all of that
 
 this is why behaviours i think shoudl be dictate by the work instead of the agent and only the agent when there is no work or stuff like that
 
+when they got back home but there is not enough time // skill issue, if not back in he house hurt them there is a check to see if they still have a obj in that case they didnt wagmi
 
+the big thing is the checking what the agents do at night and day, there is also the fact that some 
+when
 
-when they got back home but there is not enough time 
  */

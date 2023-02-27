@@ -110,7 +110,11 @@ public class HouseBuilding : MonoBehaviour, IAgentInteractions,IBuildingActions,
                     }
                     else 
                     {
-                        GeneralUtil.map.SpawnAgent(habitant.guid, GeneralUtil.Vector2Tile(habitant.refToHouse.entrancePoints[0]));
+                        if (habitant.agentObj == null) 
+                        {
+                            GeneralUtil.map.SpawnAgent(habitant.guid, GeneralUtil.Vector2Tile(habitant.refToHouse.entrancePoints[0]));
+                        }
+
                         habitant.SetAgentPathing(habitant.refToHouse.entrancePoints[0], habitant.refToWorkPlace.entrancePoints[0], true);
                     }
                 }
