@@ -1,11 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
 
 public class Agent : MonoBehaviour
 {
-
     public bool moving = false;
     public AgentData data;
     [SerializeField] string agentName;
@@ -135,31 +133,36 @@ public class Agent : MonoBehaviour
     // this is for the workers
     private IEnumerator MiningResource()
     {
+
+        Debug.Log("action");
         animator.SetBool("Working", true);
 
         yield return new WaitForSeconds(timeTaken);
 
         animator.SetBool("Working", false);
 
-        if (GeneralUtil.map.tilesArray[data.tileDestination.coord.x, data.tileDestination.coord.y].tileObject != null)
+        if (data.currAction == AgentData.CURRENT_ACTION.WORKING) 
         {
-            var obj = GeneralUtil.map.tilesArray[data.tileDestination.coord.x, data.tileDestination.coord.y].tileObject;
-            if (obj != null)
+            if (GeneralUtil.map.tilesArray[data.tileDestination.coord.x, data.tileDestination.coord.y].tileObject != null)
             {
-                var comp = obj.GetComponent<Resource>();
+                var obj = GeneralUtil.map.tilesArray[data.tileDestination.coord.x, data.tileDestination.coord.y].tileObject;
+                if (obj != null)
+                {
+                    var comp = obj.GetComponent<Resource>();
 
-                // this is where we add the resource to the char not the bank
+                    // this is where we add the resource to the char not the bank
 
-                GeneralUtil.bank.ChangeFoodAmount(comp.foodAmount);
-                GeneralUtil.bank.ChangeStoneAmount(comp.stoneAmount);
-                GeneralUtil.bank.ChangeWoodAmount(comp.woodAmount);
+                    GeneralUtil.bank.ChangeFoodAmount(comp.foodAmount);
+                    GeneralUtil.bank.ChangeStoneAmount(comp.stoneAmount);
+                    GeneralUtil.bank.ChangeWoodAmount(comp.woodAmount);
+                }
+
+                Destroy(obj);
+                GeneralUtil.map.tilesArray[data.tileDestination.coord.x, data.tileDestination.coord.y].tileObject = null;
             }
 
-            Destroy(obj);
-            GeneralUtil.map.tilesArray[data.tileDestination.coord.x, data.tileDestination.coord.y].tileObject = null;
+            data.SetAgentPathing(data.tileDestination.coord, data.refToWorkPlace.entrancePoints[0], true);
         }
-
-        data.SetAgentPathing(data.tileDestination.coord, data.refToWorkPlace.entrancePoints[0], true);
 
     }
 

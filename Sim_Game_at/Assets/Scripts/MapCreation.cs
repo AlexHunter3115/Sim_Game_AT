@@ -385,6 +385,7 @@ public class MapCreation : MonoBehaviour
         var comp = objRef.GetComponent<Agent>();
 
         comp.LoadData(guid);
+        Debug.Log(exitPoint);
         comp.SetPosition(exitPoint);
     }
 
@@ -473,11 +474,6 @@ public class MapCreation : MonoBehaviour
 
         }
     }
-
-
-
-
-
 
 }
 

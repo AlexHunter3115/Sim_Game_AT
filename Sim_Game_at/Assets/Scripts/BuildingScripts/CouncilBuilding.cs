@@ -47,10 +47,8 @@ public class CouncilBuilding : MonoBehaviour, IAgentInteractions, ITimeTickers, 
             newCitizen.SetAgentPathing(destination, buildingId.buildingData.entrancePoints[0], true);  //sets the pathing to the workplace at the start
 
         }
-
-
     }
-
+    // i need to fix this thing that it spawns on the thing
 
 
     private void Update()
@@ -152,20 +150,18 @@ public class CouncilBuilding : MonoBehaviour, IAgentInteractions, ITimeTickers, 
         // this is where the deletion of the workers should go
         for (int i = 0; i < buildingId.buildingData.workers.Count; i++)
         {
-            buildingId.buildingData.workers[i].refToWorkPlace = null;
 
-            if (buildingId.buildingData.workers[i].atWork) 
-            {
-                GeneralUtil.map.SpawnAgent(buildingId.buildingData.workers[i].guid, GeneralUtil.map.tilesArray[buildingId.buildingData.entrancePoints[0].x, buildingId.buildingData.entrancePoints[0].y]);
-            }
+            //if (buildingId.buildingData.workers[i].atWork) 
+            //{
+            //    GeneralUtil.map.SpawnAgent(buildingId.buildingData.workers[i].guid, GeneralUtil.map.tilesArray[buildingId.buildingData.entrancePoints[0].x, buildingId.buildingData.entrancePoints[0].y]);
+            //}
 
             buildingId.buildingData.workers[i].pathTile.Clear();
             buildingId.buildingData.workers[i].SetToWonder();
 
-
+            buildingId.buildingData.workers[i].refToWorkPlace = null;
         }
         Destroy(gameObject);
         GeneralUtil.dataBank.buildingDict.Remove(buildingId.buildingData.guid);
-
     }
 }

@@ -17,7 +17,8 @@ public class BuildingIdentifier : MonoBehaviour
 
     [Header("the entrance point is based on the middle point")]
     public int buildingIndex = 0;
-    
+
+    public bool test = false;
 
     public void init(Tile middleTile, Vector2Int size, List<Tile> controlledTiles, int index)
     {
@@ -86,6 +87,21 @@ public class BuildingIdentifier : MonoBehaviour
         worker.currJob = AgentData.OCCUPATION.JOBLESS;
         return false;
     }
+
+
+
+
+
+    private void Update()
+    {
+        if (test) 
+        {
+            test = false;
+            DeleteBuilding();
+        }
+    }
+
+
 
     /// <summary>
     /// what this does it moslty restores the map back to what it was for the pathing
