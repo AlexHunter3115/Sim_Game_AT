@@ -173,5 +173,7 @@ the big thing is the checking what the agents do at night and day, there is also
 when
 
 remember that every building adds to the overall max keeping of the resources preferably if
+issue with the anims
 
+there is the issue that once evertyhing is delete the workers that may be going to wrads a resrouce may not set the resource back to available
  */

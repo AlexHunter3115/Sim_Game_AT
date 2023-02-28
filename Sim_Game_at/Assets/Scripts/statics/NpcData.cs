@@ -248,6 +248,15 @@ public class AgentData : Entity, ITimeTickers
     {
         if (GeneralUtil.timeCycle.isNightTime) // if its night time 
         {
+            if (refToWorkPlace == null) 
+            {
+                if (refToHouse != null) // and has no house then this llogic takes over
+                {
+                    this.SetAgentPathing(GeneralUtil.WorldTileNoLoop(agentObj.transform.position).coord, this.refToHouse.entrancePoints[0], true);
+                    this.readyToWork = false;
+                    this.atWork = false;
+                }
+            }
             if (refToHouse == null) // and has no house then this llogic takes over
             {
                 SetToSleeping(GeneralUtil.ReturnTile(refToWorkPlace.entrancePoints[0])); 
@@ -255,6 +264,9 @@ public class AgentData : Entity, ITimeTickers
         }
         else // if its day time and no job this takes over
         {
+
+
+
             if (refToWorkPlace == null)
             {
                 SetToWonder(GeneralUtil.ReturnTile(refToHouse.entrancePoints[0]));
@@ -276,7 +288,7 @@ public class AgentData : Entity, ITimeTickers
 
         agentObj.GetComponent<Agent>().StopAllCoroutines();
 
-        SetAgentPathing(GeneralUtil.WorldTileNoLoop(agentObj.transform.position).coord, GeneralUtil.RandomTileAround(5, GeneralUtil.WorldTileNoLoop(agentObj.transform.position).coord, new List<int> { 0, 1 }).coord,true);
+        SetAgentPathing(GeneralUtil.WorldTileNoLoop(agentObj.transform.position).coord, GeneralUtil.RandomTileAround(3, GeneralUtil.WorldTileNoLoop(agentObj.transform.position).coord, new List<int> { 0, 1 }).coord,true);
 
 
         //pathTile = GeneralUtil.A_StarPathfinding(GeneralUtil.WorldTileNoLoop(agentObj.transform.position).coord, GeneralUtil.RandomTileAround(5,  GeneralUtil.WorldTileNoLoop(agentObj.transform.position).coord, new List<int> { 0, 1 }).coord, this);
@@ -294,7 +306,7 @@ public class AgentData : Entity, ITimeTickers
 
         agentObj.GetComponent<Agent>().StopAllCoroutines();
 
-        SetAgentPathing(GeneralUtil.WorldTileNoLoop(agentObj.transform.position).coord, GeneralUtil.RandomTileAround(5, GeneralUtil.WorldTileNoLoop(agentObj.transform.position).coord, new List<int> { 0, 1 }).coord, true);
+        SetAgentPathing(GeneralUtil.WorldTileNoLoop(agentObj.transform.position).coord, GeneralUtil.RandomTileAround(3, GeneralUtil.WorldTileNoLoop(agentObj.transform.position).coord, new List<int> { 0, 1 }).coord, true);
     }
 
 

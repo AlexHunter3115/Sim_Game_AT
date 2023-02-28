@@ -43,14 +43,7 @@ public class HouseBuilding : MonoBehaviour, IAgentInteractions,IBuildingActions,
         }
     }
 
-    //private void Update()
-    //{
-    //    if (test)
-    //    {
-    //        test = false;
-    //        FindHabitant();
-    //    }
-    //}
+    
 
     public void LandedOnEntrance(AgentData data)
     {
@@ -76,9 +69,11 @@ public class HouseBuilding : MonoBehaviour, IAgentInteractions,IBuildingActions,
 
         for (int i = buildingId.buildingData.workers.Count; i-- > 0;)
         {
-            
+            if (GeneralUtil.timeCycle.isNightTime && buildingId.buildingData.workers[i].atHouse) 
+            {
+                GeneralUtil.map.SpawnAgent(buildingId.buildingData.workers[i].guid, GeneralUtil.map.tilesArray[   buildingId.buildingData.entrancePoints[0].x, buildingId.buildingData.entrancePoints[0].y]);
+            }
             //if at night spawn it in?
-
 
             buildingId.buildingData.workers[i].refToHouse = null;
             buildingId.buildingData.workers[i].atHouse = false;
@@ -87,6 +82,8 @@ public class HouseBuilding : MonoBehaviour, IAgentInteractions,IBuildingActions,
         }
     }
 
+
+    //should prob subscribe with a interface too we can use the interface alreday there for buidling actions
     public void HourTick()
     {
         if (GeneralUtil.timeCycle.isNightTime)
@@ -106,7 +103,9 @@ public class HouseBuilding : MonoBehaviour, IAgentInteractions,IBuildingActions,
                 {
                     if (habitant.refToWorkPlace == null) 
                     {
-                    // this is where they spawn and do nothing
+                        GeneralUtil.map.SpawnAgent(habitant.guid, GeneralUtil.Vector2Tile(habitant.refToHouse.entrancePoints[0]));
+                        habitant.SetToWonder();
+                        // this is where they spawn and do nothing
                     }
                     else 
                     {
@@ -120,13 +119,16 @@ public class HouseBuilding : MonoBehaviour, IAgentInteractions,IBuildingActions,
                 }
             }
 
-
-
-
             buildingId.buildingData.shut = true;
             firstInHouseCheck = false;
         }
     }
+
+
+
+
+
+
 
 
     public void DayTick()

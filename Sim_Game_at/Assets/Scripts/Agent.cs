@@ -80,7 +80,7 @@ public class Agent : MonoBehaviour
                 }
             }
         }
-
+        //they shouldnt cross the river and they should keep the anim
 
         if (!stillPathing)   //if he has done pathing
         {
