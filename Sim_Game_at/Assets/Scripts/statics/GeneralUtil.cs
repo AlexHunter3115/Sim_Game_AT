@@ -33,10 +33,9 @@ public static class GeneralUtil
 
     public static Dictionary<Tile, BuildingIdentifier> entranceTileDict = new Dictionary<Tile, BuildingIdentifier>();
 
-    public static List<Tile> A_StarPathfinding(Vector2Int start, Vector2Int end, AgentData npc, bool forced = false)
+    public static Tuple<List<Tile>, List<Tile>> A_StarPathfinding(Vector2Int start, Vector2Int end, AgentData npc, bool forced = false)
     {
         var tileArray2D = map.tilesArray;
-
 
         if (end.x < 0 || end.y < 0 || end.x >= tileArray2D.GetLength(1) || end.y >= tileArray2D.GetLength(0))
         {
@@ -57,21 +56,12 @@ public static class GeneralUtil
 
         openList.Add(start_node);
 
+        List<AStar_Node> allChecked = new List<AStar_Node>();
 
         int iter = 0;
 
         while (openList.Count > 0)
         {
-
-
-
-            if (iter > 500)
-            {
-                Debug.Log("this is too loong");
-                Debug.Log(end);
-                break;
-            }
-
             iter++;
 
             AStar_Node currNode = openList[0];
@@ -89,6 +79,8 @@ public static class GeneralUtil
 
             closedList.Add(currNode);
 
+            allChecked.Add(currNode);
+
             if (currNode.refToBasicTile.coord.x == end_node.refToBasicTile.coord.x && currNode.refToBasicTile.coord.y == end_node.refToBasicTile.coord.y)
             {
                 List<AStar_Node> path = new List<AStar_Node>();
@@ -101,24 +93,23 @@ public static class GeneralUtil
                     current = current.parent;
                 }
 
-
                 var pathOfBasicTiles = new List<Tile>();
-                float overallCost = 0;
+                var allCehckedTiles = new List<Tile>();
 
                 foreach (var tile in path)
                 {
-                    overallCost += tileCosts[tile.refToBasicTile.tileType];
                     pathOfBasicTiles.Add(tile.refToBasicTile);
                 }
 
-                if (overallCost > maxTileDistPerAge[npc.currAge])
+                foreach (var tile in allChecked)
                 {
-                    if (pathOfBasicTiles[0].tileType != TileType.ENTRANCE && forced == false)
-                        return null;
+                    allCehckedTiles.Add(tile.refToBasicTile);
                 }
 
+                Debug.Log($"{npc.name} has taken {iter} iters to workout its destination");
+
                 pathOfBasicTiles.Reverse();
-                return pathOfBasicTiles;
+                return Tuple.Create(pathOfBasicTiles, allCehckedTiles);
             }
             else
             {
@@ -131,58 +122,58 @@ public static class GeneralUtil
 
                     int[] node_position = { currNode.refToBasicTile.coord.x + x_buff, currNode.refToBasicTile.coord.y + y_buff };
 
-
                     if (node_position[0] < 0 || node_position[1] < 0 || node_position[0] >= tileArray2D.GetLength(1) || node_position[1] >= tileArray2D.GetLength(0))
                     {
                         continue;
                     }
                     else
                     {
-                        //if (tileArray2D[node_position[0], node_position[1]].tileType == TileType.NULL  || tileArray2D[node_position[0], node_position[1]].tileType == TileType.BLOCKED) 
-                        //{
-
-                        //}
-                        //else
-                        //{ 
-
                         AStar_Node new_node = new AStar_Node(tileArray2D[node_position[0], node_position[1]]);
                         children.Add(new_node);
-
-                        //}
                     }
                 }
 
                 foreach (var child in children)
                 {
-                    foreach (var closedListItem in closedList)
+                    bool alreadyThere = false;
+
+                    for (int i = 0; i < closedList.Count; i++)
                     {
-                        if (child.refToBasicTile.coord.x == closedListItem.refToBasicTile.coord.x && child.refToBasicTile.coord.y == closedListItem.refToBasicTile.coord.y)
+                        if (child.refToBasicTile.coord.x == closedList[i].refToBasicTile.coord.x && child.refToBasicTile.coord.y == closedList[i].refToBasicTile.coord.y)
                         {
-                            continue;
+                            alreadyThere = true;
+                            break;
                         }
                     }
 
-
-                    child.g = currNode.g + 0.5f;
-                    child.h = EuclideanDistance2D(new Vector2(end_node.refToBasicTile.coord.x, end_node.refToBasicTile.coord.y), new Vector2(child.refToBasicTile.coord.x, child.refToBasicTile.coord.y));
-
-                    child.f = child.g + child.h + tileCosts[child.refToBasicTile.tileType];   //added value here
-                    child.parent = currNode;
-
-
-                    foreach (var openListItem in openList)
+                    if (alreadyThere == false) 
                     {
-                        if (child.refToBasicTile.coord.x == openListItem.refToBasicTile.coord.x && child.refToBasicTile.coord.y == openListItem.refToBasicTile.coord.y && child.g > openListItem.g)// 
+                        child.g = currNode.g + 0.5f;
+                        child.h = EuclideanDistance2D(new Vector2(end_node.refToBasicTile.coord.x, end_node.refToBasicTile.coord.y), new Vector2(child.refToBasicTile.coord.x, child.refToBasicTile.coord.y));
+
+                        child.f = child.g + child.h + tileCosts[child.refToBasicTile.tileType];   //added value here
+                        child.parent = currNode;
+
+                        bool alreadyThereAgain = false;
+
+                        foreach (var openListItem in openList)
                         {
-                            continue;
+                            if (child.refToBasicTile.coord.x == openListItem.refToBasicTile.coord.x && child.refToBasicTile.coord.y == openListItem.refToBasicTile.coord.y && child.g > openListItem.g)// 
+                            {
+                                alreadyThereAgain = true;
+                                break;
+                            }
                         }
+
+                        if (alreadyThereAgain == false)
+                            openList.Add(child);
                     }
-
-                    openList.Add(child);
-
                 }
             }
         }
+
+        Debug.Log($"this shouldnt get here");
+
         return null;
     }
 
@@ -200,18 +191,13 @@ public static class GeneralUtil
                 return true;
             }
         }
-
         return false;
     }
-
-
-
 
     public static Tile ReturnTile(Vector2Int pos) 
     {
         return map.tilesArray[pos.x, pos.y];
     }
-
 
     public static Tile RandomTileAround(int range, Vector2Int centerPos, List<int> AllowedTypes = null, int tries = 10) 
     {
@@ -255,7 +241,7 @@ public static class GeneralUtil
 
 
 
-
+    
     public static int GetRandomNumberExcludingRange(int min, int max, int excludeStart, int excludeEnd)
     {
         int randomNumber = Random.Range(min, max);
@@ -285,36 +271,8 @@ public static class GeneralUtil
         return false;
     }
 
-    /// <summary>
-    /// given a world position returns a tile object corresponding to that cord
-    /// </summary>
-    /// <param name="point"></param>
-    /// <returns></returns>
-    public static Tile WorldTileCoord(Vector3 point)
+    public static Tile WorldPosToTile(Vector3 point) 
     {
-        for (int i = 0; i < map.tilesArray.Length; i++)
-        {
-            int row = i / map.textSize;
-            int col = i % map.textSize;
-
-            if (AABBCol(point, map.tilesArray[row, col]))
-            {
-                return map.tilesArray[row, col];
-            }
-        }
-
-        return null;
-    }
-
-
-
-
-
-
-    public static Tile WorldTileNoLoop(Vector3 point) 
-    {
-
-        // var verticeList = map.plane.GetComponent<MeshFilter>().sharedMesh.vertices;
         float pointX = point.x;
         float pointY = point.z;
 
@@ -325,10 +283,9 @@ public static class GeneralUtil
         return map.tilesArray[tileX, tileY];
     }
 
-
-
     public static Tile Vector2Tile(Vector2Int cord) { return map.tilesArray[cord.x, cord.y]; }
 
+    // not used
     public static List<Tile> GetResourcesCloseSpiral(Vector2Int start, int range)
     {
         var tileCloseBy = new List<Tile>();
@@ -425,22 +382,18 @@ public static class GeneralUtil
 
 
     #region Dicts
-
-
     //the cost of pathfidnign for each tile
     public static Dictionary<TileType, float> tileCosts = new Dictionary<TileType, float>()
     {
-        {TileType.GRASS, 0.12f},
-        {TileType.HILL, 0.3f},
-        {TileType.SNOW, 0.6f},
-        {TileType.WATER, 0.9f},
-        {TileType.NULL, 10000f},
-        {TileType.PATH, 0.03f},
-        {TileType.BLOCKED, 10000f},
+        {TileType.GRASS, 1.2f},
+        {TileType.HILL, 3f},
+        {TileType.SNOW, 6f},
+        {TileType.WATER, 9f},
+        {TileType.NULL, 100f},
+        {TileType.PATH, 0.3f},
+        {TileType.BLOCKED, 100f},
         {TileType.ENTRANCE, 0f}
     };
-
-
 
     public static Dictionary<AgentData.AGE_STATE, float> maxTileDistPerAge = new Dictionary<AgentData.AGE_STATE, float>()
     {
@@ -452,8 +405,6 @@ public static class GeneralUtil
 
 
     #endregion
-
-
 }
 
 public class DistanceComparer : IComparer<Collider>

@@ -11,6 +11,7 @@ public class BuildingIdentifier : MonoBehaviour
 
     public BuildingData buildingData;
     public string guid;
+
     public IAgentInteractions agentActions;
     public IBuildingActions buildingActions;
     public ITimeTickers buildingTimer;
@@ -22,18 +23,17 @@ public class BuildingIdentifier : MonoBehaviour
 
     public void init(Tile middleTile, Vector2Int size, List<Tile> controlledTiles, int index)
     {
+        var stats = GeneralUtil.buildingScritpable.buildingStats[index];
 
         buildingIndex = index;
-        buildingData = new BuildingData( middleTile.coord, GeneralUtil.buildingScritpable.buildingStats[index]);
+        buildingData = new BuildingData( middleTile.coord,stats);
         this.guid = buildingData.guid;
         buildingData.takenTiles = controlledTiles;
         buildingData.buildingID = this;
 
-        buildingData.maxWorkers = GeneralUtil.buildingScritpable.buildingStats[index].maxWorkers;
-
         var entranceLocation = new List<Vector2Int>();
 
-        foreach (var entrance in GeneralUtil.buildingScritpable.buildingStats[index].entrances)
+        foreach (var entrance in stats.entrances)
         {
             entranceLocation.Add(new Vector2Int(entrance.x + buildingData.centerCoord.x, entrance.y + buildingData.centerCoord.y));
             GeneralUtil.map.tilesArray[entrance.x + buildingData.centerCoord.x, entrance.y + buildingData.centerCoord.y].tileType = TileType.ENTRANCE;
@@ -64,8 +64,14 @@ public class BuildingIdentifier : MonoBehaviour
         if (buildingData.maxWorkers == buildingData.workers.Count)
             return false;
 
+        GeneralUtil.dataBank.unemployedNpc.Remove(worker.guid);
         buildingData.workers.Add(worker);
-        worker.currJob = AgentData.OCCUPATION.FOREGER;
+        worker.refToWorkPlace = buildingData;
+
+        worker.currAction = AgentData.CURRENT_ACTION.WORKING;
+
+        if (worker.agentObj != null)
+            worker.SetAgentPathing(GeneralUtil.WorldPosToTile(worker.agentObj.transform.position).coord, worker.refToWorkPlace.entrancePoints[0]);
 
         return true;
     }
@@ -78,18 +84,27 @@ public class BuildingIdentifier : MonoBehaviour
     {
         var worker = GeneralUtil.dataBank.npcDict[guid];
 
-        if (buildingData.workers.Contains(worker)) 
+        if (buildingData.workers.Contains(worker))
         {
             buildingData.workers.Remove(worker);
+
+            worker.pathTile.Clear();
+
+            worker.SetToWonder();
+
+            worker.currJob = AgentData.OCCUPATION.JOBLESS;
+
+            worker.atWork = false;
+            worker.readyToWork = false;
+
+            worker.refToWorkPlace = null;
+
+            GeneralUtil.dataBank.unemployedNpc.Add(worker.guid);
+
             return true;
         }
-
-        worker.currJob = AgentData.OCCUPATION.JOBLESS;
         return false;
     }
-
-
-
 
 
     private void Update()
@@ -124,11 +139,14 @@ public class BuildingIdentifier : MonoBehaviour
                 item.tileType = TileType.HILL;
             else if (pixelColor == Color.white)
                 item.tileType = TileType.SNOW;
+        }
 
+        for (int i = buildingData.workers.Count; i-- > 0;)
+        {
+            RemoveWorker(buildingData.workers[i].guid);
         }
 
         GeneralUtil.dataBank.buildingDict.Remove(guid);
-
         Destroy(gameObject);
     }
 
@@ -146,31 +164,12 @@ public class BuildingIdentifier : MonoBehaviour
 
         foreach (var tiles in hitColliders)
         {
-                var comp = tiles.GetComponent<Resource>();
+            var comp = tiles.GetComponent<Resource>();
 
-                bool addThisResource = false;
-
-                if (buildingData.upKeepFoodCost > 0) 
-                {
-                    if (comp.foodAmount > 0)
-                        addThisResource = true;
-                }
-
-                if (buildingData.upKeepStoneCost > 0)
-                {
-                    if (comp.stoneAmount > 0)
-                        addThisResource = true;
-                }
-
-                if (buildingData.upKeepWoodCost > 0)
-                {
-                    if (comp.woodAmount > 0)
-                        addThisResource = true;
-                }
-
-                if (addThisResource)
-                    buildingData.tilesWithResourcesInRange.Add(comp.tile);
-            
+            if (buildingData.stats.whatResourceLookingFor.Contains((int)comp.type)) 
+            {
+                buildingData.tilesWithResourcesInRange.Add(comp.tile);
+            }
         }
     }
 }

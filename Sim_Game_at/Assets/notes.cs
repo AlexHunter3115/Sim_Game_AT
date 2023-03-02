@@ -176,4 +176,7 @@ remember that every building adds to the overall max keeping of the resources pr
 issue with the anims
 
 there is the issue that once evertyhing is delete the workers that may be going to wrads a resrouce may not set the resource back to available
+
+
+alos i dont think the map is updating
  */

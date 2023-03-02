@@ -45,7 +45,7 @@ public class MapInteraction : MonoBehaviour
                     case 6:  //map
                         var sel = GeneralUtil.buildingScritpable.buildingStats[selectedIndex].size;
 
-                        GeneralUtil.map.ClickedTile = GeneralUtil.WorldTileNoLoop(hit.point);
+                        GeneralUtil.map.ClickedTile = GeneralUtil.WorldPosToTile(hit.point);
                         //GeneralUtil.map.ClickedTile = GeneralUtil.WorldTileCoord(hit.point);
 
                         //Debug.Log(GeneralUtil.map.ClickedTile.coord);
@@ -160,7 +160,6 @@ public class MapInteraction : MonoBehaviour
 
 
         }
-
 
     }
 
@@ -370,7 +369,7 @@ public class MapInteraction : MonoBehaviour
     {
         var npcData = GeneralUtil.dataBank.npcDict[guid];
 
-        GUI.Box(new Rect(5, 5, 160, 120), "");
+        GUI.Box(new Rect(5, 5, 200, 120), "");
         GUI.Label(new Rect(10, 10, 100, 20), $"Name: {npcData.name}");
 
         GUI.Label(new Rect(10, 20, 100, 20), $"Health: {npcData.health}");
@@ -392,16 +391,16 @@ public class MapInteraction : MonoBehaviour
         }
 
         GUI.Label(new Rect(10, 100, 100, 20), "mother");
-        GUI.Label(new Rect(10, 100, 100, 20), "father");
+        GUI.Label(new Rect(10, 120, 100, 20), "father");
 
-        GUI.Label(new Rect(10, 110, 100, 20), "list of children");
+        GUI.Label(new Rect(10, 140, 100, 20), "list of children");
 
       
             if (npcData.children.Count > 0)
             {
                 for (int i = 0; i < npcData.children.Count; i++)
                 {
-                    GUI.Label(new Rect(10, 120 + (i * 10), 100, 20), "child");
+                    GUI.Label(new Rect(10, 160 + (i * 10), 100, 20), "child");
                 }
             }
         

@@ -53,10 +53,6 @@ public class HouseBuilding : MonoBehaviour, IAgentInteractions,IBuildingActions,
         {//the first person that landed here is checking the food
             // does this place have enough food? 
             // no then set its pathign to go to the shop 
-
-
-
-
             firstInHouseCheck = true;
         }
 

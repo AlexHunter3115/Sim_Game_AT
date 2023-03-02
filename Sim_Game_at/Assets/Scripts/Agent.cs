@@ -15,6 +15,7 @@ public class Agent : MonoBehaviour
     private float timeTaken = 3f;
     private Tile lastTile = null;
 
+    public bool debugSwitch = false;
 
     private Animator animator;
     private void Awake()
@@ -57,6 +58,7 @@ public class Agent : MonoBehaviour
     {
 
         animator.SetBool("Walking", true);
+        animator.SetBool("Working", false);
         bool stillPathing = true;
 
         if (!GeneralUtil.AABBCol(this.transform.position, data.pathTile[0]))   // if it has yet to touch the tile
@@ -118,23 +120,18 @@ public class Agent : MonoBehaviour
 
         }
     }
-
-
    
     private IEnumerator WonderingCall()
     {
-        yield return new WaitForSeconds(timeTaken * 2);
+        yield return new WaitForSeconds(timeTaken * Random.Range(1.0f,2.0f));
         //the issue is the courutine still will call even if the wait time is gone so this is the check for that
         if (data.currAction == AgentData.CURRENT_ACTION.WONDERING)
-            data.SetAgentPathing(GeneralUtil.WorldTileNoLoop(this.transform.position).coord, GeneralUtil.RandomTileAround(4, GeneralUtil.WorldTileNoLoop(this.transform.position).coord, new List<int> { 0, 1 }, 10).coord, true);
-      
+            data.SetAgentPathing(GeneralUtil.WorldPosToTile(this.transform.position).coord, GeneralUtil.RandomTileAround(4, GeneralUtil.WorldPosToTile(this.transform.position).coord, new List<int> { 0, 1 }, 10).coord, true);
     }
 
     // this is for the workers
     private IEnumerator MiningResource()
     {
-
-        Debug.Log("action");
         animator.SetBool("Working", true);
 
         yield return new WaitForSeconds(timeTaken);
@@ -155,6 +152,21 @@ public class Agent : MonoBehaviour
                     GeneralUtil.bank.ChangeFoodAmount(comp.foodAmount);
                     GeneralUtil.bank.ChangeStoneAmount(comp.stoneAmount);
                     GeneralUtil.bank.ChangeWoodAmount(comp.woodAmount);
+
+                    switch (comp.type)
+                    {
+                        case Resource.RESOURCE_TYPE.STONE:
+                            GeneralUtil.dataBank.numOfResourcesStone--;
+                            break;
+                        case Resource.RESOURCE_TYPE.FOOD:
+                            GeneralUtil.dataBank.numOfResourcesFood--;
+                            break;
+                        case Resource.RESOURCE_TYPE.WOOD:
+                            GeneralUtil.dataBank.numOfResourcesWood--;
+                            break;
+                        default:
+                            break;
+                    }
                 }
 
                 Destroy(obj);
@@ -171,14 +183,31 @@ public class Agent : MonoBehaviour
     private void OnDrawGizmosSelected()
     {
 
-        if (data != null)
+        if (data == null)
             return;
 
-        if (data.pathTile.Count > 0)   // if the path is larger than 0 tiles
+        if (data.pathTile.Count == 0)   // if the path is larger than 0 tiles
             return;
 
-        foreach (var tile in data.pathTile)
-            Gizmos.DrawSphere(tile.midCoord, 0.5f);
+        if (debugSwitch) 
+        {
+            Gizmos.color = Color.red;
+
+            foreach (var tile in data.pathTile)
+            {
+                Gizmos.DrawSphere(tile.midCoord, 0.25f);
+            }
+        }
+        else 
+        {
+            Gizmos.color = Color.yellow;
+
+            foreach (var tile in data.allCheckedDebug)
+            {
+                Gizmos.DrawSphere(tile.midCoord, 0.25f);
+            }
+
+        }
 
     }
 

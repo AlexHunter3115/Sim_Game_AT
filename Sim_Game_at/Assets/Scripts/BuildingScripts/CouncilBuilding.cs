@@ -4,10 +4,7 @@ using UnityEngine.Events;
 public class CouncilBuilding : MonoBehaviour, IAgentInteractions, ITimeTickers, IBuildingActions
 {
     private BuildingIdentifier buildingId;
-    public bool test = false;
-    public bool beforeTest = false;
-
-
+  
 
     private void Start()
     {
@@ -27,6 +24,8 @@ public class CouncilBuilding : MonoBehaviour, IAgentInteractions, ITimeTickers, 
         {
             //get the position to spawn the agents
             var destination = new Vector2Int(buildingId.buildingData.centerCoord.x + Random.Range(-5, 5), buildingId.buildingData.centerCoord.y + Random.Range(-5, 5));   //chooses the random pos to spawn on
+            // that is not the entrance this is to add, this will lead to issues
+
             if (destination.x < 0 || destination.y < 0 || destination.x >= GeneralUtil.map.tilesArray.GetLength(0) || destination.y >= GeneralUtil.map.tilesArray.GetLength(1))
             {
                 destination = new Vector2Int(buildingId.buildingData.entrancePoints[0].x + 3, buildingId.buildingData.entrancePoints[0].y + 1);
@@ -36,38 +35,49 @@ public class CouncilBuilding : MonoBehaviour, IAgentInteractions, ITimeTickers, 
                 destination = new Vector2Int(buildingId.buildingData.entrancePoints[0].x + 3, buildingId.buildingData.entrancePoints[0].y + 1);
             }
 
-
             var newCitizen = new AgentData(AgentData.AGE_STATE.ADULT);     // initiates the class
             GeneralUtil.dataBank.npcDict.Add(newCitizen.guid, newCitizen);   // adds it to the dict
-            newCitizen.refToWorkPlace = buildingId.buildingData;    //sets the workplace to the council
-            buildingId.AddWorker(newCitizen.guid); //set the place to work in
+                                                                             //sets the workplace to the council
+                                                                             // buildingId.AddWorker(newCitizen.guid); //set the place to work in
 
-            GeneralUtil.map.SpawnAgent(newCitizen.guid, GeneralUtil.map.tilesArray[destination.x, destination.y]);   //spawns the agent
+            buildingId.buildingData.workers.Add(newCitizen);
+
+            newCitizen.refToWorkPlace = buildingId.buildingData;
+
+            var agent = GeneralUtil.map.SpawnAgent(newCitizen.guid, GeneralUtil.map.tilesArray[destination.x, destination.y]);   //spawns the agent
+
+            if (GeneralUtil.WorldPosToTile(agent.transform.position).coord == buildingId.buildingData.entrancePoints[0]) 
+            {
+                destination = new Vector2Int(buildingId.buildingData.entrancePoints[0].x + 1, buildingId.buildingData.entrancePoints[0].y +1);
+                agent.GetComponent<Agent>().SetPosition(GeneralUtil.Vector2Tile(destination));
+            }
 
             newCitizen.SetAgentPathing(destination, buildingId.buildingData.entrancePoints[0], true);  //sets the pathing to the workplace at the start
-
         }
     }
     // i need to fix this thing that it spawns on the thing
 
-
-    private void Update()
-    {
-        if (test)
-        {
-            test = false;
-            DeleteBuilding();
-        }
-    }
 
     public void LandedOnEntrance(AgentData data)
     {
         Destroy(data.agentObj);
         data.readyToWork = true;
         data.atWork = true;
+
+        if (GeneralUtil.timeCycle.isNightTime)
+        {
+            if (data.refToHouse != null)
+            {
+                if (data.readyToWork == true && data.currAction == AgentData.CURRENT_ACTION.WORKING)
+                {
+                    data.SetAgentPathing(buildingId.buildingData.entrancePoints[0], data.refToHouse.entrancePoints[0], true);
+                    GeneralUtil.map.SpawnAgent(data.guid, GeneralUtil.map.tilesArray[buildingId.buildingData.entrancePoints[0].x, buildingId.buildingData.entrancePoints[0].y]);
+                    data.readyToWork = false;
+                    data.atWork = false;
+                }
+            }
+        }
     }
-
-
 
 
     public void HourTick()
@@ -146,22 +156,16 @@ public class CouncilBuilding : MonoBehaviour, IAgentInteractions, ITimeTickers, 
     public void DeleteBuilding()
     {
        // buildingId.DeleteBuilding();
-        Debug.Log($"Deliting this buidling");
-        // this is where the deletion of the workers should go
-        for (int i = 0; i < buildingId.buildingData.workers.Count; i++)
-        {
+        //Debug.Log($"Deliting this buidling");
+        //// this is where the deletion of the workers should go
+        //for (int i = 0; i < buildingId.buildingData.workers.Count; i++)
+        //{
+        //    buildingId.buildingData.workers[i].pathTile.Clear();
+        //    buildingId.buildingData.workers[i].SetToWonder();
 
-            //if (buildingId.buildingData.workers[i].atWork) 
-            //{
-            //    GeneralUtil.map.SpawnAgent(buildingId.buildingData.workers[i].guid, GeneralUtil.map.tilesArray[buildingId.buildingData.entrancePoints[0].x, buildingId.buildingData.entrancePoints[0].y]);
-            //}
-
-            buildingId.buildingData.workers[i].pathTile.Clear();
-            buildingId.buildingData.workers[i].SetToWonder();
-
-            buildingId.buildingData.workers[i].refToWorkPlace = null;
-        }
-        Destroy(gameObject);
-        GeneralUtil.dataBank.buildingDict.Remove(buildingId.buildingData.guid);
+        //    buildingId.buildingData.workers[i].refToWorkPlace = null;
+        //}
+        //Destroy(gameObject);
+        //GeneralUtil.dataBank.buildingDict.Remove(buildingId.buildingData.guid);
     }
 }

@@ -101,6 +101,7 @@ MonoBehaviour:
   woodAmount: 100
   stoneAmount: 0
   foodAmount: 0
+  type: 2
   available: 1
 --- !u!65 &-5512184856265024201
 BoxCollider:

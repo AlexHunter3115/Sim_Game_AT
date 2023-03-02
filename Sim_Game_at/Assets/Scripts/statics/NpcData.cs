@@ -74,6 +74,7 @@ public class AgentData : Entity, ITimeTickers
     public Tile tileDestination;
     public Tile tileStart;
     public List<Tile> pathTile = new List<Tile>();
+    public List<Tile> allCheckedDebug = new List<Tile>();
 
     #endregion
 
@@ -81,7 +82,7 @@ public class AgentData : Entity, ITimeTickers
     #region relationships
     public AgentData spouse;
     public AgentData[] parentsArr = new AgentData[2];
-    public List<AgentData> children;
+    public List<AgentData> children = new List<AgentData>();
 
     public void SetParents(AgentData parentOne, AgentData parentTwo)
     {
@@ -96,9 +97,6 @@ public class AgentData : Entity, ITimeTickers
     public bool dead;
 
     private bool lastTime = false;
-
-
-
 
 
     //constructor
@@ -176,7 +174,11 @@ public class AgentData : Entity, ITimeTickers
     /// <param name="forced"></param>
     public bool SetAgentPathing(Vector2Int start,  Vector2Int end, bool forced = false) 
     {
-        pathTile = GeneralUtil.A_StarPathfinding(start, end, this,forced);
+        var pathData = GeneralUtil.A_StarPathfinding(start, end, this, forced);
+
+
+        pathTile = pathData.Item1;
+        allCheckedDebug = pathData.Item2;
 
         if (pathTile == null)
             return false;
@@ -252,9 +254,10 @@ public class AgentData : Entity, ITimeTickers
             {
                 if (refToHouse != null) // and has no house then this llogic takes over
                 {
-                    this.SetAgentPathing(GeneralUtil.WorldTileNoLoop(agentObj.transform.position).coord, this.refToHouse.entrancePoints[0], true);
+                    this.SetAgentPathing(GeneralUtil.WorldPosToTile(agentObj.transform.position).coord, this.refToHouse.entrancePoints[0], true);
                     this.readyToWork = false;
                     this.atWork = false;
+                    currAction = CURRENT_ACTION.SLEEPING;
                 }
             }
             if (refToHouse == null) // and has no house then this llogic takes over
@@ -288,7 +291,7 @@ public class AgentData : Entity, ITimeTickers
 
         agentObj.GetComponent<Agent>().StopAllCoroutines();
 
-        SetAgentPathing(GeneralUtil.WorldTileNoLoop(agentObj.transform.position).coord, GeneralUtil.RandomTileAround(3, GeneralUtil.WorldTileNoLoop(agentObj.transform.position).coord, new List<int> { 0, 1 }).coord,true);
+        SetAgentPathing(GeneralUtil.WorldPosToTile(agentObj.transform.position).coord, GeneralUtil.RandomTileAround(3, GeneralUtil.WorldPosToTile(agentObj.transform.position).coord, new List<int> { 0, 1 }).coord,true);
 
 
         //pathTile = GeneralUtil.A_StarPathfinding(GeneralUtil.WorldTileNoLoop(agentObj.transform.position).coord, GeneralUtil.RandomTileAround(5,  GeneralUtil.WorldTileNoLoop(agentObj.transform.position).coord, new List<int> { 0, 1 }).coord, this);
@@ -306,7 +309,7 @@ public class AgentData : Entity, ITimeTickers
 
         agentObj.GetComponent<Agent>().StopAllCoroutines();
 
-        SetAgentPathing(GeneralUtil.WorldTileNoLoop(agentObj.transform.position).coord, GeneralUtil.RandomTileAround(3, GeneralUtil.WorldTileNoLoop(agentObj.transform.position).coord, new List<int> { 0, 1 }).coord, true);
+        SetAgentPathing(GeneralUtil.WorldPosToTile(agentObj.transform.position).coord, GeneralUtil.RandomTileAround(3, GeneralUtil.WorldPosToTile(agentObj.transform.position).coord, new List<int> { 0, 1 }).coord, true);
     }
 
 

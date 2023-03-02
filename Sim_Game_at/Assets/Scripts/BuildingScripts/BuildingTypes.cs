@@ -26,7 +26,7 @@ public class BuildingStatistics
     public List<int> allowedTileTypes = new List<int>();
     public GameObject building;
     public int maxWorkers;
-    public int[] whatResourceLookingFor = new int[4];
+    public List<int> whatResourceLookingFor = new List<int>();
     public int[] BankAmount = new int[4];
 
     //add what kind they are looking for 

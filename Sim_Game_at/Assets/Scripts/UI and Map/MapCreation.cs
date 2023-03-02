@@ -131,11 +131,6 @@ public class MapCreation : MonoBehaviour
         plane.transform.Rotate(new Vector3(0, 180, 0));    // this is a temp fix but i think the issue is with the for loop above cheking x first other than y
 
         GenerateResources();
-        //thedistance between the two   0.78125
-
-        //Debug.Log(  Vector3.Distance  (tilesArray[0,0].BotLeft, tilesArray[0, 0].BotRight));
-
-
     }
 
     // in a way the setting of the weight can be here as we are redrawin the map but should theroatically be put somewhere else
@@ -187,7 +182,6 @@ public class MapCreation : MonoBehaviour
 
     public Tile[,] PerlinNoise2D(float scale, int octaves, float persistance, float lacu, int offsetX, int offsetY)
     {
-
         if (threasholdHill <= threasholdGrass)
             threasholdHill = threasholdGrass + 0.01f;
 
@@ -271,7 +265,6 @@ public class MapCreation : MonoBehaviour
 
         for (int i = 0; i < regionsOfGreen; i++)//this is how many will have the trees
         {
-
             for (int j = 0; j < voronoiOutcome[i].Count; j++)
             {
                 var ran = Random.value;
@@ -283,6 +276,8 @@ public class MapCreation : MonoBehaviour
                         voronoiOutcome[i][j].busy = true;
                         var objRef = Instantiate(trees.Count == 0 ? trees[0] : trees[Random.Range(0, trees.Count)]);
                         objRef.GetComponent<Resource>().tile = voronoiOutcome[i][j];
+
+                        GeneralUtil.dataBank.numOfResourcesWood++;
 
                         objRef.transform.parent = resourceHolder.transform;
                         objRef.transform.position = new Vector3(voronoiOutcome[i][j].midCoord.x, 0, voronoiOutcome[i][j].midCoord.z);
@@ -313,6 +308,8 @@ public class MapCreation : MonoBehaviour
                             objRef.transform.parent = resourceHolder.transform;
                             objRef.transform.position = new Vector3(tile.midCoord.x, 0.1f, tile.midCoord.z);
 
+                            GeneralUtil.dataBank.numOfResourcesFood++;
+
                             objRef.transform.rotation = Quaternion.Euler(0, Random.Range(0, 360), 0);
                             tile.tileObject = objRef;
                         }
@@ -329,6 +326,8 @@ public class MapCreation : MonoBehaviour
                                 objRef.transform.parent = resourceHolder.transform;
                                 objRef.transform.position = new Vector3(tile.midCoord.x, 0f, tile.midCoord.z);
 
+                                GeneralUtil.dataBank.numOfResourcesWood++;
+
                                 tile.tileObject = objRef;
                             }
                         }
@@ -343,18 +342,15 @@ public class MapCreation : MonoBehaviour
 
                                 objRef.transform.parent = resourceHolder.transform;
                                 objRef.transform.position = new Vector3(tile.midCoord.x, 0.25f, tile.midCoord.z);
-                                tile.tileObject = objRef;
 
+                                GeneralUtil.dataBank.numOfResourcesStone++;
+
+                                tile.tileObject = objRef;
                             }
                         }
 
-
-
-                       
-
                         break;
                     case TileType.HILL:
-
 
                         ran = Random.Range(0.000f, 1.000f);
 
@@ -362,8 +358,11 @@ public class MapCreation : MonoBehaviour
                         {
                             tile.busy = true;
                             var objRef = Instantiate(rocks.Count == 0 ? rocks[0] : rocks[Random.Range(0, rocks.Count)]);
+
                             objRef.transform.parent = resourceHolder.transform;
                             objRef.transform.position = new Vector3(tile.midCoord.x, 0.25f, tile.midCoord.z);
+
+                            GeneralUtil.dataBank.numOfResourcesStone++;
 
                             tile.tileObject = objRef;
                         }
@@ -379,14 +378,15 @@ public class MapCreation : MonoBehaviour
         }
     }
 
-    public void SpawnAgent(string guid, Tile exitPoint) 
+    public GameObject SpawnAgent(string guid, Tile exitPoint) 
     {
         var objRef = Instantiate(agent, transform);
         var comp = objRef.GetComponent<Agent>();
 
         comp.LoadData(guid);
-        Debug.Log(exitPoint);
         comp.SetPosition(exitPoint);
+
+        return objRef;
     }
 
 

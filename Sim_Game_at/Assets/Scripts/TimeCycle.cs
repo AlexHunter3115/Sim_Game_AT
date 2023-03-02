@@ -101,7 +101,6 @@ public class TimeCycle : MonoBehaviour
         {
             yield return new WaitForSeconds(dayCheck/timerMultiplier);
 
-
             for (int i = 0; i < GeneralUtil.dataBank.buildingDict.Count; i++)
             {
                 CallDayInterface(GeneralUtil.dataBank.buildingDict.Values.ElementAt(i).buildingID.buildingTimer);
@@ -216,6 +215,11 @@ public class TimeCycle : MonoBehaviour
 
         OnFunctionCalled?.Invoke();
     }
+
+    
+
+
+
 
 
     private void CallMinuteInterface(ITimeTickers timeInterface) => timeInterface.MinuteTick();

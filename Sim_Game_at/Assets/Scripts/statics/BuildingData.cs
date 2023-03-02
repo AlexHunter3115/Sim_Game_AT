@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Security.Cryptography;
@@ -11,15 +12,17 @@ public class BuildingData : Entity
         buildingSize = stats.size;
         centerCoord = mid;
         range = stats.tileRange;
+        this.stats = stats;
 
         upKeepFoodCost = stats.keepUpCostWSFS[2];
         upKeepStoneCost = stats.keepUpCostWSFS[1];
         upKeepSandCost = stats.keepUpCostWSFS[3];
         upKeepWoodCost = stats.keepUpCostWSFS[0];
 
+        maxWorkers = stats.maxWorkers;
     }
 
-    public void LoadCloseResources() => tilesWithResourcesInRange = GeneralUtil.GetResourcesCloseSpiral(centerCoord, range);
+    public BuildingStatistics stats;
 
     public bool shut;
 
@@ -44,7 +47,6 @@ public class BuildingData : Entity
         BROKEN
     }
     public BUILDING_STATUS buildingStatus;
-
 
     #region map pos stuff
     public Vector2Int centerCoord;
