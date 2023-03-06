@@ -13,7 +13,7 @@ public class ResourceBank : MonoBehaviour
 
     private void Awake()
     {
-        GeneralUtil.bank = this;
+        GeneralUtil.resourceBank = this;
     }
 
     private void Start()
@@ -22,71 +22,89 @@ public class ResourceBank : MonoBehaviour
         ChangeSandAmount(0);
         ChangeStoneAmount(0);
         ChangeFoodAmount(0);
-        ChangePeopleAmount(0);
+    }
+
+    public void ChangeWoodAmount(int amount) 
+    {
+        if (CheckWoodAmount(amount)) 
+        {
+            woodAmount += amount;
+            GeneralUtil.Ui.SetWoodResText(woodAmount);
+        }
+    }
+
+    public void ChangeSandAmount(int amount)
+    {
+        if (CheckSandAmount(amount)) 
+        {
+            sandAmount += amount;
+            GeneralUtil.Ui.SetSandResText(sandAmount);
+        }
+    }
+
+    public void ChangeStoneAmount(int amount)
+    {
+        if (CheckStoneAmount(amount)) 
+        {
+            stoneAmount += amount;
+            GeneralUtil.Ui.SetStoneResText(stoneAmount);
+        }
+    }
+
+    public void ChangeFoodAmount(int amount)
+    {
+        if (CheckFoodAmount(amount))
+        {
+            foodAmount += amount;
+            GeneralUtil.Ui.SetFoodResText(foodAmount);
+        }
     }
 
 
-    public bool ChangeWoodAmount(int amount) 
+    public void SetPeopleAmount(int amount) 
     {
-        if (amount < 0)
+        peopleAmount = amount;
+    }
+
+
+    public bool CheckWoodAmount(int amount) 
+    {
+        if (woodAmount - amount < 0)
         {
-            if (amount > woodAmount)
-                return false;
+            return false;
         }
 
-        woodAmount += amount;
-        GeneralUtil.Ui.SetWoodResText(woodAmount);
-
         return true;
     }
 
-    public bool ChangeSandAmount(int amount)
+    public bool CheckStoneAmount(int amount)
     {
-        if (amount < 0)
+        if (stoneAmount - amount < 0)
         {
-            if (amount > sandAmount)
-                return false;
+            return false;
         }
 
-        sandAmount += amount;
-        GeneralUtil.Ui.SetSandResText(sandAmount);
-
         return true;
     }
 
-    public bool ChangeStoneAmount(int amount)
+    public bool CheckFoodAmount(int amount)
     {
-        if (amount < 0)
+        if (foodAmount - amount < 0)
         {
-            if (amount > stoneAmount)
-                return false;
+            return false;
         }
 
-        stoneAmount += amount;
-        GeneralUtil.Ui.SetStoneResText(stoneAmount);
-
         return true;
     }
 
-    public bool ChangeFoodAmount(int amount)
+    public bool CheckSandAmount(int amount)
     {
-        if (amount < 0)
+        if (sandAmount - amount < 0)
         {
-            if (amount > foodAmount)
-                return false;
+            return false;
         }
 
-        foodAmount += amount;
-        GeneralUtil.Ui.SetFoodResText(foodAmount);
-
         return true;
     }
 
-    public bool ChangePeopleAmount(int amount)
-    {
-        peopleAmount += amount;
-        GeneralUtil.Ui.SetPeepAmoungText(peopleAmount);
-
-        return true;
-    }
 }

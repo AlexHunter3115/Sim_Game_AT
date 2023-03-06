@@ -205,26 +205,19 @@ public class TimeCycle : MonoBehaviour
             if (currentDayState == TIME.NIGHT)
             {
                 DayChangeStateEvent();
+                GeneralUtil.dataBank.SaveAllResourceThisCycle();
+                GeneralUtil.dataBank.SpendDailyNeeds();
             }
         }
     }
 
     public void DayChangeStateEvent()
     {
-       // Debug.Log("Called on the time cuycle");
-
         OnFunctionCalled?.Invoke();
     }
-
-    
-
-
-
-
 
     private void CallMinuteInterface(ITimeTickers timeInterface) => timeInterface.MinuteTick();
     private void CallHourInterface(ITimeTickers timeInterface) => timeInterface.HourTick();
     private void CallDayInterface(ITimeTickers timeInterface) => timeInterface.DayTick();
-
 
 }

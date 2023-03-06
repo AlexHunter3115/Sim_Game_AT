@@ -71,7 +71,6 @@ public class FarmBuilding : MonoBehaviour, IAgentInteractions, ITimeTickers, IBu
 
     public void LandedOnEntrance(AgentData data)
     {
-
         Destroy(data.agentObj);
         data.readyToWork = true;
         data.atWork = true;
@@ -125,13 +124,5 @@ public class FarmBuilding : MonoBehaviour, IAgentInteractions, ITimeTickers, IBu
         }
     }
 
-    
 
-
-
-
-
-
-
-  
 }

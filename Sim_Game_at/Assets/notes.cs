@@ -156,12 +156,9 @@ try to get the position in relation to the corners
 
  
  
- every buiilding is going to contrinute towards a max possible kept resource so if we have like 1 council and 2 sawmill max is 1500 wood and so on, the shops take that from them
+every buiilding is going to contrinute towards a max possible kept resource so if we have like 1 council and 2 sawmill max is 1500 wood and so on, the shops take that from them
  
- 
-// the issue is that every house? it keeps redoing them, 
-need to fi the clumping whihc is more a visual thing but get a random location in the confinments of the tiles and then get a distance check instead o f n AABB check
- 
+
 
 if they are out when the sun goes down new ones spawn this is where the is idle shoudl come in the issue is that this in comb with the is at house bool shoudl diatcte witlh all of that
 
@@ -169,14 +166,33 @@ this is why behaviours i think shoudl be dictate by the work instead of the agen
 
 when they got back home but there is not enough time // skill issue, if not back in he house hurt them there is a check to see if they still have a obj in that case they didnt wagmi
 
-the big thing is the checking what the agents do at night and day, there is also the fact that some 
-when
+
 
 remember that every building adds to the overall max keeping of the resources preferably if
 issue with the anims
 
-there is the issue that once evertyhing is delete the workers that may be going to wrads a resrouce may not set the resource back to available
 
 
 alos i dont think the map is updating
+
+
+i need a basic game loop right now
+
+
+
+
+
+cost to build should be there
+
+starting amount --easy
+
+
+a gneerral pop up
+
+ask chatgpt for the decision algos
+
+the path
+
+tesitng stuff and finishing the bhevaiour for the other thing
+
  */

@@ -23,7 +23,7 @@ public class BuildingData : Entity
     }
 
     public BuildingStatistics stats;
-
+    public int health = 100;
     public bool shut;
 
     public enum BUILDING_TYPE 
@@ -77,5 +77,22 @@ public class BuildingData : Entity
     public List<Tile> tilesInRange = new List<Tile>();
     public List<Tile> tilesWithResourcesInRange = new List<Tile>();
 
+    public void ChangeHealth(int amount) 
+    {
+        health += amount;
 
+        if (health > 100) 
+        {
+            health = 100;
+            return;
+        }
+
+        if (health <= 0)
+        {
+            GeneralUtil.mapInteraction.SpawnFloatingText("*Crumbles*",Color.red, this.buildingID.transform);
+            buildingID.DeleteBuilding();
+            return;
+        }
+
+    }
 }

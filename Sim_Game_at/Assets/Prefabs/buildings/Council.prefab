@@ -100,8 +100,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b9aa89d2b71d79a468c4b49b38bd500f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  floatingText: {fileID: 2024783260514265893, guid: 1216a42bf2c14f34f935c636be73fb16, type: 3}
   guid: 
   buildingIndex: 0
+  test: 0
 --- !u!114 &8307660064223196632
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -114,8 +116,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff626e827e2a2094e966ef0ddba677fe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  test: 0
-  beforeTest: 0
+  stuff:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!65 &-2329094866972186155
 BoxCollider:
   m_ObjectHideFlags: 0

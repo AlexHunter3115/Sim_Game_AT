@@ -22,10 +22,11 @@ public static class GeneralUtil
 
     public static UserUIManager Ui;
     public static MapCreation map;
-    public static ResourceBank bank;
+    public static ResourceBank resourceBank;
     public static DataHolder dataBank;
     public static TimeCycle timeCycle;
     public static Graph graphRef;
+    public static MapInteraction mapInteraction;
 
     public static BuildingTypes buildingScritpable;
 
@@ -106,7 +107,7 @@ public static class GeneralUtil
                     allCehckedTiles.Add(tile.refToBasicTile);
                 }
 
-                Debug.Log($"{npc.name} has taken {iter} iters to workout its destination");
+               // Debug.Log($"{npc.name} has taken {iter} iters to workout its destination");
 
                 pathOfBasicTiles.Reverse();
                 return Tuple.Create(pathOfBasicTiles, allCehckedTiles);
@@ -171,8 +172,6 @@ public static class GeneralUtil
                 }
             }
         }
-
-        Debug.Log($"this shouldnt get here");
 
         return null;
     }

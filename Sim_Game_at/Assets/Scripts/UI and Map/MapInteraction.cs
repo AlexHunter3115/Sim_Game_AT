@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
 
@@ -7,10 +9,14 @@ public class MapInteraction : MonoBehaviour
 {
     [SerializeField] DataHolder dataHolder;
 
+    public GameObject floatingText;
+
     [SerializeField] Material transparent;
     [SerializeField] Material transparentError;
     [SerializeField] GameObject showObj;
 
+    [SerializeField] GameObject ghostObjHolder;
+ 
     private List<GameObject> spawnedShowObj = new List<GameObject>();
     public Vector2Int selectionGridSize = new Vector2Int(0, 0);
 
@@ -26,166 +32,251 @@ public class MapInteraction : MonoBehaviour
     private int typeSelected = 0;
     private bool showToolTip = false;
 
+    private bool arrowKeyLock = false;
+
+    private int graphChoiceOne = 0;
+    private int graphChoiceTwo = 1;
+
+    public bool spawnedCouncil = false;
+
+    private bool showingAllowedTiles = false;
+
+
     private void Start()
     {
         GeneralUtil.Ui.SetSelIndexText(GeneralUtil.buildingScritpable.buildingStats[selectedIndex].name);
+        GeneralUtil.mapInteraction = this;
     }
 
     void Update()
     {
-        if (Input.GetMouseButtonDown(0))
+        if (!GeneralUtil.Ui.showingMenu)
         {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            RaycastHit hit;
-
-            if (Physics.Raycast(ray, out hit,Mathf.Infinity, ~LayerMask.GetMask("Resources")))
+            if (Input.GetMouseButtonDown(0))
             {
-                switch (hit.transform.gameObject.layer)
+                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                RaycastHit hit;
+
+                if (Physics.Raycast(ray, out hit, Mathf.Infinity, ~LayerMask.GetMask("Resources")))
                 {
-                    case 6:  //map
-                        var sel = GeneralUtil.buildingScritpable.buildingStats[selectedIndex].size;
+                    switch (hit.transform.gameObject.layer)
+                    {
+                        case 6:  //map
+                            if (!showToolTip)
+                            {
+                                var sel = GeneralUtil.buildingScritpable.buildingStats[selectedIndex].size;
 
-                        GeneralUtil.map.ClickedTile = GeneralUtil.WorldPosToTile(hit.point);
-                        //GeneralUtil.map.ClickedTile = GeneralUtil.WorldTileCoord(hit.point);
+                                GeneralUtil.map.ClickedTile = GeneralUtil.WorldPosToTile(hit.point);
 
-                        //Debug.Log(GeneralUtil.map.ClickedTile.coord);
+                                SpawnShowObj(GeneralUtil.map.ClickedTile, sel.x, sel.y);
+                                typeSelected = 0;
+                            }
 
-                        SpawnShowObj(GeneralUtil.map.ClickedTile, sel.x, sel.y);
-                        typeSelected = 0;
-                        break;
-                    case 8:  //building
+                            break;
+                        case 8:  //building
 
-                        showToolTip = true;
-                        var compBuilding = hit.transform.GetComponent<BuildingIdentifier>();
-                        guid = compBuilding.buildingData.guid;
-                        typeSelected = 2;
+                            showToolTip = true;
+                            var compBuilding = hit.transform.GetComponent<BuildingIdentifier>();
+                            guid = compBuilding.buildingData.guid;
+                            typeSelected = 2;
 
-                        break;
-                    case 9:  //citizen
+                            break;
+                        case 9:  //citizen
 
-                        showToolTip = true;
-                        var compAgent = hit.transform.GetComponent<Agent>();
-                        guid = compAgent.data.guid;
-                        typeSelected = 1;
-                        break;
+                            showToolTip = true;
+                            var compAgent = hit.transform.GetComponent<Agent>();
+                            guid = compAgent.data.guid;
+                            typeSelected = 1;
+                            break;
 
-                    default:
-                        break;
+                        default:
+                            break;
+                    }
+
+                }
+            }
+
+            if (Input.GetKeyDown(KeyCode.Return))
+            {
+                if (canSpawn)
+                {
+                    if (selectedCoords.Count != 0)
+                    {
+                        if (spawnedCouncil && selectedIndex == 0)
+                            return;
+
+                        //if (!CheckEnoughResources())
+                        //    return;
+
+                        var success = SpawnBuilding();
+                        ClearSection(true);
+
+                        if (success)
+                        {
+                         
+                        }
+                        else
+                        {
+
+                        }
+                    }
+                }
+            }
+
+            if (arrowKeyLock == false)
+            {
+                if (Input.GetKeyDown(KeyCode.UpArrow))
+                {
+                    if (selectedIndex + 1 >= GeneralUtil.buildingScritpable.buildingStats.Count) { selectedIndex = spawnedCouncil == false ? 0 : 1; }
+                    else { selectedIndex += 1; }
+
+                    ClearSection(false);
+
+
+                    var sel = GeneralUtil.buildingScritpable.buildingStats[selectedIndex].size;
+                    SpawnShowObj(GeneralUtil.map.ClickedTile, sel.x, sel.y);
+
+
+                    GeneralUtil.Ui.SetSelIndexText(GeneralUtil.buildingScritpable.buildingStats[selectedIndex].name);
+
+
+                }
+                if (Input.GetKeyDown(KeyCode.DownArrow))
+                {
+                    if (selectedIndex - 1 < (spawnedCouncil == false ? 0 : 1)) { selectedIndex = GeneralUtil.buildingScritpable.buildingStats.Count - 1; }
+                    else { selectedIndex -= 1; }
+
+                    ClearSection(false);
+
+                    var sel = GeneralUtil.buildingScritpable.buildingStats[selectedIndex].size;
+                    SpawnShowObj(GeneralUtil.map.ClickedTile, sel.x, sel.y);
+
+                    GeneralUtil.Ui.SetSelIndexText(GeneralUtil.buildingScritpable.buildingStats[selectedIndex].name);
+                }
+            }
+            else
+            {
+                if (Input.GetKeyDown(KeyCode.UpArrow))
+                {
+                    if (graphChoiceTwo + 1 >= GeneralUtil.dataBank.arrayOfLists.Length) { graphChoiceTwo = 0; }
+                    else { graphChoiceTwo += 1; }
+
+                    if (graphChoiceTwo == graphChoiceOne)
+                    {
+                        graphChoiceTwo = 1;
+                    }
+
+                    CallDrawGraph();
+
+                }
+                if (Input.GetKeyDown(KeyCode.DownArrow))
+                {
+                    if (graphChoiceTwo - 1 < 0) { graphChoiceTwo = GeneralUtil.dataBank.arrayOfLists.Length - 1; }
+                    else { graphChoiceTwo -= 1; }
+
+                    if (graphChoiceTwo == graphChoiceOne)
+                    {
+                        graphChoiceTwo = GeneralUtil.dataBank.arrayOfLists.Length - 2;
+                    }
+
+                    CallDrawGraph();
+
                 }
 
-            }
-        }
-
-        if (Input.GetKeyDown(KeyCode.Return)) 
-        {
-            if (canSpawn) 
-            {
-                if (selectedCoords.Count != 0)
+                if (Input.GetKeyDown(KeyCode.LeftArrow))
                 {
-                    //if (!CheckEnoughResources((BuildingData.BUILDING_TYPE)selectedIndex))
-                    //    return;
-
-                    var success = SpawnBuilding();
-                    ClearSection(true);
-
-
-                    if (success)
+                    if (graphChoiceOne - 1 < 0)
                     {
+                        graphChoiceOne = GeneralUtil.dataBank.arrayOfLists.Length - 1;
                     }
                     else
                     {
-                     
+                        graphChoiceOne -= 1;
                     }
+
+                    if (graphChoiceOne == graphChoiceTwo)
+                    {
+                        graphChoiceOne = GeneralUtil.dataBank.arrayOfLists.Length - 2;
+                    }
+
+                    CallDrawGraph();
+                }
+                if (Input.GetKeyDown(KeyCode.RightArrow))
+                {
+                    if (graphChoiceOne + 1 >= GeneralUtil.dataBank.arrayOfLists.Length) { graphChoiceOne = 0; }
+                    else { graphChoiceOne += 1; }
+
+                    if (graphChoiceTwo == graphChoiceOne)
+                    {
+                        graphChoiceOne = 1;
+                    }
+
+                    CallDrawGraph();
                 }
             }
-        }
 
-        if (Input.GetKeyDown(KeyCode.Escape))
-            showToolTip = false;
-
-        if (Input.GetKeyDown(KeyCode.UpArrow)) 
-        {
-            if (selectedIndex + 1>= GeneralUtil.buildingScritpable.buildingStats.Count) { selectedIndex = 0; }
-            else { selectedIndex += 1; }
-
-            ClearSection(false);
-
-
-            var sel = GeneralUtil.buildingScritpable.buildingStats[selectedIndex].size;
-            SpawnShowObj(GeneralUtil.map.ClickedTile, sel.x, sel.y);
-
-
-            GeneralUtil.Ui.SetSelIndexText(GeneralUtil.buildingScritpable.buildingStats[selectedIndex].name);
-        }
-        if (Input.GetKeyDown(KeyCode.DownArrow))
-        {
-            if (selectedIndex -1  < 0) { selectedIndex = GeneralUtil.buildingScritpable.buildingStats.Count - 1; }
-            else { selectedIndex -= 1; }
-
-            ClearSection(false);
-
-            var sel = GeneralUtil.buildingScritpable.buildingStats[selectedIndex].size;
-            SpawnShowObj(GeneralUtil.map.ClickedTile, sel.x, sel.y);
-
-            GeneralUtil.Ui.SetSelIndexText(GeneralUtil.buildingScritpable.buildingStats[selectedIndex].name);
-
-        }
-
-        if (Input.GetMouseButtonDown(1))
-        {
-            //deselect everything
-            if (spawnedShowObj.Count > 0)
-                ClearShowObj();
-            showToolTip = false;
-
-            typeSelected = 0;
-        }
-
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            if (GeneralUtil.graphRef.MainGraph.gameObject.activeSelf) 
+            if (Input.GetMouseButtonDown(1))
             {
-                GeneralUtil.graphRef.MainGraph.gameObject.SetActive(false);
-            }
-            else 
-            {
-                GeneralUtil.graphRef.MainGraph.gameObject.SetActive(true);
+                //deselect everything
+                if (spawnedShowObj.Count > 0)
+                    ClearShowObj();
+                showToolTip = false;
 
-                var list1 = GenerateRandomIntegers();
-                var list2 = GenerateRandomIntegers();
-
-
-                GeneralUtil.graphRef.DrawGraph(list1, list2);
+                typeSelected = 0;
             }
 
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                if (GeneralUtil.graphRef.MainGraph.gameObject.activeSelf)
+                {
+                    arrowKeyLock = false;
+                    GeneralUtil.graphRef.MainGraph.gameObject.SetActive(false);
+                }
+                else
+                {
+                    arrowKeyLock = true;
 
+                    GeneralUtil.graphRef.MainGraph.gameObject.SetActive(true);
+
+
+                    CallDrawGraph();
+                }
+            }
+
+            if (Input.GetKeyDown(KeyCode.X))
+            {
+                showingAllowedTiles = !showingAllowedTiles;
+
+                if (showingAllowedTiles) 
+                {
+                    GeneralUtil.dataBank.RecalcAllAllowedTiles();
+                    GeneralUtil.map.DrawAllowedTiles();
+                }
+                else
+                    GeneralUtil.map.UpdateMapTexture();
+            }
         }
 
+        if (Input.GetKeyDown(KeyCode.Escape)) 
+        {
+            GeneralUtil.Ui.showingMenu = !GeneralUtil.Ui.showingMenu;
+            Time.timeScale = GeneralUtil.Ui.showingMenu == true ? 0 : 1;
+        }
     }
 
-    //to dleete
-    public static List<int> GenerateRandomIntegers()
+    public void CallDrawGraph()
     {
-        // Initialize an empty list to store the random integers
-        List<int> randomIntegers = new List<int>();
+        GeneralUtil.graphRef.DrawGraph(GeneralUtil.dataBank.arrayOfLists[graphChoiceOne], GeneralUtil.dataBank.arrayOfLists[graphChoiceTwo]);
 
-        // Generate 20 random integers between 1 and 40 (inclusive) using a loop
-        for (int i = 0; i < Random.Range(1, 12); i++)
-        {
-            int randomInt = Random.Range(1, 30);
-            randomIntegers.Add(randomInt);
-        }
-
-        // Return the list of random integers
-        return randomIntegers;
+        GeneralUtil.graphRef.graphOneString.text = GeneralUtil.dataBank.arrayOfListsNames[graphChoiceTwo];
+        GeneralUtil.graphRef.graphTwoString.text = GeneralUtil.dataBank.arrayOfListsNames[graphChoiceOne];
     }
-
 
     /// <summary>
     /// returns true if there are enough resrouces avaialble to build 
     /// </summary>
     /// <returns></returns>
-    private bool CheckEnoughResources() 
+    private bool CheckEnoughResources()
     {
         var list = GeneralUtil.buildingScritpable.buildingStats[selectedIndex].startCostWSFS;
 
@@ -194,9 +285,9 @@ public class MapInteraction : MonoBehaviour
         int food = list[2];
         int sand = list[3];
 
-        var bank = GeneralUtil.bank;
+        var bank = GeneralUtil.resourceBank;
 
-        if (bank.woodAmount < wood) 
+        if (bank.woodAmount < wood)
         {
             return false;
         }
@@ -222,9 +313,14 @@ public class MapInteraction : MonoBehaviour
         return true;
     }
 
+    public void SpawnFloatingText(string text, Color color, Transform parent) 
+    {
+        var obj = Instantiate(floatingText, parent.position, Quaternion.identity, parent);
+        obj.GetComponent<TMP_Text>().text = text;
+        obj.GetComponent<TMP_Text>().color = color;
+    }
 
-
-    private bool SpawnBuilding() 
+    private bool SpawnBuilding()
     {
         foreach (var cord in selectedCoords)
         {
@@ -237,9 +333,9 @@ public class MapInteraction : MonoBehaviour
             }
         }
 
-        var objRef = Instantiate(GeneralUtil.buildingScritpable.buildingStats[selectedIndex].building, new Vector3(middleTile.midCoord.x  + GeneralUtil.buildingScritpable.buildingStats[selectedIndex].centerOffset.x, middleTile.midCoord.y, middleTile.midCoord.z + GeneralUtil.buildingScritpable.buildingStats[selectedIndex].centerOffset.y)   , Quaternion.identity);
+        var objRef = Instantiate(GeneralUtil.buildingScritpable.buildingStats[selectedIndex].building, new Vector3(middleTile.midCoord.x + GeneralUtil.buildingScritpable.buildingStats[selectedIndex].centerOffset.x, middleTile.midCoord.y, middleTile.midCoord.z + GeneralUtil.buildingScritpable.buildingStats[selectedIndex].centerOffset.y), Quaternion.identity);
         var BID = objRef.GetComponent<BuildingIdentifier>();
-        BID.init(middleTile, GeneralUtil.buildingScritpable.buildingStats[selectedIndex].size, selectedCoords,selectedIndex);
+        BID.init(middleTile, GeneralUtil.buildingScritpable.buildingStats[selectedIndex].size, selectedCoords, selectedIndex);
 
         GeneralUtil.dataBank.buildingDict.Add(BID.guid, BID.buildingData);
 
@@ -280,24 +376,23 @@ public class MapInteraction : MonoBehaviour
 
                 var objRef = Instantiate(showObj, Vector3.Lerp(GeneralUtil.map.tilesArray[x, y].BotRight, GeneralUtil.map.tilesArray[x, y].TopLeft, 0.5f), Quaternion.identity);
 
-                objRef.transform.parent = this.transform;
+                objRef.transform.parent = ghostObjHolder.transform;
                 spawnedShowObj.Add(objRef);
 
                 bool typeCheck = false;
 
-
                 foreach (var type in GeneralUtil.buildingScritpable.buildingStats[selectedIndex].allowedTileTypes)
                 {
-                    if (GeneralUtil.map.tilesArray[x, y].tileType == (TileType)type) 
+                    if (GeneralUtil.map.tilesArray[x, y].tileType == (TileType)type)
                     {
                         typeCheck = true;
                         break;
                     }
                 }
 
-                selectedCoords.Add(GeneralUtil.map.tilesArray[x,y]);
+                selectedCoords.Add(GeneralUtil.map.tilesArray[x, y]);
 
-                if (!typeCheck) 
+                if (!typeCheck)
                 {
                     canInteract = false;
                 }
@@ -305,6 +400,10 @@ public class MapInteraction : MonoBehaviour
                 tileCounter++;
             }
         }
+
+        if (!GeneralUtil.dataBank.allowedBuildingLocations.Contains(middleTile.coord) && selectedIndex !=0)
+            canInteract = false;
+
         canSpawn = canInteract;
         CheckInteractionAllowance(canInteract);
     }
@@ -327,7 +426,7 @@ public class MapInteraction : MonoBehaviour
     }
 
 
-    private void ClearSection(bool delResources) 
+    private void ClearSection(bool delResources)
     {
         if (delResources)
         {
@@ -344,9 +443,11 @@ public class MapInteraction : MonoBehaviour
     }
 
 
+    #region GUi region
+
     private void OnGUI()
     {
-        if (showToolTip == true) 
+        if (showToolTip == true)
         {
             switch (typeSelected)
             {
@@ -364,49 +465,88 @@ public class MapInteraction : MonoBehaviour
         }
     }
 
+    public float lastX = 0;
+    public float lastY = 0;
 
-    private void GuiAgent() 
+    private void GuiAgent()
     {
+
         var npcData = GeneralUtil.dataBank.npcDict[guid];
 
-        GUI.Box(new Rect(5, 5, 200, 120), "");
-        GUI.Label(new Rect(10, 10, 100, 20), $"Name: {npcData.name}");
-
-        GUI.Label(new Rect(10, 20, 100, 20), $"Health: {npcData.health}");
-        GUI.Label(new Rect(10, 30, 100, 20), $"Stamina: {npcData.stamina}");
-        GUI.Label(new Rect(10, 40, 100, 20), $"Hunger: {npcData.hunger}");
-        GUI.Label(new Rect(10, 50, 100, 20), $"Gender: {npcData.gender}");
-        GUI.Label(new Rect(10, 60, 100, 20), $"Speed: {npcData.speed}");
-
-        GUI.Label(new Rect(10, 70, 100, 20), $"Age: {npcData.name}");
-
-        if (npcData.refToWorkPlace != null) 
+        if (npcData.agentObj == null)
         {
-            GUI.Label(new Rect(10, 80, 100, 20), $"Work: {npcData.refToWorkPlace.guid}");
+            showToolTip = false;
+            return;
         }
 
-        if (npcData.refToHouse != null) 
+
+        var npcObjComp = npcData.agentObj.GetComponent<Agent>();
+
+
+
+        GUI.Box(new Rect(5, 5, 140, lastY), "");
+
+        GUILayout.BeginVertical();
+        GUILayout.BeginArea(new Rect(10, 10, 100, Screen.height));
+
+        GUILayout.Label( $"Name: {npcData.name}");
+        GUILayout.Space(-5);
+        GUILayout.Label( $"Health: {npcData.health}");
+        GUILayout.Space(-5);
+        GUILayout.Label($"Stamina: {npcData.stamina}");
+        GUILayout.Space(-5);
+        GUILayout.Label( $"Hunger: {npcData.hunger}");
+        GUILayout.Space(-5);
+        GUILayout.Label( $"Gender: {npcData.gender}");
+        GUILayout.Space(-5);
+        GUILayout.Label( $"Speed: {npcData.speed}");
+        GUILayout.Space(-5);
+        GUILayout.Label( $"Age: {npcData.name}");
+
+        GUILayout.Space(10);
+        if (npcData.refToWorkPlace != null)
         {
-            GUI.Label(new Rect(10, 90, 100, 20), $"House: {npcData.refToHouse.guid}");
+            GUILayout.Label($"Work: {npcData.refToWorkPlace.guid}");
         }
 
-        GUI.Label(new Rect(10, 100, 100, 20), "mother");
-        GUI.Label(new Rect(10, 120, 100, 20), "father");
+        if (npcData.refToHouse != null)
+        {
+            GUILayout.Label( $"House: {npcData.refToHouse.guid}");
+        }
 
-        GUI.Label(new Rect(10, 140, 100, 20), "list of children");
 
-      
-            if (npcData.children.Count > 0)
-            {
-                for (int i = 0; i < npcData.children.Count; i++)
-                {
-                    GUI.Label(new Rect(10, 160 + (i * 10), 100, 20), "child");
-                }
-            }
+        GUILayout.Space(10);
+        GUILayout.Label( $"mother");
         
+        GUILayout.Label( $"father");
 
+
+        if (npcData.children.Count > 0)
+        {
+            GUILayout.Label("list of children");
+            for (int i = 0; i < npcData.children.Count; i++)
+            {
+                GUILayout.Label("child");
+            }
+        }
+
+        GUILayout.Space(10);
+        npcObjComp.showPathToggle = GUILayout.Toggle( npcObjComp.showPathToggle, "Show path Mode");
+
+        if (npcObjComp.showPathToggle)
+            npcObjComp.switchPathMode = GUILayout.Toggle( npcObjComp.switchPathMode, npcObjComp.switchPathMode == true ? "path mode" : "all tiles checked mode");
+
+        Rect lastRect = GUILayoutUtility.GetLastRect();
+
+        float valToCopy = lastRect.y + lastRect.height + 20;
+
+        if (valToCopy > 40)
+            lastY = valToCopy;
+
+
+        GUILayout.EndArea();
+        GUILayout.EndVertical();
     }
-
 
     private void GuiBuilidng()
     {
@@ -414,52 +554,56 @@ public class MapInteraction : MonoBehaviour
 
         if (GeneralUtil.dataBank.buildingDict.ContainsKey(guid))
             buildingData = GeneralUtil.dataBank.buildingDict[guid];
-        else 
+        else
         {
             showToolTip = false;
             return;
         }
 
-        GUI.Box(new Rect(5, 5, 160, 250), "");
+        GUI.Box(new Rect(5, 5, 140, lastY), "");
 
-        GUI.Label(new Rect(10, 10, 100, 20), "building type");
+        GUILayout.BeginVertical();
+        GUILayout.BeginArea(new Rect(10, 10, 100, Screen.height));        
 
-        GUI.Label(new Rect(10, 20, 100, 20), "building status");
-
-        GUI.Label(new Rect(10, 30, 100, 20), "list of workers");
+        GUILayout.Label("building type");
+        GUILayout.Space(-5);
+        GUILayout.Label(new GUIContent() {text = "building Layout", tooltip = "this is a tooltip" } );
+        GUILayout.Space(-5);
+        GUILayout.Label( "list of workers");
 
         for (int i = 0; i < buildingData.workers.Count; i++)
         {
-            if (GUI.Button(new Rect(10, 60 + (i * 30), 100, 20), $"{buildingData.workers[i].name}"))
+            if (GUILayout.Button( $"{buildingData.workers[i].name}"))
             {
                 typeSelected = 1;
                 guid = buildingData.workers[i].guid;
             }
         }
-        
-        GUI.Label(new Rect(10, 180 , 100, 20), "building age");
 
-        if (GUI.Button(new Rect(10, 220, 100, 20), "Delete Me"))
+        GUILayout.Label("Building age");
+
+        if (GUILayout.Button("Delete Me"))
         {
-            buildingData.buildingID.DeleteBuilding();
+            if (buildingData.buildingID.buildingIndex != 0)
+                buildingData.buildingID.DeleteBuilding();
+            else
+                SpawnFloatingText("Cant delete this building", Color.yellow, buildingData.buildingID.transform);
         }
 
+        Rect lastRect = GUILayoutUtility.GetLastRect();
+
+        float valToCopy = lastRect.y + lastRect.height + 20;
+
+        if (valToCopy > 40)
+            lastY = valToCopy;
+
+        GUILayout.EndArea();
+        GUILayout.EndVertical();
+
     }
+
+    #endregion
 
 
     
-
-
-    private void OnDrawGizmos()
-    {
-        //if (dataHolder != null)
-        //    Gizmos.DrawSphere(GeneralUtil.map.tilesArray[testCoord.x, testCoord.y].midCoord, 0.5f);
-
-
-        //if (debugTiles.Count >0)
-        //for (int i = 0; i < maxNum; i++)
-        //{
-        //    //Gizmos.DrawSphere(debugTiles[i].midCoord, 0.5f);
-        //}
-    }
 }

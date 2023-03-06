@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Security.Cryptography;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
+using System.Linq;
 
 public class Graph : MonoBehaviour
 {
@@ -12,9 +14,31 @@ public class Graph : MonoBehaviour
     [SerializeField] private GameObject dotRedSprite;
     [SerializeField] private GameObject dotBlueSprite;
     [SerializeField] private int resolutionGraph;
-    [SerializeField] private float gapInPoints = 5;
     [SerializeField] private float LineWidth = 2;
+    [SerializeField] private GameObject graphBackground;
 
+    public TMP_Text graphOneString;
+    public TMP_Text graphTwoString;
+
+    public TMP_Text maxRedVal;
+    public TMP_Text higherRedVal;
+    public TMP_Text lowerRedVal;
+    public TMP_Text zeroRedVal;
+
+    public TMP_Text maxBlueVal;
+    public TMP_Text higherBlueVal;
+    public TMP_Text lowerBlueVal;
+    public TMP_Text zeroBlueVal;
+
+    Vector2[] corners = new Vector2[4] { new Vector2(5,5), new Vector2(5, 90), new Vector2(230, 90), new Vector2(230, 5) };
+
+    private int maxValueBlue;
+    private int maxValueRed;
+
+    // corners[0] is the bottom-left corner
+    // corners[1] is the top-left corner
+    // corners[2] is the top-right corner
+    // corners[3] is the bottom-right corner
 
     private void Start()
     {
@@ -31,8 +55,32 @@ public class Graph : MonoBehaviour
     {
         DeleteAllChildren(graphContainer.transform);
 
+        var objRef = Instantiate(graphBackground,graphContainer.transform);
+
+        maxValueRed = LineOne.Max();
+        maxValueBlue = LineTwo.Max();
+
+        SetUpText();
+
         ShowGraph(LineOne,true);
         ShowGraph(LineTwo,false);
+
+        objRef.transform.SetSiblingIndex(0);
+    }
+
+
+
+    private void SetUpText() 
+    {
+        maxRedVal.text = $"{maxValueRed} -";
+        higherRedVal.text = $"{(int)Mathf.Lerp(0, maxValueRed, 0.66f)} -";
+        lowerRedVal.text = $"{(int)Mathf.Lerp(0, maxValueRed,0.33f)} -";
+        zeroRedVal.text = $"{0} -";
+
+        maxBlueVal.text = $"- {maxValueBlue}";
+        higherBlueVal.text = $"- {(int)Mathf.Lerp(0, maxValueBlue, 0.66f)}";
+        lowerBlueVal.text = $"- {(int)Mathf.Lerp(0, maxValueBlue, 0.33f)}";
+        zeroBlueVal.text = $"- {0}";
     }
 
     private void DeleteAllChildren(Transform transform) 
@@ -47,6 +95,7 @@ public class Graph : MonoBehaviour
     private GameObject CreateDot(Vector2 anchoredPos, bool red = false) 
     {
         GameObject objRef = null;
+
         if (red) 
         {
             objRef = Instantiate(dotRedSprite);
@@ -68,30 +117,27 @@ public class Graph : MonoBehaviour
         return objRef;
     }
 
+
     private void ShowGraph(List<int> valueList, bool red) 
     {
-        float xSize = 25;
-        float yMaximum = 200;
-        float graphHeight = graphContainer.sizeDelta.y;
-
         GameObject prevDot = null;
 
         for (int i = 0; i < resolutionGraph; i++)
         {
             if (i >= valueList.Count) 
             {
-                Debug.Log("out of range");
+
             }
             else 
             {
-                float xPosition = i * xSize + gapInPoints;
-                float yPosition = (valueList[i] / yMaximum) * graphHeight + gapInPoints;
+                float xPosition = Mathf.Lerp(corners[1].x, corners[2].x, i / 14.0f);
 
-                var dot = CreateDot(new Vector2(xPosition, yPosition));
+                float yPosition = Mathf.Lerp(corners[3].y, corners[2].y, (float)valueList[i] / (red == true ? maxValueRed : maxValueBlue));
+
+                var dot = CreateDot(new Vector2(xPosition, yPosition),red);
 
                 if (prevDot != null)
                 {
-                    Debug.Log(prevDot.GetComponent<RectTransform>().anchoredPosition);
                     CreateConnection(prevDot.GetComponent<RectTransform>().anchoredPosition, dot.GetComponent<RectTransform>().anchoredPosition,red);
                 }
                 prevDot = dot;

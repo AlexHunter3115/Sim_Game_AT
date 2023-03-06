@@ -2,13 +2,14 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Reflection;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 
 public class BuildingIdentifier : MonoBehaviour
 {
-
     public BuildingData buildingData;
     public string guid;
 
@@ -16,7 +17,6 @@ public class BuildingIdentifier : MonoBehaviour
     public IBuildingActions buildingActions;
     public ITimeTickers buildingTimer;
 
-    [Header("the entrance point is based on the middle point")]
     public int buildingIndex = 0;
 
     public bool test = false;
@@ -112,15 +112,13 @@ public class BuildingIdentifier : MonoBehaviour
         if (test) 
         {
             test = false;
-            DeleteBuilding();
+            Test();
         }
     }
 
+    public void Test()
+    { }
 
-
-    /// <summary>
-    /// what this does it moslty restores the map back to what it was for the pathing
-    /// </summary>
     public void DeleteBuilding()
     {
         DeleteBuidlingInterfaceCall(buildingActions);
@@ -141,9 +139,25 @@ public class BuildingIdentifier : MonoBehaviour
                 item.tileType = TileType.SNOW;
         }
 
+        texture.filterMode = FilterMode.Point;
+        texture.Apply();
+
+        GeneralUtil.map.plane.GetComponent<Renderer>().material.mainTexture = texture;
+
         for (int i = buildingData.workers.Count; i-- > 0;)
         {
-            RemoveWorker(buildingData.workers[i].guid);
+            var worker = buildingData.workers[i];
+
+            if (worker.atWork && worker.readyToWork == false) 
+            {
+                if (worker.tileDestination != null) 
+                {
+                    if (worker.tileDestination.tileObject != null)
+                        worker.tileDestination.tileObject.GetComponent<Resource>().available = true;
+                }
+            }
+
+            RemoveWorker(worker.guid);
         }
 
         GeneralUtil.dataBank.buildingDict.Remove(guid);
@@ -157,8 +171,6 @@ public class BuildingIdentifier : MonoBehaviour
         Collider[] hitColliders = Physics.OverlapSphere(transform.position, 10, LayerMask.GetMask("Resources"));
 
         Array.Sort(hitColliders, new DistanceComparer(transform));
-
-        //Debug.Log($"{hitColliders.Length}");
 
         buildingData.tilesWithResourcesInRange.Clear();
 

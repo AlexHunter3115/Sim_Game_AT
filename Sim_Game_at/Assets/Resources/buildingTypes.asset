@@ -20,7 +20,7 @@ MonoBehaviour:
     entrances:
     - {x: 2, y: 1}
     tileRange: 10
-    keepUpCostWSFS: 14000000050000000200000002000000
+    keepUpCostWSFS: 00000000000000000000000000000000
     startCostWSFS: fa0000001e000000140000000a000000
     allowedTileTypes: 0000000001000000
     building: {fileID: 8044071594055797428, guid: 3a833e0bba287844289de25c1a8cdcbf, type: 3}
@@ -77,7 +77,7 @@ MonoBehaviour:
     entrances:
     - {x: 1, y: 0}
     - {x: 0, y: 0}
-    tileRange: 0
+    tileRange: 15
     keepUpCostWSFS: 05000000050000000500000000000000
     startCostWSFS: 640000001e0000000500000000000000
     allowedTileTypes: 000000000100000002000000

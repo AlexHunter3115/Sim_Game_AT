@@ -89,14 +89,14 @@ public class AgentData : Entity, ITimeTickers
         parentsArr[0] = parentOne;
         parentsArr[0] = parentTwo;
     }
+
     public void AddChild(AgentData child) => this.children.Add(child);
+
     #endregion
 
 
     public GameObject agentObj;
     public bool dead;
-
-    private bool lastTime = false;
 
 
     //constructor
@@ -115,9 +115,7 @@ public class AgentData : Entity, ITimeTickers
             name = GeneralUtil.maleNames[Random.Range(0, 49)];
         }
 
-
         GeneralUtil.timeCycle.OnFunctionCalled.AddListener(EndOfDayCall);
-
     }
 
 
@@ -132,22 +130,22 @@ public class AgentData : Entity, ITimeTickers
 
         daysAlive++;
 
-        //if ((int)AGE_STATE.BABY <= dayAlive)
+        //if ((int)AGE_STATE.BABY <= daysAlive)
         //{
 
         //}
 
-        //if ((int)AGE_STATE.TEEN >= currentHour)
+        //if ((int)AGE_STATE.TEEN >= daysAlive)
         //{
 
         //}
 
-        //if ((int)TIME.DAY <= currentHour && (int)TIME.AFTERNOON > currentHour)
+        //if ((int)TIME.DAY <= daysAlive && (int)TIME.AFTERNOON > daysAlive)
         //{
 
         //}
 
-        //if ((int)TIME.AFTERNOON <= currentHour && (int)TIME.NIGHT > currentHour)
+        //if ((int)TIME.AFTERNOON <= currentHour && (int)TIME.NIGHT > daysAlive)
         //{
 
         //}

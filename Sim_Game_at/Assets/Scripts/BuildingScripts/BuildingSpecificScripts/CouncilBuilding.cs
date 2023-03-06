@@ -20,6 +20,8 @@ public class CouncilBuilding : MonoBehaviour, IAgentInteractions, ITimeTickers, 
     //the council is the starting point its where the player gets its first 4 people
     public void InitiateCouncil()
     {
+        GeneralUtil.mapInteraction.spawnedCouncil = true;
+
         for (int i = 0; i < 4; i++)
         {
             //get the position to spawn the agents
@@ -54,8 +56,10 @@ public class CouncilBuilding : MonoBehaviour, IAgentInteractions, ITimeTickers, 
 
             newCitizen.SetAgentPathing(destination, buildingId.buildingData.entrancePoints[0], true);  //sets the pathing to the workplace at the start
         }
+
+
+        GeneralUtil.dataBank.RecalcAllAllowedTiles();
     }
-    // i need to fix this thing that it spawns on the thing
 
 
     public void LandedOnEntrance(AgentData data)
@@ -104,7 +108,6 @@ public class CouncilBuilding : MonoBehaviour, IAgentInteractions, ITimeTickers, 
         }
         else
         {
-
             buildingId.buildingData.shut = false;
 
             foreach (var worker in buildingId.buildingData.workers) //this gives the workers the job 
@@ -155,17 +158,5 @@ public class CouncilBuilding : MonoBehaviour, IAgentInteractions, ITimeTickers, 
 
     public void DeleteBuilding()
     {
-       // buildingId.DeleteBuilding();
-        //Debug.Log($"Deliting this buidling");
-        //// this is where the deletion of the workers should go
-        //for (int i = 0; i < buildingId.buildingData.workers.Count; i++)
-        //{
-        //    buildingId.buildingData.workers[i].pathTile.Clear();
-        //    buildingId.buildingData.workers[i].SetToWonder();
-
-        //    buildingId.buildingData.workers[i].refToWorkPlace = null;
-        //}
-        //Destroy(gameObject);
-        //GeneralUtil.dataBank.buildingDict.Remove(buildingId.buildingData.guid);
     }
 }

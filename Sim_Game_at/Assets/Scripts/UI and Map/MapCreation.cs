@@ -389,7 +389,6 @@ public class MapCreation : MonoBehaviour
         return objRef;
     }
 
-
     public List<Tile>[] Voronoi() 
     {
         var pointsArr = new List<Vector2>();
@@ -457,23 +456,29 @@ public class MapCreation : MonoBehaviour
 
     }
 
-
-    private void OnDrawGizmos()
+    public void DrawAllowedTiles() 
     {
-        Gizmos.color = Color.red;
-        if (showGizmos) 
+        Texture2D texture = new Texture2D(textSize, textSize);
+
+        for (int y = 0; y < tilesArray.GetLength(0); y++)
         {
-
-            if (ClickedTile != null) 
+            for (int x = 0; x < tilesArray.GetLength(1); x++)
             {
-                Gizmos.DrawSphere(ClickedTile.BotLeft, 0.5f);
-                Gizmos.DrawSphere(ClickedTile.TopLeft, 0.5f);
-                Gizmos.DrawSphere(ClickedTile.TopRight, 0.5f);
-                Gizmos.DrawSphere(ClickedTile.BotRight, 0.5f);
-            }
+                var newVec = new Vector2(x, y);
 
+                if (GeneralUtil.dataBank.allowedBuildingLocations.Contains(newVec))
+                    texture.SetPixel(x, y, Color.green);
+                else
+                    texture.SetPixel(x, y, Color.red);
+            }
         }
+
+        texture.filterMode = FilterMode.Point;
+        texture.Apply();
+
+        plane.GetComponent<Renderer>().material.mainTexture = texture;
     }
+
 
 }
 

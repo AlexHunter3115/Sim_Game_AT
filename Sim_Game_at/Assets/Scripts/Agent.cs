@@ -11,11 +11,11 @@ public class Agent : MonoBehaviour
     private float speed = 1;
     // on the calc for the path nreverse the list
 
-    private bool waiting = false;
     private float timeTaken = 3f;
     private Tile lastTile = null;
 
-    public bool debugSwitch = false;
+    public bool switchPathMode = false;
+    public bool showPathToggle = false;
 
     private Animator animator;
     private void Awake()
@@ -149,9 +149,9 @@ public class Agent : MonoBehaviour
 
                     // this is where we add the resource to the char not the bank
 
-                    GeneralUtil.bank.ChangeFoodAmount(comp.foodAmount);
-                    GeneralUtil.bank.ChangeStoneAmount(comp.stoneAmount);
-                    GeneralUtil.bank.ChangeWoodAmount(comp.woodAmount);
+                    GeneralUtil.resourceBank.ChangeFoodAmount(comp.foodAmount);
+                    GeneralUtil.resourceBank.ChangeStoneAmount(comp.stoneAmount);
+                    GeneralUtil.resourceBank.ChangeWoodAmount(comp.woodAmount);
 
                     switch (comp.type)
                     {
@@ -179,37 +179,37 @@ public class Agent : MonoBehaviour
     }
 
 
-
-    private void OnDrawGizmosSelected()
+    //this needs ot change anwyay to a norm functiona s gizmos draw on the eidtor
+    private void OnDrawGizmos()
     {
-
         if (data == null)
             return;
 
         if (data.pathTile.Count == 0)   // if the path is larger than 0 tiles
             return;
 
-        if (debugSwitch) 
-        {
-            Gizmos.color = Color.red;
 
-            foreach (var tile in data.pathTile)
+        if (showPathToggle)
+        {
+            if (switchPathMode)
             {
-                Gizmos.DrawSphere(tile.midCoord, 0.25f);
+                Gizmos.color = Color.red;
+
+                foreach (var tile in data.pathTile)
+                {
+                    Gizmos.DrawSphere(tile.midCoord, 0.25f);
+                }
+            }
+            else
+            {
+                Gizmos.color = Color.yellow;
+
+                foreach (var tile in data.allCheckedDebug)
+                {
+                    Gizmos.DrawSphere(tile.midCoord, 0.25f);
+                }
             }
         }
-        else 
-        {
-            Gizmos.color = Color.yellow;
-
-            foreach (var tile in data.allCheckedDebug)
-            {
-                Gizmos.DrawSphere(tile.midCoord, 0.25f);
-            }
-
-        }
-
     }
-
 
 }
