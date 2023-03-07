@@ -15,7 +15,7 @@ public static class GeneralUtil
     #endregion
 
 
-
+    public static Color colorBrown = new Color(165.0f / 255, 42.0f / 255, 42.0f / 255, 1);
 
     public static int[,] childPosArry4Side = { { 0, -1 }, { -1, 0 }, { 1, 0 }, { 0, 1 } };
     public static int[,] childPosArry8Side = { { 0, -1 }, { 1, -1 }, { -1, -1 }, { -1, 0 }, { 1, 0 }, { 0, 1 }, { 1, 1 }, { -1, 1 } };
@@ -393,15 +393,6 @@ public static class GeneralUtil
         {TileType.BLOCKED, 100f},
         {TileType.ENTRANCE, 0f}
     };
-
-    public static Dictionary<AgentData.AGE_STATE, float> maxTileDistPerAge = new Dictionary<AgentData.AGE_STATE, float>()
-    {
-        {AgentData.AGE_STATE.BABY, 3},
-        {AgentData.AGE_STATE.TEEN, 10},
-        {AgentData.AGE_STATE.ADULT, 15},
-        {AgentData.AGE_STATE.ELDER, 7}
-    };
-
 
     #endregion
 }

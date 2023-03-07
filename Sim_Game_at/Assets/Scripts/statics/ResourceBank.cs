@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class ResourceBank : MonoBehaviour
 {
-
     public int woodAmount = 0;
     public int stoneAmount = 0;
     public int foodAmount = 0;
@@ -26,37 +25,70 @@ public class ResourceBank : MonoBehaviour
 
     public void ChangeWoodAmount(int amount) 
     {
-        if (CheckWoodAmount(amount)) 
+        if (amount >= 0)
         {
             woodAmount += amount;
             GeneralUtil.Ui.SetWoodResText(woodAmount);
         }
+        else
+        {
+            if (CheckWoodAmount(amount))
+            {
+                woodAmount += amount;
+                GeneralUtil.Ui.SetWoodResText(woodAmount);
+            }
+        }
+
     }
 
     public void ChangeSandAmount(int amount)
     {
-        if (CheckSandAmount(amount)) 
+        if (amount >= 0)
         {
             sandAmount += amount;
-            GeneralUtil.Ui.SetSandResText(sandAmount);
+            GeneralUtil.Ui.SetSandResText(foodAmount);
+        }
+        else
+        {
+            if (CheckSandAmount(amount))
+            {
+                sandAmount += amount;
+                GeneralUtil.Ui.SetSandResText(sandAmount);
+            }
         }
     }
 
     public void ChangeStoneAmount(int amount)
     {
-        if (CheckStoneAmount(amount)) 
+        if (amount >= 0)
         {
             stoneAmount += amount;
             GeneralUtil.Ui.SetStoneResText(stoneAmount);
+        }
+        else
+        {
+            if (CheckStoneAmount(amount))
+            {
+                stoneAmount += amount;
+                GeneralUtil.Ui.SetStoneResText(stoneAmount);
+            }
         }
     }
 
     public void ChangeFoodAmount(int amount)
     {
-        if (CheckFoodAmount(amount))
+        if (amount >= 0) 
         {
             foodAmount += amount;
             GeneralUtil.Ui.SetFoodResText(foodAmount);
+        }
+        else 
+        {
+            if (CheckFoodAmount(amount))
+            {
+                foodAmount += amount;
+                GeneralUtil.Ui.SetFoodResText(foodAmount);
+            }
         }
     }
 

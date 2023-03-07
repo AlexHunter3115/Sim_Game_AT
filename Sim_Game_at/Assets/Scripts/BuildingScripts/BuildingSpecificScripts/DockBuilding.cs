@@ -43,6 +43,8 @@ public class DockBuilding : MonoBehaviour, IAgentInteractions, ITimeTickers, IBu
     }
 
 
+    #region timeTickers ITimeTickers
+
     public void DayTick()
     {
     }
@@ -55,6 +57,8 @@ public class DockBuilding : MonoBehaviour, IAgentInteractions, ITimeTickers, IBu
     {
         LookForWorkers();
     }
+
+    #endregion
 
     private void LookForWorkers()
     {
@@ -70,9 +74,9 @@ public class DockBuilding : MonoBehaviour, IAgentInteractions, ITimeTickers, IBu
         }
     }
 
-    public void DeleteBuilding()
+    public bool DeleteBuilding()
     {
-
+        return true;
     }
 
 }

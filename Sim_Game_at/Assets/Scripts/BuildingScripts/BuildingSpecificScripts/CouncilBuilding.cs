@@ -84,6 +84,16 @@ public class CouncilBuilding : MonoBehaviour, IAgentInteractions, ITimeTickers, 
     }
 
 
+    public UnityEvent stuff;
+
+    //public void CheckingEvent() 
+    //{
+    //    Debug.Log("this is calle dint he council building ");
+    //}
+
+
+    #region timeTickers ITimeTickers
+
     public void HourTick()
     {
         buildingId.GetResourceNearby();
@@ -138,25 +148,22 @@ public class CouncilBuilding : MonoBehaviour, IAgentInteractions, ITimeTickers, 
         }
     }
 
-    public UnityEvent stuff;
-
-    //public void CheckingEvent() 
-    //{
-    //    Debug.Log("this is calle dint he council building ");
-    //}
-
-
-
     public void DayTick()
     {
     }
 
     public void MinuteTick()
     {
-
     }
 
-    public void DeleteBuilding()
+    #endregion
+
+
+
+
+
+    public bool DeleteBuilding()
     {
+        return false;
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class UserUIManager : MonoBehaviour
 {
@@ -46,44 +47,36 @@ public class UserUIManager : MonoBehaviour
         }
     }
 
-
     void OnGUI()
     {
         if (showingMenu)
         {
-            // Set up the GUI skin
             GUI.skin.label.alignment = TextAnchor.MiddleCenter;
             GUI.skin.button.alignment = TextAnchor.MiddleCenter;
 
-            // Define the menu dimensions
             float menuWidth = 200f;
             float menuHeight = 150f;
             float menuX = Screen.width / 2 - menuWidth / 2;
             float menuY = Screen.height / 2 - menuHeight / 2;
 
-            // Draw the menu background
             GUI.Box(new Rect(menuX, menuY, menuWidth, menuHeight), "Menu");
 
-            // Draw the menu options
             float optionY = menuY + 50f;
             float buttonWidth = 100f;
             float buttonHeight = 30f;
 
-            if (GUI.Button(new Rect(menuX + menuWidth / 2 - buttonWidth / 2, optionY, buttonWidth, buttonHeight), "Option 1"))
+            if (GUI.Button(new Rect(menuX + menuWidth / 2 - buttonWidth / 2, optionY, buttonWidth, buttonHeight), "Restart Game"))
             {
-                // Handle option 1
-                Debug.Log("Option 1 selected");
+                SceneManager.LoadScene(SceneManager.GetActiveScene().name);
             }
 
             optionY += buttonHeight + 10f;
 
             if (GUI.Button(new Rect(menuX + menuWidth / 2 - buttonWidth / 2, optionY, buttonWidth, buttonHeight), "Option 2"))
             {
-                // Handle option 2
-                Debug.Log("Option 2 selected");
+
             }
         }
     }
-
 
 }

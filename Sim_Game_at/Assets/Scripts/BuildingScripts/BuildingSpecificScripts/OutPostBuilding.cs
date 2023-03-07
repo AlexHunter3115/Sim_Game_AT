@@ -20,7 +20,7 @@ public class OutPostBuilding : MonoBehaviour, IAgentInteractions, ITimeTickers, 
     private void Init() 
     {
 
-        GeneralUtil.dataBank.RecalcAllAllowedTiles();
+        //GeneralUtil.dataBank.RecalcAllAllowedTiles();
     }
 
     // Update is called once per frame
@@ -29,9 +29,9 @@ public class OutPostBuilding : MonoBehaviour, IAgentInteractions, ITimeTickers, 
         
     }
 
-    public void DeleteBuilding()
+    public bool DeleteBuilding()
     {
-
+        return true;
     }
 
 
@@ -56,18 +56,21 @@ public class OutPostBuilding : MonoBehaviour, IAgentInteractions, ITimeTickers, 
         }
     }
 
+    #region timeTickers ITimeTickers
     public void DayTick()
     {
     }
 
     public void HourTick()
-    { 
+    {
     }
 
     public void MinuteTick()
     {
         LookForWorkers();
     }
+
+    #endregion
 
     private void LookForWorkers()
     {
@@ -78,6 +81,7 @@ public class OutPostBuilding : MonoBehaviour, IAgentInteractions, ITimeTickers, 
                 for (int i = GeneralUtil.dataBank.unemployedNpc.Count; i-- > 0;)
                 {
                     buildingId.AddWorker(GeneralUtil.dataBank.unemployedNpc[i]);
+                    GeneralUtil.dataBank.RecalcAllAllowedTiles();
                 }
             }
         }

@@ -6,6 +6,8 @@ public class FarmBuilding : MonoBehaviour, IAgentInteractions, ITimeTickers, IBu
 {
     private BuildingIdentifier buildingId;
 
+
+    #region timeTickers ITimeTickers
     public void DayTick()
     {
     }
@@ -69,6 +71,9 @@ public class FarmBuilding : MonoBehaviour, IAgentInteractions, ITimeTickers, IBu
         LookForWorkers();
     }
 
+    #endregion 
+
+
     public void LandedOnEntrance(AgentData data)
     {
         Destroy(data.agentObj);
@@ -90,9 +95,9 @@ public class FarmBuilding : MonoBehaviour, IAgentInteractions, ITimeTickers, IBu
         }
     }
 
-    public void DeleteBuilding()
+    public bool DeleteBuilding()
     {
-
+        return true;
     }
 
     private void Start()

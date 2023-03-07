@@ -36,7 +36,6 @@ public class DataHolder : MonoBehaviour
     public static List<int> listOfCostsStone = new List<int>();
     public static List<int> listOfCostsSand = new List<int>();
 
-
     public List<int>[] arrayOfLists = new List<int>[]
     {
         listOfValueForResourceStone,
@@ -69,15 +68,11 @@ public class DataHolder : MonoBehaviour
         "daily cost of wood",
     };
 
-
     public List<string> unemployedNpc = new List<string>();
 
 
     public void SaveAllResourceThisCycle() 
     {
-
-        Debug.Log("saving the resources");
-
         if (listOfValueForResourceStone.Count == 15) 
         {
             listOfValueForResourceWood.RemoveAt(0);
@@ -135,25 +130,25 @@ public class DataHolder : MonoBehaviour
 
             if (!GeneralUtil.resourceBank.CheckFoodAmount(building.upKeepFoodCost)) 
             {
-                building.ChangeHealth(-10);
+              //  building.ChangeHealth(-10);
                 GeneralUtil.mapInteraction.SpawnFloatingText("Abbandond", Color.yellow, building.buildingID.transform);
                 continue;
             }
             else if (!GeneralUtil.resourceBank.CheckSandAmount(building.upKeepSandCost)) 
             {
-                building.ChangeHealth(-10);
+               // building.ChangeHealth(-10);
                 GeneralUtil.mapInteraction.SpawnFloatingText("Abbandond", Color.yellow, building.buildingID.transform);
                 continue;
             }
             else if (!GeneralUtil.resourceBank.CheckStoneAmount(building.upKeepStoneCost))
             {
-                building.ChangeHealth(-10);
+               // building.ChangeHealth(-10);
                 GeneralUtil.mapInteraction.SpawnFloatingText("Abbandond", Color.yellow, building.buildingID.transform);
                 continue;
             }
             else if (!GeneralUtil.resourceBank.CheckWoodAmount(building.upKeepWoodCost))
             {
-                building.ChangeHealth(-10);
+               // building.ChangeHealth(-10);
                 GeneralUtil.mapInteraction.SpawnFloatingText("Abbandond", Color.yellow, building.buildingID.transform);
                 continue;
             }
@@ -174,7 +169,6 @@ public class DataHolder : MonoBehaviour
     public void RecalcAllAllowedTiles() 
     {
         allowedBuildingLocations.Clear();
-        Debug.Log("adadada");
         foreach (var building in buildingDict.Values)
         {
             if (building.workers.Count > 0 && (building.buildingID.buildingIndex == 0 || building.buildingID.buildingIndex == 4)) 

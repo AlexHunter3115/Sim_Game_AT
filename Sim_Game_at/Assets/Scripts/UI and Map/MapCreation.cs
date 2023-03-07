@@ -148,7 +148,7 @@ public class MapCreation : MonoBehaviour
                         texture.SetPixel(x, y, Color.green);
                         break;
                     case TileType.HILL:
-                        texture.SetPixel(x, y, new Color(165.0f/255, 42.0f / 255, 42.0f / 255,1));
+                        texture.SetPixel(x, y, GeneralUtil.colorBrown);
                         break;
                     case TileType.SNOW:
                         texture.SetPixel(x, y, Color.white);

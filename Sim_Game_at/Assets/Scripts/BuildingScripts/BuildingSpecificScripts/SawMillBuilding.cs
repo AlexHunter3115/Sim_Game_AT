@@ -44,19 +44,71 @@ public class SawMillBuilding : MonoBehaviour, IAgentInteractions, ITimeTickers, 
 
 
 
+    #region timeTickers ITimeTickers
     public void DayTick()
     {
     }
 
     public void HourTick()
     {
+        buildingId.GetResourceNearby();
 
+        if (GeneralUtil.timeCycle.isNightTime)
+        {
+            buildingId.buildingData.shut = true;
+
+            //foreach (var worker in buildingId.buildingData.workers) //this gives the workers the job 
+            //{
+            //    if (worker.refToHouse != null)
+            //    {
+            //        if (worker.readyToWork == true && worker.currAction == AgentData.CURRENT_ACTION.WORKING)
+            //        {
+            //            worker.SetAgentPathing(buildingId.buildingData.entrancePoints[0], worker.refToHouse.entrancePoints[0], true);
+            //            GeneralUtil.map.SpawnAgent(worker.guid, GeneralUtil.map.tilesArray[buildingId.buildingData.entrancePoints[0].x, buildingId.buildingData.entrancePoints[0].y]);
+            //            worker.readyToWork = false;
+            //            worker.atWork = false;
+            //        }
+            //    }
+            //}
+        }
+        else
+        {
+
+            buildingId.buildingData.shut = false;
+
+            foreach (var worker in buildingId.buildingData.workers) //this gives the workers the job 
+            {
+                if (worker.atWork)
+                {
+                    if (worker.readyToWork == true && worker.currAction == AgentData.CURRENT_ACTION.WORKING)
+                    {
+                        for (int i = 0; i < buildingId.buildingData.tilesWithResourcesInRange.Count; i++)
+                        {
+                            if (buildingId.buildingData.tilesWithResourcesInRange[i].tileObject.GetComponent<Resource>().available)
+                            {
+                                buildingId.buildingData.tilesWithResourcesInRange[i].tileObject.GetComponent<Resource>().available = false;
+                                if (worker.SetAgentPathing(buildingId.buildingData.entrancePoints[0], buildingId.buildingData.tilesWithResourcesInRange[i].coord))
+                                {
+                                    GeneralUtil.map.SpawnAgent(worker.guid, GeneralUtil.map.tilesArray[buildingId.buildingData.entrancePoints[0].x, buildingId.buildingData.entrancePoints[0].y]);
+                                    worker.readyToWork = false;
+                                }
+                                buildingId.buildingData.tilesWithResourcesInRange.RemoveAt(i);
+                                break;
+
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     public void MinuteTick()
     {
         LookForWorkers();
     }
+
+    #endregion
 
     private void LookForWorkers()
     {
@@ -71,9 +123,9 @@ public class SawMillBuilding : MonoBehaviour, IAgentInteractions, ITimeTickers, 
             }
         }
     }
-    public void DeleteBuilding()
+    public bool DeleteBuilding()
     {
-
+        return true;
     }
 
 }

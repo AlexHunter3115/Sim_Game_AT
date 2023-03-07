@@ -39,15 +39,14 @@ public class AgentData : Entity, ITimeTickers
     public float health;
     public float hunger;
     public float stamina;
-    public int gender;
     public float speed;
+    public float fertilityPerc;
 
     public enum AGE_STATE 
     {
         BABY=4,
-        TEEN = 12,
-        ADULT = 18,
-        ELDER = 30
+        ADULT = 8,
+        ELDER = 34
     }
     public AGE_STATE currAge;
     public int daysAlive;
@@ -78,16 +77,14 @@ public class AgentData : Entity, ITimeTickers
 
     #endregion
 
-
     #region relationships
-    public AgentData spouse;
     public AgentData[] parentsArr = new AgentData[2];
     public List<AgentData> children = new List<AgentData>();
 
     public void SetParents(AgentData parentOne, AgentData parentTwo)
     {
         parentsArr[0] = parentOne;
-        parentsArr[0] = parentTwo;
+        parentsArr[1] = parentTwo;
     }
 
     public void AddChild(AgentData child) => this.children.Add(child);
@@ -104,16 +101,32 @@ public class AgentData : Entity, ITimeTickers
     {
         currAge = age;
 
+        switch (currAge)
+        {
+            case AGE_STATE.BABY:
+                daysAlive = 0;
+                break;
+
+            case AGE_STATE.ADULT:
+                daysAlive = 9;
+                break;
+
+            case AGE_STATE.ELDER:
+                break;
+            default:
+                break;
+        }
+
         if (0.5f > Random.value) 
         {
-            gender = 0;
             name = GeneralUtil.femaleNames[Random.Range(0, 49)];
         }
         else
         {
-            gender = 1;
             name = GeneralUtil.maleNames[Random.Range(0, 49)];
         }
+
+        fertilityPerc = Random.Range(0.01f, 0.1f);
 
         GeneralUtil.timeCycle.OnFunctionCalled.AddListener(EndOfDayCall);
     }
@@ -130,39 +143,50 @@ public class AgentData : Entity, ITimeTickers
 
         daysAlive++;
 
-        //if ((int)AGE_STATE.BABY <= daysAlive)
-        //{
+        if ((int)AGE_STATE.BABY <= daysAlive)
+        {
+            currAge = AGE_STATE.BABY;
+        }
 
-        //}
+        if ((int)AGE_STATE.BABY < daysAlive && (int)AGE_STATE.ADULT >= daysAlive)
+        {
+            currAge = AGE_STATE.ADULT;
+        }
 
-        //if ((int)AGE_STATE.TEEN >= daysAlive)
-        //{
+        if ((int)AGE_STATE.ADULT < daysAlive && (int)AGE_STATE.ELDER >= daysAlive)
+        {
+            currAge = AGE_STATE.ELDER;
+        } 
 
-        //}
-
-        //if ((int)TIME.DAY <= daysAlive && (int)TIME.AFTERNOON > daysAlive)
-        //{
-
-        //}
-
-        //if ((int)TIME.AFTERNOON <= currentHour && (int)TIME.NIGHT > daysAlive)
-        //{
-
-        //}
+        if ((int)AGE_STATE.ELDER < daysAlive)
+        {
+            //dead
+            Kill();
+        }
 
 
         //on death need to delete it self from everywhere
         return true;
     }
 
-    public void SetDead()
+    public void Kill()
     {
+        if (refToWorkPlace != null)
+        {
+            refToWorkPlace.buildingID.RemoveWorker(guid);
+        }
 
+        if (refToHouse != null)
+        {
+            refToWorkPlace.buildingID.RemoveWorker(guid);
+        }
+
+        GeneralUtil.dataBank.npcDict.Remove(guid);
     }
 
 
 
-
+    #region Behaviour stuff
 
     /// <summary>
     /// given the start and end of the pathing sets all the vars
@@ -173,7 +197,6 @@ public class AgentData : Entity, ITimeTickers
     public bool SetAgentPathing(Vector2Int start,  Vector2Int end, bool forced = false) 
     {
         var pathData = GeneralUtil.A_StarPathfinding(start, end, this, forced);
-
 
         pathTile = pathData.Item1;
         allCheckedDebug = pathData.Item2;
@@ -188,97 +211,7 @@ public class AgentData : Entity, ITimeTickers
         return true;
     }
 
-
-
-    // i dont like the atHouse toggle thign
-    public void HourTick()
-    {
-
-        //if (GeneralUtil.timeCycle.isNightTime != lastTime)
-        //{
-        //    lastTime = GeneralUtil.timeCycle.isNightTime;
-
-        //    if (GeneralUtil.timeCycle.isNightTime) // if its night time 
-        //    {
-        //        if (refToHouse == null) // and has no house then this llogic takes over
-        //        {
-        //            Debug.Log("call on the first time for agent at night");
-        //            //this needs to take over
-        //        }
-
-        //    }
-        //    else // if its day time and no job this takes over
-        //    {
-        //        if (refToWorkPlace == null)
-        //        {
-
-        //        }
-        //    }
-        //}
-
-
-
-
-
-        //if (GeneralUtil.timeCycle.isNightTime) // if its night time 
-        //{
-        //    if (refToHouse == null) // and has no house then this llogic takes over
-        //    {
-        //        //this needs to take over
-        //        if (agentObj == null) 
-        //        {
-        //            GeneralUtil.map.SpawnAgent(this.guid, GeneralUtil.ReturnTile(refToWorkPlace.entrancePoints[0]));
-        //        }
-
-        //        pathTile = GeneralUtil.A_StarPathfinding(GeneralUtil.ReturnTile(refToWorkPlace.entrancePoints[0]).coord, GeneralUtil.RandomTileAround(5, GeneralUtil.ReturnTile(refToWorkPlace.entrancePoints[0]).coord, new List<int> { 0, 1 }).coord, this);
-        //    }
-        //}
-        //else // if its day time and no job this takes over
-        //{
-        //    if (refToWorkPlace == null) 
-        //    {
-                
-        //    }
-        //}
-    }
-
-
-
-    private void EndOfDayCall() 
-    {
-        if (GeneralUtil.timeCycle.isNightTime) // if its night time 
-        {
-            if (refToWorkPlace == null) 
-            {
-                if (refToHouse != null) // and has no house then this llogic takes over
-                {
-                    this.SetAgentPathing(GeneralUtil.WorldPosToTile(agentObj.transform.position).coord, this.refToHouse.entrancePoints[0], true);
-                    this.readyToWork = false;
-                    this.atWork = false;
-                    currAction = CURRENT_ACTION.SLEEPING;
-                }
-            }
-            if (refToHouse == null) // and has no house then this llogic takes over
-            {
-                SetToSleeping(GeneralUtil.ReturnTile(refToWorkPlace.entrancePoints[0])); 
-            }
-        }
-        else // if its day time and no job this takes over
-        {
-
-
-
-            if (refToWorkPlace == null)
-            {
-                SetToWonder(GeneralUtil.ReturnTile(refToHouse.entrancePoints[0]));
-            }
-        }
-    }
-
-
-
-
-    public void SetToWonder(Tile tile = null) 
+    public void SetToWonder() 
     {
         currAction = CURRENT_ACTION.WONDERING;
 
@@ -290,19 +223,18 @@ public class AgentData : Entity, ITimeTickers
         agentObj.GetComponent<Agent>().StopAllCoroutines();
 
         SetAgentPathing(GeneralUtil.WorldPosToTile(agentObj.transform.position).coord, GeneralUtil.RandomTileAround(3, GeneralUtil.WorldPosToTile(agentObj.transform.position).coord, new List<int> { 0, 1 }).coord,true);
-
-
-        //pathTile = GeneralUtil.A_StarPathfinding(GeneralUtil.WorldTileNoLoop(agentObj.transform.position).coord, GeneralUtil.RandomTileAround(5,  GeneralUtil.WorldTileNoLoop(agentObj.transform.position).coord, new List<int> { 0, 1 }).coord, this);
     }
 
-
-    public void SetToSleeping(Tile tile = null) 
+    public void SetToSleeping() 
     {
         currAction = CURRENT_ACTION.SLEEPING;
 
         if (agentObj == null)
         {
-            GeneralUtil.map.SpawnAgent(this.guid, GeneralUtil.map.tilesArray[ refToHouse.entrancePoints[0].x, refToHouse.entrancePoints[0].y]);
+            if (refToHouse != null)
+                GeneralUtil.map.SpawnAgent(this.guid, GeneralUtil.map.tilesArray[ refToHouse.entrancePoints[0].x, refToHouse.entrancePoints[0].y]);
+            else
+                GeneralUtil.map.SpawnAgent(this.guid, GeneralUtil.map.tilesArray[refToWorkPlace.entrancePoints[0].x, refToWorkPlace.entrancePoints[0].y]);
         }
 
         agentObj.GetComponent<Agent>().StopAllCoroutines();
@@ -310,21 +242,70 @@ public class AgentData : Entity, ITimeTickers
         SetAgentPathing(GeneralUtil.WorldPosToTile(agentObj.transform.position).coord, GeneralUtil.RandomTileAround(3, GeneralUtil.WorldPosToTile(agentObj.transform.position).coord, new List<int> { 0, 1 }).coord, true);
     }
 
+    #endregion
 
+    #region TimeStuff
 
-
+    //this gets called at noon because the gaem starts at noon and then its a day from there
     public void DayTick()
     {
-       // AgeUp();
-       // Debug.Log("Day tick in the npc data class");
+       AgeUp();
     }
 
     public void MinuteTick()
+    { }
+
+    public void HourTick()
+    { }
+
+    private void EndOfDayCall() 
     {
-        //Debug.Log("minute tick in the npc data class");
+        if (currAge != AGE_STATE.BABY)
+        {
+            if (GeneralUtil.timeCycle.isNightTime) // if its night time 
+            {
+                if (refToWorkPlace == null)
+                {
+                    if (refToHouse != null) // and has no house then this llogic takes over
+                    {
+                        this.SetAgentPathing(GeneralUtil.WorldPosToTile(agentObj.transform.position).coord, this.refToHouse.entrancePoints[0], true);
+                        this.readyToWork = false;
+                        this.atWork = false;
+                        currAction = CURRENT_ACTION.SLEEPING;
+                    }
+                }
+                else 
+                {
+                    if (refToHouse == null) // and has no house then this llogic takes over
+                    {
+                        SetToSleeping();
+                    }
+                }
+                
+            }
+            else // if its day time and no job this takes over
+            {
+                if (refToWorkPlace == null)   // if it doesnt have a job
+                {
+                    if (refToHouse != null)
+                        SetToWonder();
+                }
+                else  //if it does have a job
+                {
+                    if (refToHouse == null) // and has no house then this llogic takes over
+                    {
+                        this.SetAgentPathing(GeneralUtil.WorldPosToTile(agentObj.transform.position).coord, this.refToWorkPlace.entrancePoints[0], true);
+                        this.readyToWork = false;
+                        this.atWork = false;
+                        currAction = CURRENT_ACTION.WORKING;
+                    }
+                }
+            }
+        }
+        
     }
 
-
+    #endregion
 
     //the npc here should have an inventory
 }

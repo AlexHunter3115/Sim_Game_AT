@@ -145,15 +145,6 @@ they leave wit a radnom dest
 sleep becasue of no house
 
 
-
-
-try to not use any foreach  use only for loops
-
-try to get the position in relation to the corners
-
-
-
-
  
  
 every buiilding is going to contrinute towards a max possible kept resource so if we have like 1 council and 2 sawmill max is 1500 wood and so on, the shops take that from them
@@ -173,26 +164,14 @@ issue with the anims
 
 
 
-alos i dont think the map is updating
 
 
-i need a basic game loop right now
+and do the banking shit 
+beahviours should be fine just time consuming apart from the shop if we want to implement that
 
+poissant for the placing this emasn that every building is goign to have a radius modifier that i need in the resource sricptable
 
+chat gpt gave 2 possible ways of doing the decision based thing
 
-
-
-cost to build should be there
-
-starting amount --easy
-
-
-a gneerral pop up
-
-ask chatgpt for the decision algos
-
-the path
-
-tesitng stuff and finishing the bhevaiour for the other thing
 
  */

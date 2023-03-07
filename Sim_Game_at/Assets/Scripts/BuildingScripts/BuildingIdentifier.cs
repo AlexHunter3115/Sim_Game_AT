@@ -20,6 +20,7 @@ public class BuildingIdentifier : MonoBehaviour
     public int buildingIndex = 0;
 
     public bool test = false;
+    public bool drawResources = false;
 
     public void init(Tile middleTile, Vector2Int size, List<Tile> controlledTiles, int index)
     {
@@ -121,7 +122,12 @@ public class BuildingIdentifier : MonoBehaviour
 
     public void DeleteBuilding()
     {
-        DeleteBuidlingInterfaceCall(buildingActions);
+
+        if (buildingIndex == 0)
+            return;
+
+        if (!DeleteBuidlingInterfaceCall(buildingActions))
+            return;
 
         MeshRenderer meshRenderer = GeneralUtil.map.plane.GetComponent<MeshRenderer>();
         Material material = meshRenderer.material;
@@ -133,7 +139,7 @@ public class BuildingIdentifier : MonoBehaviour
 
             if (pixelColor == Color.green)
                 item.tileType = TileType.GRASS;
-            else if (pixelColor == new Color(165.0f / 255, 42.0f / 255, 42.0f / 255, 1))
+            else if (pixelColor == GeneralUtil.colorBrown)
                 item.tileType = TileType.HILL;
             else if (pixelColor == Color.white)
                 item.tileType = TileType.SNOW;
@@ -164,7 +170,7 @@ public class BuildingIdentifier : MonoBehaviour
         Destroy(gameObject);
     }
 
-    private void DeleteBuidlingInterfaceCall(IBuildingActions timeInterface) => timeInterface.DeleteBuilding();
+    private bool DeleteBuidlingInterfaceCall(IBuildingActions timeInterface) => timeInterface.DeleteBuilding();
 
     public void GetResourceNearby() 
     {
@@ -177,6 +183,8 @@ public class BuildingIdentifier : MonoBehaviour
         foreach (var tiles in hitColliders)
         {
             var comp = tiles.GetComponent<Resource>();
+            if (!comp.available)
+                continue;
 
             if (buildingData.stats.whatResourceLookingFor.Contains((int)comp.type)) 
             {
@@ -184,6 +192,21 @@ public class BuildingIdentifier : MonoBehaviour
             }
         }
     }
+
+    private void OnDrawGizmos()
+    {
+        if (drawResources) 
+        {
+            if (buildingData.tilesWithResourcesInRange.Count > 0)
+            {
+                for (int i = 0; i < buildingData.tilesWithResourcesInRange.Count; i++)
+                {
+                    Gizmos.DrawSphere(buildingData.tilesWithResourcesInRange[i].midCoord, 0.5f);
+                }
+            }
+        }
+    }
+
 }
 
 

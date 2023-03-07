@@ -23,9 +23,7 @@ public class Agent : MonoBehaviour
         animator = GetComponent<Animator>();
     }
 
-
     Vector3 destinationCoord = new Vector3(0, 0, 0);
-
 
     /// <summary>
     /// loads the data for this agent to use using the guid

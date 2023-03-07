@@ -8,7 +8,6 @@ using System.Linq;
 
 public class Graph : MonoBehaviour
 {
-
     [SerializeField] RectTransform graphContainer;
     public Transform MainGraph;
     [SerializeField] private GameObject dotRedSprite;
@@ -68,8 +67,6 @@ public class Graph : MonoBehaviour
         objRef.transform.SetSiblingIndex(0);
     }
 
-
-
     private void SetUpText() 
     {
         maxRedVal.text = $"{maxValueRed} -";
@@ -116,7 +113,6 @@ public class Graph : MonoBehaviour
 
         return objRef;
     }
-
 
     private void ShowGraph(List<int> valueList, bool red) 
     {

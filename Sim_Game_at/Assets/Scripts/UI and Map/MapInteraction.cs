@@ -315,7 +315,7 @@ public class MapInteraction : MonoBehaviour
 
     public void SpawnFloatingText(string text, Color color, Transform parent) 
     {
-        var obj = Instantiate(floatingText, parent.position, Quaternion.identity, parent);
+        var obj = Instantiate(floatingText, parent.position + new Vector3(0,4,0), Quaternion.identity, parent);
         obj.GetComponent<TMP_Text>().text = text;
         obj.GetComponent<TMP_Text>().color = color;
     }
@@ -339,7 +339,7 @@ public class MapInteraction : MonoBehaviour
 
         GeneralUtil.dataBank.buildingDict.Add(BID.guid, BID.buildingData);
 
-        GeneralUtil.map.UpdateMapTexture();
+        //GeneralUtil.map.UpdateMapTexture();
         return true;
     }
 
@@ -401,8 +401,8 @@ public class MapInteraction : MonoBehaviour
             }
         }
 
-        if (!GeneralUtil.dataBank.allowedBuildingLocations.Contains(middleTile.coord) && selectedIndex !=0)
-            canInteract = false;
+        //if (!GeneralUtil.dataBank.allowedBuildingLocations.Contains(middleTile.coord) && selectedIndex !=0)
+        //    canInteract = false;
 
         canSpawn = canInteract;
         CheckInteractionAllowance(canInteract);
@@ -470,7 +470,6 @@ public class MapInteraction : MonoBehaviour
 
     private void GuiAgent()
     {
-
         var npcData = GeneralUtil.dataBank.npcDict[guid];
 
         if (npcData.agentObj == null)
@@ -479,10 +478,7 @@ public class MapInteraction : MonoBehaviour
             return;
         }
 
-
         var npcObjComp = npcData.agentObj.GetComponent<Agent>();
-
-
 
         GUI.Box(new Rect(5, 5, 140, lastY), "");
 
@@ -497,8 +493,6 @@ public class MapInteraction : MonoBehaviour
         GUILayout.Space(-5);
         GUILayout.Label( $"Hunger: {npcData.hunger}");
         GUILayout.Space(-5);
-        GUILayout.Label( $"Gender: {npcData.gender}");
-        GUILayout.Space(-5);
         GUILayout.Label( $"Speed: {npcData.speed}");
         GUILayout.Space(-5);
         GUILayout.Label( $"Age: {npcData.name}");
@@ -506,20 +500,19 @@ public class MapInteraction : MonoBehaviour
         GUILayout.Space(10);
         if (npcData.refToWorkPlace != null)
         {
-            GUILayout.Label($"Work: {npcData.refToWorkPlace.guid}");
+            GUILayout.Label($"Works at: {npcData.refToWorkPlace.typeOfBuilding}");
         }
-
         if (npcData.refToHouse != null)
         {
-            GUILayout.Label( $"House: {npcData.refToHouse.guid}");
+            GUILayout.Label( $"House at: {npcData.refToHouse.centerCoord}");
         }
 
-
         GUILayout.Space(10);
-        GUILayout.Label( $"mother");
-        
-        GUILayout.Label( $"father");
+        if (npcData.parentsArr[0] != null)
+            GUILayout.Label($"parent 1: {npcData.parentsArr[0].name}");
 
+        if (npcData.parentsArr[0] != null)
+            GUILayout.Label($"parent 2: {npcData.parentsArr[1].name}");
 
         if (npcData.children.Count > 0)
         {
@@ -529,6 +522,8 @@ public class MapInteraction : MonoBehaviour
                 GUILayout.Label("child");
             }
         }
+
+
 
         GUILayout.Space(10);
         npcObjComp.showPathToggle = GUILayout.Toggle( npcObjComp.showPathToggle, "Show path Mode");
@@ -565,12 +560,13 @@ public class MapInteraction : MonoBehaviour
         GUILayout.BeginVertical();
         GUILayout.BeginArea(new Rect(10, 10, 100, Screen.height));        
 
-        GUILayout.Label("building type");
+        GUILayout.Label($"building type: {buildingData.stats.type}");
         GUILayout.Space(-5);
-        GUILayout.Label(new GUIContent() {text = "building Layout", tooltip = "this is a tooltip" } );
+        GUILayout.Label(new GUIContent() {text = $"building Health: {buildingData.health}" } );
         GUILayout.Space(-5);
-        GUILayout.Label( "list of workers");
 
+
+        GUILayout.Label("list of workers");
         for (int i = 0; i < buildingData.workers.Count; i++)
         {
             if (GUILayout.Button( $"{buildingData.workers[i].name}"))
@@ -580,7 +576,7 @@ public class MapInteraction : MonoBehaviour
             }
         }
 
-        GUILayout.Label("Building age");
+        //GUILayout.Label($"Building age: {}");
 
         if (GUILayout.Button("Delete Me"))
         {
@@ -588,6 +584,29 @@ public class MapInteraction : MonoBehaviour
                 buildingData.buildingID.DeleteBuilding();
             else
                 SpawnFloatingText("Cant delete this building", Color.yellow, buildingData.buildingID.transform);
+        }
+
+
+        if (buildingData.tilesWithResourcesInRange.Count > 0)
+        {
+            buildingData.buildingID.drawResources = GUILayout.Toggle(buildingData.buildingID.drawResources, "draw resources");
+        }
+        else 
+        {
+            GUILayout.Label(new GUIContent() { text = "This buidling has no resources close to it", tooltip = "this is a tooltip" });
+        }
+
+        GUILayout.Space(10);
+        GUILayout.Label(new GUIContent() { text = "The children in this house", tooltip = "this is a tooltip" });
+
+        if (buildingData.stats.type == BuildingData.BUILDING_TYPE.HOUSE) 
+        {
+            var comp = buildingData.buildingID.transform.GetComponent<HouseBuilding>();
+
+            for (int i = 0; i < comp.childrenHabitantsGUID.Count; i++)
+            {
+                GUILayout.Label(new GUIContent() { text = $"{GeneralUtil.dataBank.npcDict[comp.childrenHabitantsGUID[i]].name} and its age is {GeneralUtil.dataBank.npcDict[comp.childrenHabitantsGUID[i]].daysAlive}", tooltip = "this is a tooltip" });
+            }
         }
 
         Rect lastRect = GUILayoutUtility.GetLastRect();

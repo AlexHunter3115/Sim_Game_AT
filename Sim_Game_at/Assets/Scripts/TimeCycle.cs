@@ -41,9 +41,7 @@ public class TimeCycle : MonoBehaviour
 
     public float colorLerpDur = 0.5f;
 
-
     [SerializeField] Light sunLight;
-
 
     public UnityEvent OnFunctionCalled;
 
@@ -51,10 +49,8 @@ public class TimeCycle : MonoBehaviour
     private delegate IEnumerator DailyCycleCorutineVar();
     private DailyCycleCorutineVar _updateDayCheck;
 
-
     private delegate IEnumerator MinuteCycleCorutineVar();
     private MinuteCycleCorutineVar _updateMinuteCheck;
-
 
     private delegate IEnumerator HourCycleCorutineVar();
     private HourCycleCorutineVar _updateHourCheck;
@@ -68,8 +64,6 @@ public class TimeCycle : MonoBehaviour
         _updateHourCheck = HourCycleCorutine;
         _updateDayCheck = DailyCycleCorutine;
         SetDayTime();
-
-
     }
 
     private void Start()
@@ -78,7 +72,6 @@ public class TimeCycle : MonoBehaviour
         StartCoroutine(_updateHourCheck());
         StartCoroutine(_updateMinuteCheck());
     }
-
 
     private void Update()
     {
@@ -94,21 +87,22 @@ public class TimeCycle : MonoBehaviour
         }
     }
 
-    //the daily ruotuine should not exist it should just be the hour and then once 0 call it as that is midnight
+   
     private IEnumerator DailyCycleCorutine()
     {
         while (timeOn)
         {
             yield return new WaitForSeconds(dayCheck/timerMultiplier);
 
-            for (int i = 0; i < GeneralUtil.dataBank.buildingDict.Count; i++)
-            {
-                CallDayInterface(GeneralUtil.dataBank.buildingDict.Values.ElementAt(i).buildingID.buildingTimer);
-            }
-
             for (int i = 0; i < GeneralUtil.dataBank.npcDict.Count; i++)
             {
                 CallDayInterface(GeneralUtil.dataBank.npcDict.Values.ElementAt(i));
+            }
+
+
+            for (int i = 0; i < GeneralUtil.dataBank.buildingDict.Count; i++)
+            {
+                CallDayInterface(GeneralUtil.dataBank.buildingDict.Values.ElementAt(i).buildingID.buildingTimer);
             }
         }
     }
@@ -154,6 +148,7 @@ public class TimeCycle : MonoBehaviour
             }
         }
     }
+
 
     private void SetDayTime() 
     {
@@ -208,6 +203,10 @@ public class TimeCycle : MonoBehaviour
                 GeneralUtil.dataBank.SaveAllResourceThisCycle();
                 GeneralUtil.dataBank.SpendDailyNeeds();
             }
+            else if (currentDayState == TIME.MORNING)
+            {
+                DayChangeStateEvent();
+            }
         }
     }
 
@@ -215,6 +214,7 @@ public class TimeCycle : MonoBehaviour
     {
         OnFunctionCalled?.Invoke();
     }
+
 
     private void CallMinuteInterface(ITimeTickers timeInterface) => timeInterface.MinuteTick();
     private void CallHourInterface(ITimeTickers timeInterface) => timeInterface.HourTick();

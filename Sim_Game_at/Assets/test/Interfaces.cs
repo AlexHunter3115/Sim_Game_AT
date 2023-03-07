@@ -21,5 +21,5 @@ public interface IAgentInteractions
 //start building
 public interface IBuildingActions
 {
-    void DeleteBuilding();
+    bool DeleteBuilding();
 }

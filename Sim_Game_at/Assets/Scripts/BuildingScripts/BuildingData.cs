@@ -65,7 +65,6 @@ public class BuildingData : Entity
     public List<AgentData> workers = new List<AgentData>();
     public int maxWorkers;
 
-
     //upkeep
     public int upKeepWoodCost;
     public int upKeepStoneCost;
@@ -93,6 +92,5 @@ public class BuildingData : Entity
             buildingID.DeleteBuilding();
             return;
         }
-
     }
 }
