@@ -11,7 +11,6 @@ public class BuildingTypes : ScriptableObject
 }
 
 
-
 [Serializable]
 public class BuildingStatistics 
 {
@@ -28,8 +27,5 @@ public class BuildingStatistics
     public int maxWorkers;
     public List<int> whatResourceLookingFor = new List<int>();
     public int[] BankAmount = new int[4];
-
-    //add what kind they are looking for 
-    //add the amount they can keep
-
+    public float poissantRadius = 1;
 }

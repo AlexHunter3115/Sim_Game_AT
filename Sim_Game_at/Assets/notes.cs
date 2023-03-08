@@ -174,4 +174,20 @@ poissant for the placing this emasn that every building is goign to have a radiu
 chat gpt gave 2 possible ways of doing the decision based thing
 
 
+
+// weighted spending is a value from 0 to 1, it dictates how important a resrouce is , closer to 1 the best
+
+// RunningLowFactor = (1 - (Amount / MaxAmount)) / (1 - CriticalThreshold)  
+
+// CriticalThreshold is a value between 0 and 1 that represents the percentage of the resource left before it's considered "running low". For example,
+if the CriticalThreshold is set to 0.2, 
+it means that the resource is considered "running low" when there's only 20% of it left.
+
+
+Importance = (1 - (Amount / MaxAmount)) * WeightedSpending * (1 + (1 - (Amount / (SpendingPerTurn * (amount/SpendingPerTurn )))) * RunningLowFactor)
+
+
+Importance = (1 - (Amount / MaxAmount)) * WeightedSpending * (1 + (1 - (Amount / (SpendingPerTurn * RoundsLeft))) * RunningLowFactor)
+
+
  */

@@ -1733,6 +1733,7 @@ GameObject:
   - component: {fileID: 963194229}
   - component: {fileID: 963194230}
   - component: {fileID: 963194231}
+  - component: {fileID: 963194232}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -1873,6 +1874,42 @@ MonoBehaviour:
   maxZoomDistance: 20
   minZoomDistance: 5
   rotationSpeed: 1
+--- !u!114 &963194232
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 963194225}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c79a6ef82ab9454db57f3452a433d8e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  calc: 1
+  totCitizens: 10
+  childrenAboutToTurn: 10
+  Homeless: 10
+  JobLess: 10
+  AreaFreeNecessity: 0
+  currentAreaTaken: 0
+  totalArea: 0
+  woodHoldingAmount: 600
+  woodMaxAmount: 1250
+  importanceOfWood: 1
+  woodSpendingAmount: 125
+  stoneHoldingAmount: 400
+  stoneMaxAmount: 800
+  importanceOfStone: 1
+  stoneSpendingAmount: 75
+  sandHoldingAmount: 70
+  sandMaxAmount: 250
+  importanceOfSand: 1
+  sandSpendingAmount: 20
+  foodHoldingAmount: 300
+  foodMaxAmount: 600
+  importanceOfFood: 1
+  foodSpendingAmount: 100
 --- !u!1 &1017883737
 GameObject:
   m_ObjectHideFlags: 0
