@@ -27,6 +27,7 @@ MonoBehaviour:
     maxWorkers: 4
     whatResourceLookingFor: 0200000001000000
     BankAmount: 00000000000000000000000000000000
+    poissantRadius: 3
   - type: 1
     centerOffset: {x: -0.25, y: 0}
     name: Sawmill
@@ -41,6 +42,7 @@ MonoBehaviour:
     maxWorkers: 2
     whatResourceLookingFor: 
     BankAmount: 00000000000000000000000000000000
+    poissantRadius: 2
   - type: 7
     centerOffset: {x: 0, y: 0}
     name: Shop
@@ -56,6 +58,7 @@ MonoBehaviour:
     maxWorkers: 1
     whatResourceLookingFor: 
     BankAmount: 00000000000000000000000000000000
+    poissantRadius: 1
   - type: 2
     centerOffset: {x: 0, y: 0}
     name: Mine
@@ -70,6 +73,7 @@ MonoBehaviour:
     maxWorkers: 2
     whatResourceLookingFor: 
     BankAmount: 00000000000000000000000000000000
+    poissantRadius: 1
   - type: 6
     centerOffset: {x: 0.4, y: -0.4}
     name: Outpost
@@ -85,6 +89,7 @@ MonoBehaviour:
     maxWorkers: 1
     whatResourceLookingFor: 
     BankAmount: 00000000000000000000000000000000
+    poissantRadius: 2
   - type: 5
     centerOffset: {x: 0, y: 0}
     name: Dock
@@ -100,6 +105,7 @@ MonoBehaviour:
     maxWorkers: 2
     whatResourceLookingFor: 
     BankAmount: 00000000000000000000000000000000
+    poissantRadius: 2
   - type: 3
     centerOffset: {x: 0, y: 0}
     name: Farm
@@ -114,6 +120,7 @@ MonoBehaviour:
     maxWorkers: 2
     whatResourceLookingFor: 02000000
     BankAmount: 00000000000000000000000000000000
+    poissantRadius: 2.5
   - type: 4
     centerOffset: {x: 0.4, y: -0.4}
     name: House
@@ -129,3 +136,4 @@ MonoBehaviour:
     maxWorkers: 2
     whatResourceLookingFor: 
     BankAmount: 00000000000000000000000000000000
+    poissantRadius: 2

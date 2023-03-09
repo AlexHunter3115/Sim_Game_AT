@@ -45,7 +45,9 @@ public class CalculationTest : MonoBehaviour
     public float importanceOfFood = 0;
     public float foodSpendingAmount = 0;
 
-   
+    [Space(10)]
+    [Range(0.2f,0.8f)]
+    public float importanceDivision = 0.5f;
 
     // Update is called once per frame
     void Update()
@@ -56,17 +58,17 @@ public class CalculationTest : MonoBehaviour
 
 
             bool calcNewBuilding = false;
-
+            
 
 
 
             if (calcNewBuilding) 
             {
                 // the lower the better     also the importance is the higer the more important starst at 1
-                float importanceFood = (foodHoldingAmount / foodMaxAmount) * (1 - (foodSpendingAmount / foodHoldingAmount)) / importanceOfFood;
-                float importanceStone = (stoneHoldingAmount / stoneMaxAmount) * (1 - (stoneSpendingAmount / stoneHoldingAmount)) / importanceOfStone;
-                float importanceSand = (sandHoldingAmount / sandMaxAmount) * (1 - (sandSpendingAmount / sandHoldingAmount)) / importanceOfSand;
-                float importanceWood = (woodHoldingAmount / woodMaxAmount) * (1 - (woodSpendingAmount / woodHoldingAmount)) / importanceOfWood;
+                float importanceFood = (    ((foodHoldingAmount / foodMaxAmount)   * Mathf.Lerp(0.5f, 1.5f, importanceDivision))    *       ( 1 - (foodSpendingAmount / foodHoldingAmount))   * Mathf.Lerp(1.5f, 0.5f, importanceDivision))    / importanceOfFood;
+                float importanceStone =(    ((stoneHoldingAmount / stoneMaxAmount) * Mathf.Lerp(0.5f, 1.5f, importanceDivision))    *       ( 1 - (stoneSpendingAmount / stoneHoldingAmount)) * Mathf.Lerp(1.5f, 0.5f, importanceDivision))    / importanceOfStone;
+                float importanceSand = (    ((sandHoldingAmount / sandMaxAmount)   * Mathf.Lerp(0.5f, 1.5f, importanceDivision))    *       ( 1 - (sandSpendingAmount / sandHoldingAmount))   * Mathf.Lerp(1.5f, 0.5f, importanceDivision))    / importanceOfSand;
+                float importanceWood = (    ((woodHoldingAmount / woodMaxAmount)   * Mathf.Lerp(0.5f, 1.5f, importanceDivision))    *       ( 1 - (woodSpendingAmount / woodHoldingAmount))   * Mathf.Lerp(1.5f, 0.5f, importanceDivision))    / importanceOfWood;
 
                 float smallestNum = Math.Min(Math.Min(importanceFood, importanceStone), Math.Min(importanceSand, importanceWood));
 

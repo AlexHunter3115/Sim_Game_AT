@@ -171,7 +171,8 @@ public class DataHolder : MonoBehaviour
         allowedBuildingLocations.Clear();
         foreach (var building in buildingDict.Values)
         {
-            if (building.workers.Count > 0 && (building.buildingID.buildingIndex == 0 || building.buildingID.buildingIndex == 4)) 
+            //building.workers.Count > 0 &&
+            if ( (building.buildingID.buildingIndex == 0 || building.buildingID.buildingIndex == 4)) 
             {
                 var listOfTiles = GeneralUtil.GetResourcesCloseSpiral(building.centerCoord, building.stats.tileRange);
                 

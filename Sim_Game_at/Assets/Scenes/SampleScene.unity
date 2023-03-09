@@ -1799,14 +1799,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
-  m_LocalRotation: {x: 0.110394776, y: -0.693934, z: 0.10891621, w: 0.70314}
+  m_LocalRotation: {x: 0.10965889, y: -0.6985521, z: 0.10965889, w: 0.6985521}
   m_LocalPosition: {x: 409.89328, y: 9.311234, z: 29.270723}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 17.843, y: -90, z: 0}
 --- !u!114 &963194229
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1828,6 +1828,7 @@ MonoBehaviour:
   selectionGridSize: {x: 5, y: 5}
   selectedIndex: 0
   spawnedCouncil: 0
+  cornerTiles: []
   lastX: 0
   lastY: 0
 --- !u!114 &963194230
@@ -1910,6 +1911,7 @@ MonoBehaviour:
   foodMaxAmount: 600
   importanceOfFood: 1
   foodSpendingAmount: 100
+  importanceDivision: 0
 --- !u!1 &1017883737
 GameObject:
   m_ObjectHideFlags: 0

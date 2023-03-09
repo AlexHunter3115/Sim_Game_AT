@@ -72,8 +72,6 @@ public class MapCreation : MonoBehaviour
     private List<Vector3> textureVertecies = new List<Vector3>();
     public Tile ClickedTile = null;
 
-
-
     private void Awake()
     {
         GeneralUtil.map = this;
@@ -503,6 +501,11 @@ public class Tile
 
     public Vector2Int coord = new Vector2Int();
     public int oneDcoord;
+}
+
+public class PoissantResource
+{
+    GameObject resoruceObj;
 }
 
 public enum TileType

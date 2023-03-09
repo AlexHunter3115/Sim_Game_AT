@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -41,6 +42,8 @@ public class MapInteraction : MonoBehaviour
 
     private bool showingAllowedTiles = false;
 
+
+    private List<PoissantPoints> listOfPoissantsPoints = new List<PoissantPoints>();
 
     private void Start()
     {
@@ -255,6 +258,11 @@ public class MapInteraction : MonoBehaviour
                 else
                     GeneralUtil.map.UpdateMapTexture();
             }
+
+            if (Input.GetKeyDown(KeyCode.Y))
+            {
+                GetEdgePoints(selectedIndex);
+            }
         }
 
         if (Input.GetKeyDown(KeyCode.Escape)) 
@@ -263,6 +271,141 @@ public class MapInteraction : MonoBehaviour
             Time.timeScale = GeneralUtil.Ui.showingMenu == true ? 0 : 1;
         }
     }
+
+
+    public void GetEdgePoints(int buildingIndex) 
+    {
+        var grid = GeneralUtil.map.tilesArray;
+
+
+        //get the boundary of the current square
+
+        Tile firstTileTop = null;
+        Tile lastTileBottom = null;
+
+        for (int x = 0; x < grid.GetLength(0); x++)
+        {
+            for (int y  = 0; y < grid.GetLength(1); y++)
+            {
+                if (firstTileTop == null && GeneralUtil.dataBank.allowedBuildingLocations.Contains(grid[x,y].coord)) 
+                {
+                    firstTileTop = grid[x,y];
+                }
+
+                if (GeneralUtil.dataBank.allowedBuildingLocations.Contains(grid[x, y].coord))
+                {
+                    lastTileBottom = grid[x, y];
+                }
+            }
+        }
+
+        Tile firstTileLeft = null;
+        Tile lastTileRight = null;
+
+        for (int y = 0; y < grid.GetLength(1); y++)
+        {
+            for (int x = 0; x < grid.GetLength(0); x++)
+            {
+                if (firstTileLeft == null && GeneralUtil.dataBank.allowedBuildingLocations.Contains(grid[x, y].coord))
+                {
+                    firstTileLeft = grid[x, y];
+                }
+
+                if (GeneralUtil.dataBank.allowedBuildingLocations.Contains(grid[x, y].coord))
+                {
+                    lastTileRight = grid[x, y];
+                }
+            }
+        }
+
+        var pos1 = new Vector3(firstTileTop.TopLeft.x,0,firstTileLeft.BotLeft.z);
+        var pos2 = new Vector3(lastTileBottom.BotRight.x,0,lastTileRight.TopRight.z);
+
+
+
+
+
+
+
+        listOfPoissantsPoints = new List<PoissantPoints>();
+
+        foreach (var building in GeneralUtil.dataBank.buildingDict.Values)
+        {
+            listOfPoissantsPoints.Add(new PoissantPoints(building.buildingID.transform.position, building.stats.poissantRadius, true));
+        }
+
+
+        float width = pos2.x - pos1.x;
+        float height = pos1.z - pos2.z;
+
+        int tries = 0;
+
+
+        for (int i = 0; i < 50; i++)
+        {
+            float x = Random.Range(pos1.x, pos1.x + width);
+            float y = Random.Range(pos2.z, pos2.z + height);
+
+            bool add = true;
+
+            var newPossiblePoints = new PoissantPoints(new Vector3(x, 0, y), GeneralUtil.buildingScritpable.buildingStats[buildingIndex].poissantRadius, false);
+
+            foreach (var alreadyTherePoint in listOfPoissantsPoints)
+            {
+                if (!FarEnoughApart(newPossiblePoints, alreadyTherePoint)) 
+                {
+                    tries++;
+                    add = false;
+                    break;
+                }
+            }
+
+            if (add == true) 
+            {
+                listOfPoissantsPoints.Add(newPossiblePoints);
+            }
+
+            if (tries == 8) 
+            {
+                break;
+            }
+        }
+
+        //deletes the point if in a non allowed area just for sanity reasons  and gets rid of points from other buidlings
+        for (int i = listOfPoissantsPoints.Count; i-- > 0;)
+        {
+            var tile = GeneralUtil.WorldPosToTile(listOfPoissantsPoints[i].position);
+
+            if (!GeneralUtil.dataBank.allowedBuildingLocations.Contains(tile.midCoord) || listOfPoissantsPoints[i].buildingHere)
+                listOfPoissantsPoints.RemoveAt(i);
+        }
+    }
+
+
+    /// <summary>
+    /// returns true if it does not interfere
+    /// </summary>
+    /// <param name="proposedPoint"></param>
+    /// <param name="establishedPoint"></param>
+    /// <returns></returns>
+    private bool FarEnoughApart(PoissantPoints proposedPoint, PoissantPoints establishedPoint) 
+    {
+        float distance = Vector3.Distance(proposedPoint.position, establishedPoint.position);
+
+        float sumOfRadii = proposedPoint.radius + establishedPoint.radius;
+
+        if (distance > sumOfRadii)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+
+
 
     public void CallDrawGraph()
     {
@@ -623,6 +766,45 @@ public class MapInteraction : MonoBehaviour
 
     #endregion
 
+    private void OnDrawGizmos()
+    {
+        if (listOfPoissantsPoints.Count > 0) 
+        {
+            foreach (var point in listOfPoissantsPoints)
+            {
+                if (point.buildingHere) 
+                {
+                    Gizmos.color = Color.red;
+                    Gizmos.DrawSphere(point.position, 0.5f);
+                    Gizmos.DrawWireSphere(point.position, point.radius);
+                }
+                else 
+                {
+                    Gizmos.color = Color.green;
+                    Gizmos.DrawSphere(point.position, 0.5f);
+                }
 
-    
+            }
+        }
+    }
+
+}
+
+
+
+
+public class PoissantPoints 
+{
+    public Vector3 position;
+    public float radius;
+    public bool buildingHere;
+
+
+    public PoissantPoints(Vector3 pos, float radius, bool buidling) 
+    {
+        position = pos;
+        this.radius = radius; 
+        buildingHere = buidling;
+    }
+   
 }
