@@ -51,29 +51,23 @@ public class MineBuilding : MonoBehaviour, IAgentInteractions, ITimeTickers, IBu
 
     public void HourTick()
     {
-        buildingId.GetResourceNearby();
+
 
         if (GeneralUtil.timeCycle.isNightTime)
         {
             buildingId.buildingData.shut = true;
-
-            //foreach (var worker in buildingId.buildingData.workers) //this gives the workers the job 
-            //{
-            //    if (worker.refToHouse != null)
-            //    {
-            //        if (worker.readyToWork == true && worker.currAction == AgentData.CURRENT_ACTION.WORKING)
-            //        {
-            //            worker.SetAgentPathing(buildingId.buildingData.entrancePoints[0], worker.refToHouse.entrancePoints[0], true);
-            //            GeneralUtil.map.SpawnAgent(worker.guid, GeneralUtil.map.tilesArray[buildingId.buildingData.entrancePoints[0].x, buildingId.buildingData.entrancePoints[0].y]);
-            //            worker.readyToWork = false;
-            //            worker.atWork = false;
-            //        }
-            //    }
-            //}
         }
         else
         {
             buildingId.buildingData.shut = false;
+
+
+            buildingId.GetResourceNearby();
+
+            GeneralUtil.resourceBank.ChangeWoodAmount((int)(buildingId.buildingData.stats.hourlyProductionWSFS[0] * (buildingId.buildingData.workers.Count / buildingId.buildingData.maxWorkers * 1.0f)));
+            GeneralUtil.resourceBank.ChangeStoneAmount((int)(buildingId.buildingData.stats.hourlyProductionWSFS[1] * (buildingId.buildingData.workers.Count / buildingId.buildingData.maxWorkers * 1.0f)));
+            GeneralUtil.resourceBank.ChangeFoodAmount((int)(buildingId.buildingData.stats.hourlyProductionWSFS[2] * (buildingId.buildingData.workers.Count / buildingId.buildingData.maxWorkers * 1.0f)));
+            GeneralUtil.resourceBank.ChangeSandAmount((int)(buildingId.buildingData.stats.hourlyProductionWSFS[3] * (buildingId.buildingData.workers.Count / buildingId.buildingData.maxWorkers * 1.0f)));
 
             foreach (var worker in buildingId.buildingData.workers) //this gives the workers the job 
             {

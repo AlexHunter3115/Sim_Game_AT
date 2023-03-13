@@ -235,11 +235,6 @@ public static class GeneralUtil
     }
 
 
-
-
-
-
-
     
     public static int GetRandomNumberExcludingRange(int min, int max, int excludeStart, int excludeEnd)
     {
@@ -288,6 +283,7 @@ public static class GeneralUtil
     public static List<Tile> GetResourcesCloseSpiral(Vector2Int start, int range)
     {
         var tileCloseBy = new List<Tile>();
+        tileCloseBy.Add(map.tilesArray[start.x, start.y]);
 
         int dir = 0;
         // 0 right
@@ -297,7 +293,6 @@ public static class GeneralUtil
         
         int countingDirection = 0;  // this counts the amoutn of ups
         bool countedThisCycle = false;
-
 
         int currentDirectionCycle = -1;
         int step = 1;
@@ -387,10 +382,10 @@ public static class GeneralUtil
         {TileType.GRASS, 1.2f},
         {TileType.HILL, 3f},
         {TileType.SNOW, 6f},
-        {TileType.WATER, 9f},
-        {TileType.NULL, 100f},
+        {TileType.WATER, 8f},
+        {TileType.NULL, 30},
         {TileType.PATH, 0.3f},
-        {TileType.BLOCKED, 100f},
+        {TileType.BLOCKED, 30},
         {TileType.ENTRANCE, 0f}
     };
 

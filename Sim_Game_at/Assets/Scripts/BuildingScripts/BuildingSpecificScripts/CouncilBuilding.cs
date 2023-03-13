@@ -4,7 +4,7 @@ using UnityEngine.Events;
 public class CouncilBuilding : MonoBehaviour, IAgentInteractions, ITimeTickers, IBuildingActions
 {
     private BuildingIdentifier buildingId;
-  
+
 
     private void Start()
     {
@@ -48,17 +48,20 @@ public class CouncilBuilding : MonoBehaviour, IAgentInteractions, ITimeTickers, 
 
             var agent = GeneralUtil.map.SpawnAgent(newCitizen.guid, GeneralUtil.map.tilesArray[destination.x, destination.y]);   //spawns the agent
 
-            if (GeneralUtil.WorldPosToTile(agent.transform.position).coord == buildingId.buildingData.entrancePoints[0]) 
+            if (GeneralUtil.WorldPosToTile(agent.transform.position).coord == buildingId.buildingData.entrancePoints[0])
             {
-                destination = new Vector2Int(buildingId.buildingData.entrancePoints[0].x + 1, buildingId.buildingData.entrancePoints[0].y +1);
+                destination = new Vector2Int(buildingId.buildingData.entrancePoints[0].x + 1, buildingId.buildingData.entrancePoints[0].y + 1);
                 agent.GetComponent<Agent>().SetPosition(GeneralUtil.Vector2Tile(destination));
             }
 
             newCitizen.SetAgentPathing(destination, buildingId.buildingData.entrancePoints[0], true);  //sets the pathing to the workplace at the start
+
+            GeneralUtil.resourceBank.ChangePeopleAmount(1);
         }
 
 
         GeneralUtil.dataBank.RecalcAllAllowedTiles();
+        GeneralUtil.resourceBank.AddStartingAmount();
     }
 
 
@@ -96,7 +99,6 @@ public class CouncilBuilding : MonoBehaviour, IAgentInteractions, ITimeTickers, 
 
     public void HourTick()
     {
-        buildingId.GetResourceNearby();
 
         if (GeneralUtil.timeCycle.isNightTime)
         {
@@ -119,28 +121,30 @@ public class CouncilBuilding : MonoBehaviour, IAgentInteractions, ITimeTickers, 
         else
         {
             buildingId.buildingData.shut = false;
+            
+            GeneralUtil.resourceBank.ChangeWoodAmount((int)(buildingId.buildingData.stats.hourlyProductionWSFS[0] * (buildingId.buildingData.workers.Count / buildingId.buildingData.maxWorkers * 1.0f)));
+            GeneralUtil.resourceBank.ChangeStoneAmount((int)(buildingId.buildingData.stats.hourlyProductionWSFS[1] * (buildingId.buildingData.workers.Count / buildingId.buildingData.maxWorkers * 1.0f)));
+            GeneralUtil.resourceBank.ChangeFoodAmount((int)(buildingId.buildingData.stats.hourlyProductionWSFS[2] * (buildingId.buildingData.workers.Count / buildingId.buildingData.maxWorkers * 1.0f)));
+            GeneralUtil.resourceBank.ChangeSandAmount((int)(buildingId.buildingData.stats.hourlyProductionWSFS[3] * (buildingId.buildingData.workers.Count / buildingId.buildingData.maxWorkers * 1.0f)));
+
+            buildingId.GetResourceNearby();
 
             foreach (var worker in buildingId.buildingData.workers) //this gives the workers the job 
             {
-                if (worker.atWork)
+                if (worker.readyToWork == true && worker.currAction == AgentData.CURRENT_ACTION.WORKING && worker.atWork)
                 {
-                    if (worker.readyToWork == true && worker.currAction == AgentData.CURRENT_ACTION.WORKING)
+                    for (int i = 0; i < buildingId.buildingData.tilesWithResourcesInRange.Count; i++)
                     {
-                        for (int i = 0; i < buildingId.buildingData.tilesWithResourcesInRange.Count; i++)
+                        if (buildingId.buildingData.tilesWithResourcesInRange[i].tileObject.GetComponent<Resource>().available)
                         {
-                           // Debug.Log(buildingId.buildingData.tilesWithResourcesInRange[i].coord);
-                            if (buildingId.buildingData.tilesWithResourcesInRange[i].tileObject.GetComponent<Resource>().available)
+                            buildingId.buildingData.tilesWithResourcesInRange[i].tileObject.GetComponent<Resource>().available = false;
+                            if (worker.SetAgentPathing(buildingId.buildingData.entrancePoints[0], buildingId.buildingData.tilesWithResourcesInRange[i].coord))
                             {
-                                buildingId.buildingData.tilesWithResourcesInRange[i].tileObject.GetComponent<Resource>().available = false;
-                                if (worker.SetAgentPathing(buildingId.buildingData.entrancePoints[0], buildingId.buildingData.tilesWithResourcesInRange[i].coord))
-                                {
-                                    GeneralUtil.map.SpawnAgent(worker.guid, GeneralUtil.map.tilesArray[buildingId.buildingData.entrancePoints[0].x, buildingId.buildingData.entrancePoints[0].y]);
-                                    worker.readyToWork = false;
-                                }
-                                buildingId.buildingData.tilesWithResourcesInRange.RemoveAt(i);
-                                break;
-
+                                GeneralUtil.map.SpawnAgent(worker.guid, GeneralUtil.map.tilesArray[buildingId.buildingData.entrancePoints[0].x, buildingId.buildingData.entrancePoints[0].y]);
+                                worker.readyToWork = false;
                             }
+                            buildingId.buildingData.tilesWithResourcesInRange.RemoveAt(i);
+                            break;
                         }
                     }
                 }

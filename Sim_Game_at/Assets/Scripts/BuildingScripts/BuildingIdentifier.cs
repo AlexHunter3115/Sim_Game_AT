@@ -1,3 +1,4 @@
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -29,7 +30,12 @@ public class BuildingIdentifier : MonoBehaviour
         buildingIndex = index;
         buildingData = new BuildingData( middleTile.coord,stats);
         this.guid = buildingData.guid;
-        buildingData.takenTiles = controlledTiles;
+        buildingData.takenTiles.Clear();
+        foreach (var tile in controlledTiles)
+        {
+            buildingData.takenTiles.Add(tile);
+        }
+
         buildingData.buildingID = this;
 
         var entranceLocation = new List<Vector2Int>();
@@ -43,6 +49,7 @@ public class BuildingIdentifier : MonoBehaviour
         }
 
         buildingData.entrancePoints = entranceLocation;
+
     }
 
     public void LandedOn(AgentData agent)
@@ -122,7 +129,6 @@ public class BuildingIdentifier : MonoBehaviour
 
     public void DeleteBuilding()
     {
-
         if (buildingIndex == 0)
             return;
 
@@ -137,12 +143,22 @@ public class BuildingIdentifier : MonoBehaviour
         {
             Color pixelColor = texture.GetPixel(item.coord.x, item.coord.y);
 
-            if (pixelColor == Color.green)
+            if (pixelColor == Color.green) 
+            {
                 item.tileType = TileType.GRASS;
-            else if (pixelColor == GeneralUtil.colorBrown)
+            }
+            else if (pixelColor == GeneralUtil.colorBrown) 
+            {
                 item.tileType = TileType.HILL;
-            else if (pixelColor == Color.white)
+            }
+            else if (pixelColor == Color.white) 
+            {
                 item.tileType = TileType.SNOW;
+            }
+            else if (pixelColor == Color.cyan)
+            {
+                item.tileType = TileType.WATER;
+            }
         }
 
         texture.filterMode = FilterMode.Point;
@@ -167,6 +183,12 @@ public class BuildingIdentifier : MonoBehaviour
         }
 
         GeneralUtil.dataBank.buildingDict.Remove(guid);
+
+        GeneralUtil.resourceBank.woodMaxAmount -= buildingData.stats.BankAmountWSFS[0];
+        GeneralUtil.resourceBank.stoneMaxAmount -= buildingData.stats.BankAmountWSFS[1];
+        GeneralUtil.resourceBank.foodMaxAmount -= buildingData.stats.BankAmountWSFS[2];
+        GeneralUtil.resourceBank.sandMaxAmount -= buildingData.stats.BankAmountWSFS[3];
+
         Destroy(gameObject);
     }
 
@@ -189,6 +211,64 @@ public class BuildingIdentifier : MonoBehaviour
             if (buildingData.stats.whatResourceLookingFor.Contains((int)comp.type)) 
             {
                 buildingData.tilesWithResourcesInRange.Add(comp.tile);
+            }
+        }
+
+
+        if (GeneralUtil.resourceBank.stoneAmount / (float)GeneralUtil.resourceBank.stoneMaxAmount > 0.9f && buildingData.stats.whatResourceLookingFor.Contains(0)) 
+        {
+            for (int i = buildingData.tilesWithResourcesInRange.Count; i-- > 0;)
+            {
+                if (buildingData.tilesWithResourcesInRange[i].tileObject != null)
+                {
+                    var comp = buildingData.tilesWithResourcesInRange[i].tileObject.GetComponent<Resource>();
+
+                    if (!comp.available)
+                        continue;
+
+                    if ((int)comp.type == 0)
+                    {
+                        buildingData.tilesWithResourcesInRange.RemoveAt(i);
+                    }
+                }
+            }
+        }
+
+        if (GeneralUtil.resourceBank.foodAmount / (float)GeneralUtil.resourceBank.foodMaxAmount > 0.9f && buildingData.stats.whatResourceLookingFor.Contains(1))
+        {
+            for (int i = buildingData.tilesWithResourcesInRange.Count; i-- > 0;)
+            {
+                if (buildingData.tilesWithResourcesInRange[i].tileObject != null) 
+                {
+                    var comp = buildingData.tilesWithResourcesInRange[i].tileObject.GetComponent<Resource>();
+
+                    if (!comp.available)
+                        continue;
+
+                    if ((int)comp.type == 1)
+                    {
+                        buildingData.tilesWithResourcesInRange.RemoveAt(i);
+                    }
+                }
+            }
+        }
+
+        if (GeneralUtil.resourceBank.woodAmount / (float)GeneralUtil.resourceBank.woodMaxAmount > 0.9f && buildingData.stats.whatResourceLookingFor.Contains(2))
+        {
+            for (int i = buildingData.tilesWithResourcesInRange.Count; i-- > 0;)
+            {
+                if (buildingData.tilesWithResourcesInRange[i].tileObject != null)
+                {
+                    var comp = buildingData.tilesWithResourcesInRange[i].tileObject.GetComponent<Resource>();
+
+                    if (!comp.available)
+                        continue;
+
+                    if ((int)comp.type == 2)
+                    {
+                        buildingData.tilesWithResourcesInRange.RemoveAt(i);
+                    }
+                }
             }
         }
     }

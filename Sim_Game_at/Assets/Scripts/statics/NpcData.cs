@@ -36,8 +36,7 @@ public class AgentData : Entity, ITimeTickers
     #region stats
 
     public string name;
-    public float health;
-    public float hunger;
+    public float health= 100;
     public float stamina;
     public float speed;
     public float fertilityPerc;
@@ -59,7 +58,6 @@ public class AgentData : Entity, ITimeTickers
         HOMELESS
     }
     public CURRENT_ACTION currAction;
-    public CURRENT_ACTION hardSetAction;
 
     public int inventoryWood;
     public int inventoryStone;
@@ -126,7 +124,7 @@ public class AgentData : Entity, ITimeTickers
             name = GeneralUtil.maleNames[Random.Range(0, 49)];
         }
 
-        fertilityPerc = Random.Range(0.01f, 0.1f);
+        fertilityPerc = Random.Range(0.05f, 0.15f);
 
         GeneralUtil.timeCycle.OnFunctionCalled.AddListener(EndOfDayCall);
     }
@@ -169,7 +167,7 @@ public class AgentData : Entity, ITimeTickers
         return true;
     }
 
-    public void Kill()
+    private void Kill()
     {
         if (refToWorkPlace != null)
         {
@@ -181,9 +179,26 @@ public class AgentData : Entity, ITimeTickers
             refToWorkPlace.buildingID.RemoveWorker(guid);
         }
 
-        GeneralUtil.dataBank.npcDict.Remove(guid);
+        GeneralUtil.resourceBank.ChangePeopleAmount(-1);
+        //GeneralUtil.dataBank.npcDict.Remove(guid);
     }
 
+    public void ChangeHealth(int val) 
+    {
+        health += val;
+
+
+        if (health > 100) 
+        {
+            health = 100;
+        }
+
+        if (health <= 0) 
+        {
+            Kill();
+            GeneralUtil.dataBank.npcDict.Remove(guid);
+        }
+    }
 
 
     #region Behaviour stuff
@@ -297,6 +312,8 @@ public class AgentData : Entity, ITimeTickers
                         this.SetAgentPathing(GeneralUtil.WorldPosToTile(agentObj.transform.position).coord, this.refToWorkPlace.entrancePoints[0], true);
                         this.readyToWork = false;
                         this.atWork = false;
+                        //coul;d also be an issue of anim
+                        agentObj.GetComponent<Agent>().Anim.SetBool("Walking", true);
                         currAction = CURRENT_ACTION.WORKING;
                     }
                 }

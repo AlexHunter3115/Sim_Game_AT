@@ -59,9 +59,6 @@ public class CalculationTest : MonoBehaviour
 
             bool calcNewBuilding = false;
             
-
-
-
             if (calcNewBuilding) 
             {
                 // the lower the better     also the importance is the higer the more important starst at 1
@@ -78,8 +75,6 @@ public class CalculationTest : MonoBehaviour
                 Debug.Log($"importance for Sand: {importanceSand}\n");
                 Debug.Log($"importance for Food: {importanceFood}\n");
             }
-
-
         }
     }
 

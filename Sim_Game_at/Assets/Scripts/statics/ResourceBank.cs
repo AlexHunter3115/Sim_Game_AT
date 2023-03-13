@@ -10,32 +10,35 @@ public class ResourceBank : MonoBehaviour
     public int sandAmount = 0;
     public int peopleAmount = 0;
 
-    private void Awake()
-    {
-        GeneralUtil.resourceBank = this;
-    }
+
+    public int woodMaxAmount = 0;
+    public int stoneMaxAmount = 0;
+    public int foodMaxAmount = 0;
+    public int sandMaxAmount = 0;
+    private void Awake() => GeneralUtil.resourceBank = this;
 
     private void Start()
     {
-        ChangeWoodAmount(0);
-        ChangeSandAmount(0);
-        ChangeStoneAmount(0);
-        ChangeFoodAmount(0);
+       
     }
 
     public void ChangeWoodAmount(int amount) 
     {
-        if (amount >= 0)
+        if (amount >= 0)  // if its a positive change
         {
             woodAmount += amount;
-            GeneralUtil.Ui.SetWoodResText(woodAmount);
+
+            if (woodAmount > woodMaxAmount)
+                woodAmount = woodMaxAmount;
+
+            GeneralUtil.Ui.SetWoodResText(woodAmount,woodMaxAmount);
         }
-        else
+        else   // if its a negative change
         {
             if (CheckWoodAmount(amount))
             {
                 woodAmount += amount;
-                GeneralUtil.Ui.SetWoodResText(woodAmount);
+                GeneralUtil.Ui.SetWoodResText(woodAmount, woodMaxAmount);
             }
         }
 
@@ -46,14 +49,18 @@ public class ResourceBank : MonoBehaviour
         if (amount >= 0)
         {
             sandAmount += amount;
-            GeneralUtil.Ui.SetSandResText(foodAmount);
+
+            if (sandAmount > sandMaxAmount)
+                sandAmount = sandMaxAmount;
+
+            GeneralUtil.Ui.SetSandResText(sandMaxAmount, sandMaxAmount);
         }
         else
         {
             if (CheckSandAmount(amount))
             {
                 sandAmount += amount;
-                GeneralUtil.Ui.SetSandResText(sandAmount);
+                GeneralUtil.Ui.SetSandResText(sandAmount, sandMaxAmount);
             }
         }
     }
@@ -63,14 +70,18 @@ public class ResourceBank : MonoBehaviour
         if (amount >= 0)
         {
             stoneAmount += amount;
-            GeneralUtil.Ui.SetStoneResText(stoneAmount);
+
+            if (stoneAmount > stoneMaxAmount)
+                stoneAmount = stoneMaxAmount;
+
+            GeneralUtil.Ui.SetStoneResText(stoneAmount, stoneMaxAmount);
         }
         else
         {
             if (CheckStoneAmount(amount))
             {
                 stoneAmount += amount;
-                GeneralUtil.Ui.SetStoneResText(stoneAmount);
+                GeneralUtil.Ui.SetStoneResText(stoneAmount, stoneMaxAmount);
             }
         }
     }
@@ -80,22 +91,39 @@ public class ResourceBank : MonoBehaviour
         if (amount >= 0) 
         {
             foodAmount += amount;
-            GeneralUtil.Ui.SetFoodResText(foodAmount);
+
+            if (foodAmount > foodMaxAmount)
+                foodAmount = foodMaxAmount;
+
+            GeneralUtil.Ui.SetFoodResText(foodAmount,foodMaxAmount);
         }
         else 
         {
             if (CheckFoodAmount(amount))
             {
                 foodAmount += amount;
-                GeneralUtil.Ui.SetFoodResText(foodAmount);
+                GeneralUtil.Ui.SetFoodResText(foodAmount, foodMaxAmount);
             }
         }
     }
 
 
-    public void SetPeopleAmount(int amount) 
+    public void ChangePeopleAmount(int amount) 
     {
-        peopleAmount = amount;
+
+        if (amount >= 0)
+        {
+            peopleAmount += amount;
+            GeneralUtil.Ui.SetPeopleAmountText(peopleAmount);
+        }
+        else
+        {
+            if (CheckFoodAmount(amount))
+            {
+                peopleAmount += amount;
+                GeneralUtil.Ui.SetPeopleAmountText(peopleAmount);
+            }
+        }
     }
 
 
@@ -139,4 +167,22 @@ public class ResourceBank : MonoBehaviour
         return true;
     }
 
+    public bool CheckPeopleAmount(int amount)
+    {
+        if (peopleAmount - amount < 0)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+
+    public void AddStartingAmount() 
+    {
+        ChangeWoodAmount(300);
+        ChangeSandAmount(300);
+        ChangeStoneAmount(300);
+        ChangeFoodAmount(300);
+    }
 }

@@ -70,7 +70,13 @@ public class MapCreation : MonoBehaviour
     private Vector3 topRight = new Vector3();
 
     private List<Vector3> textureVertecies = new List<Vector3>();
-    public Tile ClickedTile = null;
+    public Tile clickedTile = null;
+
+    public CAtile[,] currCAgrid = new CAtile[0, 0];
+    private List<Vector2Int> placesForRocks = new List<Vector2Int>();
+
+    public Texture2D textMap;
+
 
     private void Awake()
     {
@@ -80,6 +86,8 @@ public class MapCreation : MonoBehaviour
 
     private void Start()
     {
+        currCAgrid = new CAtile[textSize, textSize];
+
         plane = GameObject.CreatePrimitive(PrimitiveType.Plane);
         plane.transform.parent = transform;
         plane.transform.localScale = new Vector3(scale, scale, scale);
@@ -87,7 +95,7 @@ public class MapCreation : MonoBehaviour
 
         tilesArray = PerlinNoise2D(scale, octaves, pers, lacu, offsetX, offsetY);
         
-        UpdateMapTexture();
+        CreateMapTexture();
         plane.transform.Translate(new Vector3(200, 0, 200));
 
         MeshRenderer meshRenderer = plane.GetComponent<MeshRenderer>();
@@ -129,10 +137,13 @@ public class MapCreation : MonoBehaviour
         plane.transform.Rotate(new Vector3(0, 180, 0));    // this is a temp fix but i think the issue is with the for loop above cheking x first other than y
 
         GenerateResources();
+
+        SetCAgrid();
     }
 
+
     // in a way the setting of the weight can be here as we are redrawin the map but should theroatically be put somewhere else
-    public void UpdateMapTexture()
+    public void CreateMapTexture()
     {
         Texture2D texture = new Texture2D(textSize, textSize);
 
@@ -175,9 +186,236 @@ public class MapCreation : MonoBehaviour
         texture.filterMode = FilterMode.Point;
         texture.Apply();
 
-        plane.GetComponent<Renderer>().material.mainTexture =  texture;
+        textMap = texture;
+
+        plane.GetComponent<Renderer>().material.mainTexture = textMap;
     }
 
+    public GameObject SpawnAgent(string guid, Tile exitPoint) 
+    {
+        var objRef = Instantiate(agent, transform);
+        var comp = objRef.GetComponent<Agent>();
+
+        comp.LoadData(guid);
+        comp.SetPosition(exitPoint);
+
+        return objRef;
+    }
+
+    public void DrawAllowedTiles() 
+    {
+        Texture2D texture = new Texture2D(textSize, textSize);
+
+        for (int y = 0; y < tilesArray.GetLength(0); y++)
+        {
+            for (int x = 0; x < tilesArray.GetLength(1); x++)
+            {
+                var newVec = new Vector2(x, y);
+
+                if (GeneralUtil.dataBank.allowedBuildingLocations.Contains(newVec))
+                    texture.SetPixel(x, y, Color.green);
+                else
+                    texture.SetPixel(x, y, Color.red);
+            }
+        }
+
+        texture.filterMode = FilterMode.Point;
+        texture.Apply();
+
+        plane.GetComponent<Renderer>().material.mainTexture = texture;
+    }
+
+
+    #region perTurn Gen
+    
+
+    public void RespawnSomeTrees(int amountOfTries) 
+    {
+
+
+        GeneralUtil.Ui.SetProgressState(1);
+        for (int i = 0; i < amountOfTries; i++)
+        {
+            var randomCoor = new Vector2Int(Random.Range(0, textSize - 1), Random.Range(0, textSize - 1));
+
+            for (int k = -1; k <= 1; k++)
+            {
+                for (int j = -1; j <= 1; j++)
+                {
+                    int neighborX = randomCoor.x + k;
+                    int neighborY = randomCoor.y + j;
+
+                    if (neighborX < 0 || neighborX >= textSize || neighborY < 0 || neighborY >= textSize)
+                    {
+                        continue;
+                    }
+
+                    if (tilesArray[neighborX,neighborY].tileType == TileType.GRASS   &&    tilesArray[neighborX, neighborY].tileObject != null) 
+                    {
+                        SpawnTreeType(tilesArray[neighborX, neighborY]);
+                        currCAgrid[neighborX, neighborY].alive = true;
+                    }
+                }
+            }
+        }
+    }
+
+    public void RespawnSomeBushes(int amoutnOfTries) 
+    {
+        GeneralUtil.Ui.SetProgressState(0);
+        for (int i = 0; i < amoutnOfTries; i++)
+        {
+            var randomCoor = new Vector2Int(Random.Range(0, textSize - 1), Random.Range(0, textSize - 1));
+
+            if (tilesArray[randomCoor.x, randomCoor.y].tileType == TileType.GRASS && tilesArray[randomCoor.x, randomCoor.y].tileObject != null)
+            {
+                SpawnBushType(tilesArray[randomCoor.x, randomCoor.y]);
+                currCAgrid[randomCoor.x, randomCoor.y].alive = false;
+                currCAgrid[randomCoor.x, randomCoor.y].interactable = false;
+            }
+        }
+    }
+
+    public void GrowTreesPerTurn() 
+    {
+
+        GeneralUtil.Ui.SetProgressState(2);
+
+        var newCaGrid = new CAtile[textSize, textSize]; 
+
+        for (int x = 0; x < currCAgrid.GetLength(0); x++)  //copies the grid and runs the tick
+        {
+            for (int y = 0; y < currCAgrid.GetLength(1); y++)
+            {
+                if (tilesArray[x, y].tileType != TileType.GRASS)
+                    currCAgrid[x, y] = new CAtile(false, false);
+
+                newCaGrid[x, y] = new CAtile();
+
+                if (!currCAgrid[x, y].interactable)
+                    continue;
+
+                currCAgrid[x, y].Tick(tilesArray[x, y]);
+
+                newCaGrid[x, y] = new CAtile(currCAgrid[x, y]);
+            }
+        }
+
+
+        for (int x = 0; x < newCaGrid.GetLength(0); x++)
+        {
+            for (int y = 0; y < newCaGrid.GetLength(1); y++)
+            {
+                int neigboursNum = CountNeighbors(x, y, newCaGrid);
+
+                if (neigboursNum <= 2) //set to die
+                {
+                    currCAgrid[x, y].sick = true;
+                }
+                else if (neigboursNum >2  &&  neigboursNum <= 4)  //live
+                {
+                    currCAgrid[x, y].alive = true;
+                    currCAgrid[x, y].sick = false;
+                    currCAgrid[x, y].daysLeft = 1;
+
+                    if (tilesArray[x,y].tileObject == null) 
+                    {
+                        SpawnTreeType(tilesArray[x, y]);
+                    }
+                }
+                else if (neigboursNum > 4) //set to die
+                {
+                    currCAgrid[x, y].sick = true;
+                }
+            }
+        }
+    }
+
+    private int CountNeighbors(int x, int y, CAtile[,] copyGrid)
+    {
+        int count = 0;
+
+        for (int i = -1; i <= 1; i++)
+        {
+            for (int j = -1; j <= 1; j++)
+            {
+                if (i == 0 && j == 0)
+                {
+                    continue;
+                }
+
+                int neighborX = x + i;
+                int neighborY = y + j;
+
+                if (neighborX < 0 || neighborX >= copyGrid.GetLength(0) || neighborY < 0 || neighborY >= copyGrid.GetLength(1))
+                {
+                    continue;
+                }
+
+                if (copyGrid[neighborX, neighborY].alive && copyGrid[neighborX, neighborY].interactable)
+                {
+                    count++;
+                }
+            }
+        }
+
+        return count;
+    }
+
+    private void SpawnTreeType(Tile tile) 
+    {
+        tile.busy = true;
+        var objRef = Instantiate(trees.Count == 0 ? trees[0] : trees[Random.Range(0, trees.Count)]);
+        objRef.GetComponent<Resource>().tile = tile;
+
+        objRef.transform.parent = resourceHolder.transform;
+        objRef.transform.position = new Vector3(tile.midCoord.x, 0f, tile.midCoord.z);
+
+        GeneralUtil.dataBank.numOfResourcesWood++;
+
+        tile.tileObject = objRef;
+    }
+    
+    private void SpawnStoneType(Tile tile) 
+    {
+        tile.busy = true;
+        var objRef = Instantiate(rocks.Count == 0 ? rocks[0] : rocks[Random.Range(0, rocks.Count)]);
+
+        objRef.transform.parent = resourceHolder.transform;
+        objRef.transform.position = new Vector3(tile.midCoord.x, 0.25f, tile.midCoord.z);
+
+        GeneralUtil.dataBank.numOfResourcesStone++;
+
+        tile.tileObject = objRef;
+    }
+    
+    private void SpawnBushType(Tile tile) 
+    {
+        tile.busy = true;
+        var objRef = Instantiate(bushes.Count == 0 ? bushes[0] : bushes[Random.Range(0, bushes.Count)]);
+        objRef.GetComponent<Resource>().tile = tile;
+
+        objRef.transform.parent = resourceHolder.transform;
+        objRef.transform.position = new Vector3(tile.midCoord.x, 0.1f, tile.midCoord.z);
+
+        GeneralUtil.dataBank.numOfResourcesFood++;
+
+        objRef.transform.rotation = Quaternion.Euler(0, Random.Range(0, 360), 0);
+        tile.tileObject = objRef;
+    }
+
+    public IEnumerator CallNewTurnSpawn(int bushAmount, int treeAmount)
+    {
+        RespawnSomeBushes(bushAmount);
+        RespawnSomeTrees(treeAmount);
+        GrowTreesPerTurn();
+
+        yield return null;
+    }
+
+    #endregion
+
+    #region Initial map generation
     public Tile[,] PerlinNoise2D(float scale, int octaves, float persistance, float lacu, int offsetX, int offsetY)
     {
         if (threasholdHill <= threasholdGrass)
@@ -255,138 +493,6 @@ public class MapCreation : MonoBehaviour
 
         return tiles;
     }
-
-    public void GenerateResources() 
-    {
-        var voronoiOutcome = Voronoi();
-        var regionsOfGreen = voronoiOutcome.Length / 3;
-
-        for (int i = 0; i < regionsOfGreen; i++)//this is how many will have the trees
-        {
-            for (int j = 0; j < voronoiOutcome[i].Count; j++)
-            {
-                var ran = Random.value;
-
-                if (ran < 0.1f) 
-                {
-                    if (voronoiOutcome[i][j].tileType == TileType.GRASS) 
-                    {
-                        voronoiOutcome[i][j].busy = true;
-                        var objRef = Instantiate(trees.Count == 0 ? trees[0] : trees[Random.Range(0, trees.Count)]);
-                        objRef.GetComponent<Resource>().tile = voronoiOutcome[i][j];
-
-                        GeneralUtil.dataBank.numOfResourcesWood++;
-
-                        objRef.transform.parent = resourceHolder.transform;
-                        objRef.transform.position = new Vector3(voronoiOutcome[i][j].midCoord.x, 0, voronoiOutcome[i][j].midCoord.z);
-
-                        voronoiOutcome[i][j].tileObject = objRef;
-                    }
-                }
-            }
-        }
-        foreach (var tile in tilesArray)
-        {
-            if (tile.busy == false) 
-            {
-                float ran = float.MinValue;
-
-                switch (tile.tileType)
-                {
-                    case TileType.GRASS:
-
-                        ran = Random.Range(0.000f, 1.000f);
-
-                        if (ran < percOfBushInGrass)
-                        {
-                            tile.busy = true;
-                            var objRef = Instantiate(bushes.Count == 0 ? bushes[0] : bushes[Random.Range(0, bushes.Count)]);
-                            objRef.GetComponent<Resource>().tile = tile;
-
-                            objRef.transform.parent = resourceHolder.transform;
-                            objRef.transform.position = new Vector3(tile.midCoord.x, 0.1f, tile.midCoord.z);
-
-                            GeneralUtil.dataBank.numOfResourcesFood++;
-
-                            objRef.transform.rotation = Quaternion.Euler(0, Random.Range(0, 360), 0);
-                            tile.tileObject = objRef;
-                        }
-
-                        ran = Random.Range(0.000f, 1.000f);
-                        if (tile.busy == false) 
-                        {
-                            if (ran < percOfBushInGrass)
-                            {
-                                tile.busy = true;
-                                var objRef = Instantiate(trees.Count == 0 ? trees[0] : trees[Random.Range(0, trees.Count)]);
-                                objRef.GetComponent<Resource>().tile = tile;
-
-                                objRef.transform.parent = resourceHolder.transform;
-                                objRef.transform.position = new Vector3(tile.midCoord.x, 0f, tile.midCoord.z);
-
-                                GeneralUtil.dataBank.numOfResourcesWood++;
-
-                                tile.tileObject = objRef;
-                            }
-                        }
-
-                        if (tile.busy == false) 
-                        {
-                            if (ran < percOfStoneOnGrass)
-                            {
-                                tile.busy = true;
-                                var objRef = Instantiate(rocks.Count == 0 ? rocks[0] : rocks[Random.Range(0, rocks.Count)]);
-                                objRef.GetComponent<Resource>().tile = tile;
-
-                                objRef.transform.parent = resourceHolder.transform;
-                                objRef.transform.position = new Vector3(tile.midCoord.x, 0.25f, tile.midCoord.z);
-
-                                GeneralUtil.dataBank.numOfResourcesStone++;
-
-                                tile.tileObject = objRef;
-                            }
-                        }
-
-                        break;
-                    case TileType.HILL:
-
-                        ran = Random.Range(0.000f, 1.000f);
-
-                        if (ran < percOfStoneOnHill)
-                        {
-                            tile.busy = true;
-                            var objRef = Instantiate(rocks.Count == 0 ? rocks[0] : rocks[Random.Range(0, rocks.Count)]);
-
-                            objRef.transform.parent = resourceHolder.transform;
-                            objRef.transform.position = new Vector3(tile.midCoord.x, 0.25f, tile.midCoord.z);
-
-                            GeneralUtil.dataBank.numOfResourcesStone++;
-
-                            tile.tileObject = objRef;
-                        }
-                        break;
-                    case TileType.SNOW:
-
-                        break;
-                   
-                    default:
-                        break;
-                }
-            }
-        }
-    }
-
-    public GameObject SpawnAgent(string guid, Tile exitPoint) 
-    {
-        var objRef = Instantiate(agent, transform);
-        var comp = objRef.GetComponent<Agent>();
-
-        comp.LoadData(guid);
-        comp.SetPosition(exitPoint);
-
-        return objRef;
-    }
-
     public List<Tile>[] Voronoi() 
     {
         var pointsArr = new List<Vector2>();
@@ -453,34 +559,164 @@ public class MapCreation : MonoBehaviour
 
 
     }
-
-    public void DrawAllowedTiles() 
+    public void GenerateResources() 
     {
-        Texture2D texture = new Texture2D(textSize, textSize);
+        var voronoiOutcome = Voronoi();
+        var regionsOfGreen = voronoiOutcome.Length / 3;
 
-        for (int y = 0; y < tilesArray.GetLength(0); y++)
+        for (int i = 0; i < regionsOfGreen; i++)//this is how many will have the trees
         {
-            for (int x = 0; x < tilesArray.GetLength(1); x++)
+            for (int j = 0; j < voronoiOutcome[i].Count; j++)
             {
-                var newVec = new Vector2(x, y);
+                var ran = Random.value;
 
-                if (GeneralUtil.dataBank.allowedBuildingLocations.Contains(newVec))
-                    texture.SetPixel(x, y, Color.green);
+                if (ran < 0.1f) 
+                {
+                    if (voronoiOutcome[i][j].tileType == TileType.GRASS) 
+                    {
+                        SpawnTreeType(voronoiOutcome[i][j]);
+                    }
+                }
+            }
+        }
+        foreach (var tile in tilesArray)
+        {
+            if (tile.busy == false) 
+            {
+                float ran = float.MinValue;
+
+                switch (tile.tileType)
+                {
+                    case TileType.GRASS:
+
+                        ran = Random.Range(0.000f, 1.000f);
+
+                        if (ran < percOfBushInGrass)
+                        {
+                            SpawnBushType(tile);
+                        }
+
+                        ran = Random.Range(0.000f, 1.000f);
+                        if (tile.busy == false) 
+                        {
+                            if (ran < percOfBushInGrass)
+                            {
+                                SpawnTreeType(tile);
+                            }
+                        }
+
+                        if (tile.busy == false) 
+                        {
+                            if (ran < percOfStoneOnGrass)
+                            {
+                                SpawnStoneType(tile);
+                            }
+                        }
+
+                        break;
+                    case TileType.HILL:
+
+                        ran = Random.Range(0.000f, 1.000f);
+
+                        if (ran < percOfStoneOnHill)
+                        {
+                            SpawnStoneType(tile);
+                        }
+                        break;
+                    case TileType.SNOW:
+
+                        break;
+                   
+                    default:
+                        break;
+                }
+            }
+        }
+    }
+
+    public void SetCAgrid() 
+    {
+
+        for (int x = 0; x < tilesArray.GetLength(0); x++)
+        {
+            for (int y = 0; y < tilesArray.GetLength(1); y++)
+            {
+                if (tilesArray[x, y].tileType == TileType.GRASS)
+                {
+                    if (tilesArray[x, y].tileObject != null)
+                    {
+                        var comp = tilesArray[x, y].tileObject.GetComponent<Resource>();
+
+                        if (comp.type == Resource.RESOURCE_TYPE.WOOD)
+                            currCAgrid[x, y] = new CAtile(true, true);
+                        else
+                            currCAgrid[x, y] = new CAtile(false, false);
+                    }
+                    else
+                    {
+                        currCAgrid[x, y] = new CAtile(false, true);
+                    }
+                }
                 else
-                    texture.SetPixel(x, y, Color.red);
+                {
+                    currCAgrid[x, y] = new CAtile(false, false);
+                }
+            }
+        }
+    }
+
+    #endregion
+
+    public class CAtile
+    {
+        public bool alive = false;
+        public bool interactable = false;
+        public bool sick = false;
+        public int daysLeft = 2;
+
+
+        public CAtile(bool alive, bool interactable)
+        {
+            this.alive = alive;
+            this.interactable = interactable;
+        }
+
+        public CAtile()
+        {
+        }
+
+
+        public void Tick(Tile tile)
+        {
+            if (sick)
+            {
+                daysLeft--;
+            }
+
+            if (daysLeft < 0)
+            {
+                alive = false;
+
+                if (tile.tileObject != null)
+                {
+                    Destroy(tile.tileObject);
+                    tile.busy = false;
+                    GeneralUtil.dataBank.numOfResourcesWood--;
+                }
             }
         }
 
-        texture.filterMode = FilterMode.Point;
-        texture.Apply();
 
-        plane.GetComponent<Renderer>().material.mainTexture = texture;
+        public CAtile(CAtile copy)
+        {
+            alive = copy.alive;
+            interactable = copy.interactable;
+            daysLeft = copy.daysLeft;
+            sick = copy.sick;
+        }
     }
 
-
 }
-
-
 
 public class Tile
 {
@@ -501,11 +737,6 @@ public class Tile
 
     public Vector2Int coord = new Vector2Int();
     public int oneDcoord;
-}
-
-public class PoissantResource
-{
-    GameObject resoruceObj;
 }
 
 public enum TileType

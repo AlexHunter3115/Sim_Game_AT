@@ -43,8 +43,6 @@ public class MapInteraction : MonoBehaviour
     private bool showingAllowedTiles = false;
 
 
-    private List<PoissantPoints> listOfPoissantsPoints = new List<PoissantPoints>();
-
     private void Start()
     {
         GeneralUtil.Ui.SetSelIndexText(GeneralUtil.buildingScritpable.buildingStats[selectedIndex].name);
@@ -69,9 +67,9 @@ public class MapInteraction : MonoBehaviour
                             {
                                 var sel = GeneralUtil.buildingScritpable.buildingStats[selectedIndex].size;
 
-                                GeneralUtil.map.ClickedTile = GeneralUtil.WorldPosToTile(hit.point);
+                                GeneralUtil.map.clickedTile = GeneralUtil.WorldPosToTile(hit.point);
 
-                                SpawnShowObj(GeneralUtil.map.ClickedTile, sel.x, sel.y);
+                                SpawnShowObj(GeneralUtil.map.clickedTile, sel.x, sel.y);
                                 typeSelected = 0;
                             }
 
@@ -108,15 +106,22 @@ public class MapInteraction : MonoBehaviour
                         if (spawnedCouncil && selectedIndex == 0)
                             return;
 
-                        //if (!CheckEnoughResources())
-                        //    return;
+                        if (!CheckEnoughResources(selectedIndex))
+                            return;
 
-                        var success = SpawnBuilding();
+                        var success = SpawnBuilding(selectedIndex);
+
                         ClearSection(true);
+                        ClearShowObj();
 
                         if (success)
                         {
-                         
+                            var building =  GeneralUtil.buildingScritpable.buildingStats[selectedIndex];
+
+                            GeneralUtil.resourceBank.woodMaxAmount += building.BankAmountWSFS[0];
+                            GeneralUtil.resourceBank.stoneMaxAmount += building.BankAmountWSFS[1];
+                            GeneralUtil.resourceBank.foodMaxAmount += building.BankAmountWSFS[2];
+                            GeneralUtil.resourceBank.sandMaxAmount += building.BankAmountWSFS[3];
                         }
                         else
                         {
@@ -137,7 +142,7 @@ public class MapInteraction : MonoBehaviour
 
 
                     var sel = GeneralUtil.buildingScritpable.buildingStats[selectedIndex].size;
-                    SpawnShowObj(GeneralUtil.map.ClickedTile, sel.x, sel.y);
+                    SpawnShowObj(GeneralUtil.map.clickedTile, sel.x, sel.y);
 
 
                     GeneralUtil.Ui.SetSelIndexText(GeneralUtil.buildingScritpable.buildingStats[selectedIndex].name);
@@ -152,7 +157,7 @@ public class MapInteraction : MonoBehaviour
                     ClearSection(false);
 
                     var sel = GeneralUtil.buildingScritpable.buildingStats[selectedIndex].size;
-                    SpawnShowObj(GeneralUtil.map.ClickedTile, sel.x, sel.y);
+                    SpawnShowObj(GeneralUtil.map.clickedTile, sel.x, sel.y);
 
                     GeneralUtil.Ui.SetSelIndexText(GeneralUtil.buildingScritpable.buildingStats[selectedIndex].name);
                 }
@@ -161,7 +166,7 @@ public class MapInteraction : MonoBehaviour
             {
                 if (Input.GetKeyDown(KeyCode.UpArrow))
                 {
-                    if (graphChoiceTwo + 1 >= GeneralUtil.dataBank.arrayOfLists.Length) { graphChoiceTwo = 0; }
+                    if (graphChoiceTwo + 1 >= GeneralUtil.dataBank.ArrayOfLists.Length) { graphChoiceTwo = 0; }
                     else { graphChoiceTwo += 1; }
 
                     if (graphChoiceTwo == graphChoiceOne)
@@ -174,23 +179,22 @@ public class MapInteraction : MonoBehaviour
                 }
                 if (Input.GetKeyDown(KeyCode.DownArrow))
                 {
-                    if (graphChoiceTwo - 1 < 0) { graphChoiceTwo = GeneralUtil.dataBank.arrayOfLists.Length - 1; }
+                    if (graphChoiceTwo - 1 < 0) { graphChoiceTwo = GeneralUtil.dataBank.ArrayOfLists.Length - 1; }
                     else { graphChoiceTwo -= 1; }
 
                     if (graphChoiceTwo == graphChoiceOne)
                     {
-                        graphChoiceTwo = GeneralUtil.dataBank.arrayOfLists.Length - 2;
+                        graphChoiceTwo = GeneralUtil.dataBank.ArrayOfLists.Length - 2;
                     }
 
                     CallDrawGraph();
-
                 }
 
                 if (Input.GetKeyDown(KeyCode.LeftArrow))
                 {
                     if (graphChoiceOne - 1 < 0)
                     {
-                        graphChoiceOne = GeneralUtil.dataBank.arrayOfLists.Length - 1;
+                        graphChoiceOne = GeneralUtil.dataBank.ArrayOfLists.Length - 1;
                     }
                     else
                     {
@@ -199,14 +203,14 @@ public class MapInteraction : MonoBehaviour
 
                     if (graphChoiceOne == graphChoiceTwo)
                     {
-                        graphChoiceOne = GeneralUtil.dataBank.arrayOfLists.Length - 2;
+                        graphChoiceOne = GeneralUtil.dataBank.ArrayOfLists.Length - 2;
                     }
 
                     CallDrawGraph();
                 }
                 if (Input.GetKeyDown(KeyCode.RightArrow))
                 {
-                    if (graphChoiceOne + 1 >= GeneralUtil.dataBank.arrayOfLists.Length) { graphChoiceOne = 0; }
+                    if (graphChoiceOne + 1 >= GeneralUtil.dataBank.ArrayOfLists.Length) { graphChoiceOne = 0; }
                     else { graphChoiceOne += 1; }
 
                     if (graphChoiceTwo == graphChoiceOne)
@@ -220,7 +224,6 @@ public class MapInteraction : MonoBehaviour
 
             if (Input.GetMouseButtonDown(1))
             {
-                //deselect everything
                 if (spawnedShowObj.Count > 0)
                     ClearShowObj();
                 showToolTip = false;
@@ -238,9 +241,7 @@ public class MapInteraction : MonoBehaviour
                 else
                 {
                     arrowKeyLock = true;
-
                     GeneralUtil.graphRef.MainGraph.gameObject.SetActive(true);
-
 
                     CallDrawGraph();
                 }
@@ -256,12 +257,12 @@ public class MapInteraction : MonoBehaviour
                     GeneralUtil.map.DrawAllowedTiles();
                 }
                 else
-                    GeneralUtil.map.UpdateMapTexture();
+                    GeneralUtil.map.plane.GetComponent<Renderer>().material.mainTexture = GeneralUtil.map.textMap;
             }
 
             if (Input.GetKeyDown(KeyCode.Y))
             {
-                GetEdgePoints(selectedIndex);
+                GeneratePoissantPoints(selectedIndex);
             }
         }
 
@@ -273,10 +274,12 @@ public class MapInteraction : MonoBehaviour
     }
 
 
-    public void GetEdgePoints(int buildingIndex) 
+    #region poissant
+
+    public List<PoissantPoints> GeneratePoissantPoints(int buildingIndex) 
     {
         var grid = GeneralUtil.map.tilesArray;
-
+         List<PoissantPoints> listOfPoissantsPoints = new List<PoissantPoints>();
 
         //get the boundary of the current square
 
@@ -321,12 +324,6 @@ public class MapInteraction : MonoBehaviour
         var pos1 = new Vector3(firstTileTop.TopLeft.x,0,firstTileLeft.BotLeft.z);
         var pos2 = new Vector3(lastTileBottom.BotRight.x,0,lastTileRight.TopRight.z);
 
-
-
-
-
-
-
         listOfPoissantsPoints = new List<PoissantPoints>();
 
         foreach (var building in GeneralUtil.dataBank.buildingDict.Values)
@@ -334,14 +331,12 @@ public class MapInteraction : MonoBehaviour
             listOfPoissantsPoints.Add(new PoissantPoints(building.buildingID.transform.position, building.stats.poissantRadius, true));
         }
 
-
         float width = pos2.x - pos1.x;
         float height = pos1.z - pos2.z;
 
         int tries = 0;
 
-
-        for (int i = 0; i < 50; i++)
+        for (int i = 0; i < GeneralUtil.dataBank.allowedBuildingLocations.Count/2; i++)
         {
             float x = Random.Range(pos1.x, pos1.x + width);
             float y = Random.Range(pos2.z, pos2.z + height);
@@ -365,7 +360,7 @@ public class MapInteraction : MonoBehaviour
                 listOfPoissantsPoints.Add(newPossiblePoints);
             }
 
-            if (tries == 8) 
+            if (tries >= GeneralUtil.dataBank.allowedBuildingLocations.Count /4) 
             {
                 break;
             }
@@ -376,9 +371,22 @@ public class MapInteraction : MonoBehaviour
         {
             var tile = GeneralUtil.WorldPosToTile(listOfPoissantsPoints[i].position);
 
-            if (!GeneralUtil.dataBank.allowedBuildingLocations.Contains(tile.midCoord) || listOfPoissantsPoints[i].buildingHere)
+            if (!GeneralUtil.dataBank.allowedBuildingLocations.Contains(tile.coord) || listOfPoissantsPoints[i].buildingHere) 
+            {
                 listOfPoissantsPoints.RemoveAt(i);
+            }
+            else 
+            {
+                SpawnShowObj(tile, GeneralUtil.buildingScritpable.buildingStats[buildingIndex].size.x, GeneralUtil.buildingScritpable.buildingStats[buildingIndex].size.y);
+
+                if (!canSpawn) 
+                {
+                    listOfPoissantsPoints.RemoveAt(i);
+                }
+            }
         }
+
+        return listOfPoissantsPoints;
     }
 
 
@@ -403,25 +411,25 @@ public class MapInteraction : MonoBehaviour
             return false;
         }
     }
-
-
+    
+    #endregion
 
 
     public void CallDrawGraph()
     {
-        GeneralUtil.graphRef.DrawGraph(GeneralUtil.dataBank.arrayOfLists[graphChoiceOne], GeneralUtil.dataBank.arrayOfLists[graphChoiceTwo]);
+        GeneralUtil.graphRef.DrawGraph(GeneralUtil.dataBank.ArrayOfLists[graphChoiceOne], GeneralUtil.dataBank.ArrayOfLists[graphChoiceTwo]);
 
-        GeneralUtil.graphRef.graphOneString.text = GeneralUtil.dataBank.arrayOfListsNames[graphChoiceTwo];
-        GeneralUtil.graphRef.graphTwoString.text = GeneralUtil.dataBank.arrayOfListsNames[graphChoiceOne];
+        GeneralUtil.graphRef.graphOneString.text = GeneralUtil.dataBank.ArrayOfListsNames[graphChoiceTwo];
+        GeneralUtil.graphRef.graphTwoString.text = GeneralUtil.dataBank.ArrayOfListsNames[graphChoiceOne];
     }
 
     /// <summary>
     /// returns true if there are enough resrouces avaialble to build 
     /// </summary>
     /// <returns></returns>
-    private bool CheckEnoughResources()
+    private bool CheckEnoughResources(int index)
     {
-        var list = GeneralUtil.buildingScritpable.buildingStats[selectedIndex].startCostWSFS;
+        var list = GeneralUtil.buildingScritpable.buildingStats[index].startCostWSFS;
 
         int wood = list[0];
         int stone = list[1];
@@ -463,7 +471,17 @@ public class MapInteraction : MonoBehaviour
         obj.GetComponent<TMP_Text>().color = color;
     }
 
-    private bool SpawnBuilding()
+    public bool SpawnBuildingAuto(Tile centerTile, int indexBuilding) 
+    {
+        var sel = GeneralUtil.buildingScritpable.buildingStats[indexBuilding].size;
+
+        SpawnShowObj(centerTile, sel.x, sel.y);
+        SpawnBuilding(indexBuilding);
+
+        return true;
+    }
+
+    private bool SpawnBuilding(int buildingIndex)
     {
         foreach (var cord in selectedCoords)
         {
@@ -476,17 +494,15 @@ public class MapInteraction : MonoBehaviour
             }
         }
 
-        var objRef = Instantiate(GeneralUtil.buildingScritpable.buildingStats[selectedIndex].building, new Vector3(middleTile.midCoord.x + GeneralUtil.buildingScritpable.buildingStats[selectedIndex].centerOffset.x, middleTile.midCoord.y, middleTile.midCoord.z + GeneralUtil.buildingScritpable.buildingStats[selectedIndex].centerOffset.y), Quaternion.identity);
+        var objRef = Instantiate(GeneralUtil.buildingScritpable.buildingStats[buildingIndex].building, new Vector3(middleTile.midCoord.x + GeneralUtil.buildingScritpable.buildingStats[buildingIndex].centerOffset.x, middleTile.midCoord.y, middleTile.midCoord.z + GeneralUtil.buildingScritpable.buildingStats[selectedIndex].centerOffset.y), Quaternion.identity);
         var BID = objRef.GetComponent<BuildingIdentifier>();
-        BID.init(middleTile, GeneralUtil.buildingScritpable.buildingStats[selectedIndex].size, selectedCoords, selectedIndex);
+        BID.init(middleTile, GeneralUtil.buildingScritpable.buildingStats[buildingIndex].size, selectedCoords, buildingIndex);
 
         GeneralUtil.dataBank.buildingDict.Add(BID.guid, BID.buildingData);
 
         //GeneralUtil.map.UpdateMapTexture();
         return true;
     }
-
-
 
     private void SpawnShowObj(Tile startingTile, int width, int height)
     {
@@ -548,7 +564,7 @@ public class MapInteraction : MonoBehaviour
         //    canInteract = false;
 
         canSpawn = canInteract;
-        CheckInteractionAllowance(canInteract);
+        SetTextureDependingOnInteractionAllowance(canInteract);
     }
     private void ClearShowObj()
     {
@@ -560,14 +576,13 @@ public class MapInteraction : MonoBehaviour
             spawnedShowObj.RemoveAt(i);
         }
     }
-    private void CheckInteractionAllowance(bool canInteract)
+    private void SetTextureDependingOnInteractionAllowance(bool canInteract)
     {
         foreach (var showObj in spawnedShowObj)
         {
             showObj.GetComponent<Renderer>().material = canInteract == true ? transparent : transparentError;
         }
     }
-
 
     private void ClearSection(bool delResources)
     {
@@ -633,8 +648,6 @@ public class MapInteraction : MonoBehaviour
         GUILayout.Label( $"Health: {npcData.health}");
         GUILayout.Space(-5);
         GUILayout.Label($"Stamina: {npcData.stamina}");
-        GUILayout.Space(-5);
-        GUILayout.Label( $"Hunger: {npcData.hunger}");
         GUILayout.Space(-5);
         GUILayout.Label( $"Speed: {npcData.speed}");
         GUILayout.Space(-5);
@@ -718,9 +731,7 @@ public class MapInteraction : MonoBehaviour
                 guid = buildingData.workers[i].guid;
             }
         }
-
-        //GUILayout.Label($"Building age: {}");
-
+        GUILayout.Space(5);
         if (GUILayout.Button("Delete Me"))
         {
             if (buildingData.buildingID.buildingIndex != 0)
@@ -739,11 +750,12 @@ public class MapInteraction : MonoBehaviour
             GUILayout.Label(new GUIContent() { text = "This buidling has no resources close to it", tooltip = "this is a tooltip" });
         }
 
-        GUILayout.Space(10);
-        GUILayout.Label(new GUIContent() { text = "The children in this house", tooltip = "this is a tooltip" });
-
+  
         if (buildingData.stats.type == BuildingData.BUILDING_TYPE.HOUSE) 
         {
+            GUILayout.Space(10);
+            GUILayout.Label(new GUIContent() { text = "The children in this house", tooltip = "this is a tooltip" });
+
             var comp = buildingData.buildingID.transform.GetComponent<HouseBuilding>();
 
             for (int i = 0; i < comp.childrenHabitantsGUID.Count; i++)
@@ -751,6 +763,8 @@ public class MapInteraction : MonoBehaviour
                 GUILayout.Label(new GUIContent() { text = $"{GeneralUtil.dataBank.npcDict[comp.childrenHabitantsGUID[i]].name} and its age is {GeneralUtil.dataBank.npcDict[comp.childrenHabitantsGUID[i]].daysAlive}", tooltip = "this is a tooltip" });
             }
         }
+
+
 
         Rect lastRect = GUILayoutUtility.GetLastRect();
 
@@ -765,32 +779,7 @@ public class MapInteraction : MonoBehaviour
     }
 
     #endregion
-
-    private void OnDrawGizmos()
-    {
-        if (listOfPoissantsPoints.Count > 0) 
-        {
-            foreach (var point in listOfPoissantsPoints)
-            {
-                if (point.buildingHere) 
-                {
-                    Gizmos.color = Color.red;
-                    Gizmos.DrawSphere(point.position, 0.5f);
-                    Gizmos.DrawWireSphere(point.position, point.radius);
-                }
-                else 
-                {
-                    Gizmos.color = Color.green;
-                    Gizmos.DrawSphere(point.position, 0.5f);
-                }
-
-            }
-        }
-    }
-
 }
-
-
 
 
 public class PoissantPoints 
@@ -799,12 +788,10 @@ public class PoissantPoints
     public float radius;
     public bool buildingHere;
 
-
     public PoissantPoints(Vector3 pos, float radius, bool buidling) 
     {
         position = pos;
         this.radius = radius; 
         buildingHere = buidling;
     }
-   
 }

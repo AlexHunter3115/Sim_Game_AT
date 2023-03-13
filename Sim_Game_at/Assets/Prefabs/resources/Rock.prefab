@@ -98,8 +98,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   woodAmount: 0
-  stoneAmount: 75
+  stoneAmount: 20
   foodAmount: 0
+  type: 0
   available: 1
 --- !u!65 &-4813106936268496777
 BoxCollider:

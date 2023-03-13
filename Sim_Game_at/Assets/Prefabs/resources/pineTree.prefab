@@ -98,7 +98,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef14db6b97a4e4f429c5ff051b70453e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  woodAmount: 100
+  woodAmount: 5
   stoneAmount: 0
   foodAmount: 0
   type: 2

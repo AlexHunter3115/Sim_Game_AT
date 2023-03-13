@@ -44,6 +44,7 @@ public class Graph : MonoBehaviour
         MainGraph.gameObject.SetActive(false);
         GeneralUtil.graphRef = this;
     }
+    //the graph si completely broken
 
     /// <summary>
     /// first one is blue other one is red
@@ -56,13 +57,19 @@ public class Graph : MonoBehaviour
 
         var objRef = Instantiate(graphBackground,graphContainer.transform);
 
-        maxValueRed = LineOne.Max();
-        maxValueBlue = LineTwo.Max();
-
         SetUpText();
 
-        ShowGraph(LineOne,true);
-        ShowGraph(LineTwo,false);
+        if (LineOne.Count > 0) 
+        {
+            maxValueRed = LineOne.Max();
+            ShowGraph(LineOne, true);
+        }
+
+        if (LineTwo.Count > 0) 
+        {
+            maxValueBlue = LineTwo.Max();
+            ShowGraph(LineTwo, false);
+        }
 
         objRef.transform.SetSiblingIndex(0);
     }

@@ -26,6 +26,7 @@ public class BuildingStatistics
     public GameObject building;
     public int maxWorkers;
     public List<int> whatResourceLookingFor = new List<int>();
-    public int[] BankAmount = new int[4];
+    public int[] BankAmountWSFS = new int[4];
     public float poissantRadius = 1;
+    public int[] hourlyProductionWSFS = new int[4];
 }

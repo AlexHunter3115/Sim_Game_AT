@@ -14,11 +14,6 @@ public class BuildingData : Entity
         range = stats.tileRange;
         this.stats = stats;
 
-        upKeepFoodCost = stats.keepUpCostWSFS[2];
-        upKeepStoneCost = stats.keepUpCostWSFS[1];
-        upKeepSandCost = stats.keepUpCostWSFS[3];
-        upKeepWoodCost = stats.keepUpCostWSFS[0];
-
         maxWorkers = stats.maxWorkers;
     }
 
@@ -64,12 +59,6 @@ public class BuildingData : Entity
     public BuildingIdentifier buildingID;
     public List<AgentData> workers = new List<AgentData>();
     public int maxWorkers;
-
-    //upkeep
-    public int upKeepWoodCost;
-    public int upKeepStoneCost;
-    public int upKeepSandCost;
-    public int upKeepFoodCost;
 
     public float buildTime;
 

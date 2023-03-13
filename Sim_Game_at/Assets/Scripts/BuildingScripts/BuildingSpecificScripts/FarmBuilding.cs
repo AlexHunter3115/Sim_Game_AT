@@ -14,8 +14,7 @@ public class FarmBuilding : MonoBehaviour, IAgentInteractions, ITimeTickers, IBu
 
     public void HourTick()
     {
-        buildingId.GetResourceNearby();
-
+       
         if (GeneralUtil.timeCycle.isNightTime)
         {
             buildingId.buildingData.shut = true;
@@ -38,6 +37,14 @@ public class FarmBuilding : MonoBehaviour, IAgentInteractions, ITimeTickers, IBu
         {
 
             buildingId.buildingData.shut = false;
+
+
+            buildingId.GetResourceNearby();
+
+            GeneralUtil.resourceBank.ChangeWoodAmount((int)(buildingId.buildingData.stats.hourlyProductionWSFS[0] * (buildingId.buildingData.workers.Count / buildingId.buildingData.maxWorkers * 1.0f)));
+            GeneralUtil.resourceBank.ChangeStoneAmount((int)(buildingId.buildingData.stats.hourlyProductionWSFS[1] * (buildingId.buildingData.workers.Count / buildingId.buildingData.maxWorkers * 1.0f)));
+            GeneralUtil.resourceBank.ChangeFoodAmount((int)(buildingId.buildingData.stats.hourlyProductionWSFS[2] * (buildingId.buildingData.workers.Count / buildingId.buildingData.maxWorkers * 1.0f)));
+            GeneralUtil.resourceBank.ChangeSandAmount((int)(buildingId.buildingData.stats.hourlyProductionWSFS[3] * (buildingId.buildingData.workers.Count / buildingId.buildingData.maxWorkers * 1.0f)));
 
             foreach (var worker in buildingId.buildingData.workers) //this gives the workers the job 
             {

@@ -89,17 +89,29 @@ public class HouseBuilding : MonoBehaviour, IAgentInteractions,IBuildingActions,
         Material material = meshRenderer.material;
         Texture2D texture = (Texture2D)material.mainTexture;
 
+
         foreach (var item in buildingId.buildingData.takenTiles)
         {
             Color pixelColor = texture.GetPixel(item.coord.x, item.coord.y);
 
             if (pixelColor == Color.green)
+            {
                 item.tileType = TileType.GRASS;
-            else if (pixelColor == new Color(165.0f / 255, 42.0f / 255, 42.0f / 255, 1))
+            }
+            else if (pixelColor == GeneralUtil.colorBrown)
+            {
                 item.tileType = TileType.HILL;
+            }
             else if (pixelColor == Color.white)
+            {
                 item.tileType = TileType.SNOW;
+            }
+            else if (pixelColor == Color.cyan)
+            {
+                item.tileType = TileType.WATER;
+            }
         }
+
 
         texture.filterMode = FilterMode.Point;
         texture.Apply();
@@ -127,13 +139,13 @@ public class HouseBuilding : MonoBehaviour, IAgentInteractions,IBuildingActions,
                 GeneralUtil.dataBank.unemployedNpc.Add(child.guid);  // add it to the unemployed list
                 child.refToHouse = null; // deleyte the house ref
                 child.refToWorkPlace = null; // deleyte the house ref
-                Debug.Log($"is this even calling");
                 GeneralUtil.map.SpawnAgent(child.guid, GeneralUtil.ReturnTile(buildingId.buildingData.entrancePoints[0]));
                 childrenHabitantsGUID.RemoveAt(i);
                 child.SetToWonder();
             }
         }
     }
+
     public void HourTick()
     {
         if (GeneralUtil.timeCycle.isNightTime)
@@ -207,6 +219,8 @@ public class HouseBuilding : MonoBehaviour, IAgentInteractions,IBuildingActions,
                     {
                         buildingId.buildingData.workers[i].AddChild(newChild);
                     }
+
+                    GeneralUtil.resourceBank.ChangePeopleAmount(1);
                 }
             }
         }

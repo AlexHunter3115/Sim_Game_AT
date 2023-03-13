@@ -18,6 +18,8 @@ public class Agent : MonoBehaviour
     public bool showPathToggle = false;
 
     private Animator animator;
+    public Animator Anim { get { return animator; } }
+
     private void Awake()
     {
         animator = GetComponent<Animator>();
@@ -100,7 +102,7 @@ public class Agent : MonoBehaviour
 
                     break;
                 case AgentData.CURRENT_ACTION.SLEEPING:
-                    //he is at home and has a home
+                    animator.SetTrigger("Death");
                     break;
                 case AgentData.CURRENT_ACTION.WONDERING:
 
@@ -160,7 +162,10 @@ public class Agent : MonoBehaviour
                             GeneralUtil.dataBank.numOfResourcesFood--;
                             break;
                         case Resource.RESOURCE_TYPE.WOOD:
+                            
                             GeneralUtil.dataBank.numOfResourcesWood--;
+                            GeneralUtil.map.currCAgrid[data.tileDestination.coord.x, data.tileDestination.coord.y] = new MapCreation.CAtile(false, true);
+
                             break;
                         default:
                             break;

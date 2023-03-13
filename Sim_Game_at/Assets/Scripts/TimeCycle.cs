@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
+using Random = UnityEngine.Random;
 
 public class TimeCycle : MonoBehaviour
 {
@@ -113,21 +114,28 @@ public class TimeCycle : MonoBehaviour
         {
             yield return new WaitForSeconds(hourCheck / timerMultiplier);
             currentHour++;
-            if (currentHour >= 24)
+            if (currentHour >= 24) 
+            {
+                GeneralUtil.map.StartCoroutine(GeneralUtil.map.CallNewTurnSpawn(Random.Range(5, 15), Random.Range(10, 30)));
+                GeneralUtil.dataBank.SpendDailyNeeds();
                 currentHour = 0;
+            }
 
             SetDayTime();
             
             for (int i = 0; i < GeneralUtil.dataBank.buildingDict.Count; i++)
             {
-                CallHourInterface(GeneralUtil.dataBank.buildingDict.Values.ElementAt(i).buildingID.buildingTimer);
+                if (GeneralUtil.dataBank.buildingDict.Values.ElementAt(i).buildingID.buildingTimer !=null)
+                    CallHourInterface(GeneralUtil.dataBank.buildingDict.Values.ElementAt(i).buildingID.buildingTimer);
             }
-
+            //checm for null so it doesnt crash
             for (int i = 0; i < GeneralUtil.dataBank.npcDict.Count; i++)
             {
-                CallHourInterface(GeneralUtil.dataBank.npcDict.Values.ElementAt(i));
+                if (GeneralUtil.dataBank.npcDict.Values.ElementAt(i) != null)
+                    CallHourInterface(GeneralUtil.dataBank.npcDict.Values.ElementAt(i));
             }
 
+            GeneralUtil.Ui.SetHoursText(currentHour);
         }
     }
 
@@ -200,8 +208,6 @@ public class TimeCycle : MonoBehaviour
             if (currentDayState == TIME.NIGHT)
             {
                 DayChangeStateEvent();
-                GeneralUtil.dataBank.SaveAllResourceThisCycle();
-                GeneralUtil.dataBank.SpendDailyNeeds();
             }
             else if (currentDayState == TIME.MORNING)
             {
