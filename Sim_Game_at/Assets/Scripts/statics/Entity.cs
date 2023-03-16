@@ -10,7 +10,6 @@ public class Entity
     {
         guid = System.Guid.NewGuid().ToString();
     }
-
 }
 
 

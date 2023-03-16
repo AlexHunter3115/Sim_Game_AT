@@ -221,6 +221,8 @@ public class HouseBuilding : MonoBehaviour, IAgentInteractions,IBuildingActions,
                     }
 
                     GeneralUtil.resourceBank.ChangePeopleAmount(1);
+
+                    GeneralUtil.Ui.SetMessage($"The NPC {buildingId.buildingData.workers[0].name} and {buildingId.buildingData.workers[1].name} had a baby called {newChild.name}", Color.green);
                 }
             }
         }

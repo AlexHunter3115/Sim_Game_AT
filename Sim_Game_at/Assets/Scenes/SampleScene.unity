@@ -2314,7 +2314,6 @@ MonoBehaviour:
   numOfResourcesStone: 0
   numOfResourcesWood: 0
   numOfResourcesFood: 0
-  numOfResourcesSand: 0
   daysPassed: 0
   unemployedNpc: []
   importanceDivision: 0.5
@@ -3454,6 +3453,7 @@ MonoBehaviour:
   progressText: {fileID: 847239169}
   progressSlider: {fileID: 872747276}
   progressObj: {fileID: 1193459745}
+  messageObj: {fileID: 7241678488838357125, guid: c0eff46f43b47594994bccc243aa17ba, type: 3}
   showingMenu: 0
 --- !u!114 &1557926661
 MonoBehaviour:

@@ -476,7 +476,16 @@ public class MapInteraction : MonoBehaviour
         var sel = GeneralUtil.buildingScritpable.buildingStats[indexBuilding].size;
 
         SpawnShowObj(centerTile, sel.x, sel.y);
-        SpawnBuilding(indexBuilding);
+        var success =SpawnBuilding(indexBuilding);
+
+        if (success) 
+        {
+            GeneralUtil.Ui.SetMessage($"The AI has created a {GeneralUtil.buildingScritpable.buildingStats[indexBuilding].name}", Color.green);
+        }
+        else 
+        {
+            GeneralUtil.Ui.SetMessage($"The AI tried to place a {GeneralUtil.buildingScritpable.buildingStats[indexBuilding].name} but there was an issue", Color.red);
+        }
 
         return true;
     }

@@ -7,6 +7,8 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
 using Slider = UnityEngine.UI.Slider;
 using static System.Net.Mime.MediaTypeNames;
+using UnityEditor.VersionControl;
+using static UserUIManager;
 
 public class UserUIManager : MonoBehaviour
 {
@@ -32,9 +34,16 @@ public class UserUIManager : MonoBehaviour
     [SerializeField] Slider progressSlider;
     [SerializeField] GameObject progressObj;
 
+    [Space(10)]
+    [SerializeField] GameObject messageObj;
+    private Queue<Messages> messages = new Queue<Messages>();
+    private bool showingText = false;
+    private GameObject currentMessage;
+
 
 
     public bool showingMenu = false;
+    private bool prefSave = false;
 
     private void Awake() => GeneralUtil.Ui = this;
 
@@ -113,6 +122,15 @@ public class UserUIManager : MonoBehaviour
             timeSlider.value = Time.timeScale;
             timeModifierText.text = $"Time Modifier: {Time.timeScale}";
         }
+
+
+        if (!showingText && messages.Count > 0)
+        {
+            showingText = true;
+            var comp = messages.Dequeue();
+            currentMessage = Instantiate(messageObj, transform);
+            currentMessage.GetComponent<MessageUI>().CallSetMessage(comp.text, comp.color);
+        }
     }
 
  
@@ -121,7 +139,6 @@ public class UserUIManager : MonoBehaviour
     {
         if (showingMenu)
         {
-
             var databank = GeneralUtil.dataBank;
 
             float buttonWidth = 100;
@@ -158,10 +175,13 @@ public class UserUIManager : MonoBehaviour
             }
             GUI.tooltip = "Restart the game to get a new map";
 
+            prefSave = GUI.Toggle(new Rect(x + spacing + buttonWidth + spacing, y + spacing, toggleWidth, toggleHeight), prefSave, "Randomize New Game");
+            GUI.tooltip = "This project uses perlin noise to generate its map\nWould you like to randomize it?";
 
+            PlayerPrefs.SetInt("RandomGen", prefSave ? 1 : 0);
 
             // Create a toggle
-            databank.prioritizeHousing = GUI.Toggle(new Rect(x + spacing + buttonWidth + spacing, y + spacing, toggleWidth, toggleHeight), databank.prioritizeHousing, "AI: prioritize House Building");
+            databank.prioritizeHousing = GUI.Toggle(new Rect( 200 +x + spacing + buttonWidth + spacing, y + spacing, toggleWidth, toggleHeight), databank.prioritizeHousing, "AI: prioritize House Building");
             GUI.tooltip = "True, Prioritize the creation of new housing\nFalse, Prioritize the creation of new jobs";
 
 
@@ -188,4 +208,26 @@ public class UserUIManager : MonoBehaviour
         }
     }
 
+
+    public void SetMessage(string text, Color color) => messages.Enqueue(new Messages(text, color));
+
+    public void SetDoneText()
+    {
+        Destroy(currentMessage);
+        showingText = false;
+    }
+
+
+
+    public class Messages 
+    {
+        public string text;
+        public Color color;
+
+        public Messages(string text, Color color)
+        {
+            this.text = text;
+            this.color = color;
+        }
+    }
 }

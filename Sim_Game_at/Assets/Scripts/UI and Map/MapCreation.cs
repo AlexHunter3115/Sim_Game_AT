@@ -9,9 +9,9 @@ public class MapCreation : MonoBehaviour
     public int textSize = 512;
 
     [Space(30)]
-    [Range(1, 1000)]
+    [Range(1, 10000)]
     public int offsetX = 100;
-    [Range(1, 1000)]
+    [Range(1, 10000)]
     public int offsetY = 100;
 
     [Space(20)]
@@ -30,7 +30,6 @@ public class MapCreation : MonoBehaviour
     public float threasholdHill = 0.65f;
     [Range(0.75f, 0.9f)]
     public float threasholdSnow = 0.89f;
-
 
     [Space(30)]
     public bool showGizmos = false;
@@ -86,11 +85,18 @@ public class MapCreation : MonoBehaviour
 
     private void Start()
     {
+        bool randomize = PlayerPrefs.GetInt("RandomGen") == 1 ? true : false;
+
+        if (randomize) 
+        {
+            RandomizePerlin();
+        }
+
         currCAgrid = new CAtile[textSize, textSize];
 
         plane = GameObject.CreatePrimitive(PrimitiveType.Plane);
         plane.transform.parent = transform;
-        plane.transform.localScale = new Vector3(scale, scale, scale);
+        plane.transform.localScale = new Vector3(40, 40, 40);
         plane.gameObject.layer = 6;
 
         tilesArray = PerlinNoise2D(scale, octaves, pers, lacu, offsetX, offsetY);
@@ -133,14 +139,33 @@ public class MapCreation : MonoBehaviour
             cor++;
         }
 
-
         plane.transform.Rotate(new Vector3(0, 180, 0));    // this is a temp fix but i think the issue is with the for loop above cheking x first other than y
 
         GenerateResources();
 
         SetCAgrid();
+
+        GeneralUtil.Ui.SetMessage("Place the council to start the simulation", Color.blue);
+        GeneralUtil.Ui.SetMessage("Use the time slider to speed things up", Color.blue);
+        GeneralUtil.Ui.SetMessage("Press Space to see the graph of your current progress", Color.blue);
+        GeneralUtil.Ui.SetMessage("You can either let the game take its course but you can also take contorl and place buildings your self", Color.blue);
+        GeneralUtil.Ui.SetMessage("Press Esc to pause the game and change the value for the AI behaviour", Color.blue);
     }
 
+    public void RandomizePerlin()
+    {
+        offsetX = Random.Range(1, 10000);
+        offsetY = Random.Range(1, 10000);
+
+        scale = Random.Range(20, 50);
+        lacu = Random.Range(0.1f, 0.8f);
+
+        pers = Random.Range(0.1f, 0.8f);
+
+        octaves = Random.Range(2, 8);
+
+        regions = Random.Range(3, 8);
+    }
 
     // in a way the setting of the weight can be here as we are redrawin the map but should theroatically be put somewhere else
     public void CreateMapTexture()

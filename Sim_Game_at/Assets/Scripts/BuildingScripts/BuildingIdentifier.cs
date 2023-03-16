@@ -132,6 +132,9 @@ public class BuildingIdentifier : MonoBehaviour
         if (buildingIndex == 0)
             return;
 
+
+        GeneralUtil.Ui.SetMessage($"The {buildingData.stats.name} at {buildingData.centerCoord} has been destroyed", Color.red);
+
         if (!DeleteBuidlingInterfaceCall(buildingActions))
             return;
 

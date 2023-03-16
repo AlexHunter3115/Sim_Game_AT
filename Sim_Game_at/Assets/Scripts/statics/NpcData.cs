@@ -180,6 +180,8 @@ public class AgentData : Entity, ITimeTickers
         }
 
         GeneralUtil.resourceBank.ChangePeopleAmount(-1);
+
+        GeneralUtil.Ui.SetMessage($"The NPC {name} is dead", Color.red);
         //GeneralUtil.dataBank.npcDict.Remove(guid);
     }
 
