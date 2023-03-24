@@ -16,8 +16,8 @@ public class Graph : MonoBehaviour
     [SerializeField] private float LineWidth = 2;
     [SerializeField] private GameObject graphBackground;
 
-    public TMP_Text graphOneString;
     public TMP_Text graphTwoString;
+    public TMP_Text graphOneString;
 
     public TMP_Text maxRedVal;
     public TMP_Text higherRedVal;
@@ -57,7 +57,6 @@ public class Graph : MonoBehaviour
 
         var objRef = Instantiate(graphBackground,graphContainer.transform);
 
-        SetUpText();
 
         if (LineOne.Count > 0) 
         {
@@ -71,6 +70,7 @@ public class Graph : MonoBehaviour
             ShowGraph(LineTwo, false);
         }
 
+        SetUpText();
         objRef.transform.SetSiblingIndex(0);
     }
 

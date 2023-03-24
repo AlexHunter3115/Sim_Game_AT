@@ -61,7 +61,6 @@ public class TimeCycle : MonoBehaviour
     {
         GeneralUtil.timeCycle = this;
 
-        _updateMinuteCheck = MinuteCycleCorutine;
         _updateHourCheck = HourCycleCorutine;
         _updateDayCheck = DailyCycleCorutine;
         SetDayTime();
@@ -71,7 +70,6 @@ public class TimeCycle : MonoBehaviour
     {
         StartCoroutine(_updateDayCheck());
         StartCoroutine(_updateHourCheck());
-        StartCoroutine(_updateMinuteCheck());
     }
 
     private void Update()
@@ -139,23 +137,6 @@ public class TimeCycle : MonoBehaviour
         }
     }
 
-    private IEnumerator MinuteCycleCorutine()
-    {
-        while (timeOn)
-        {
-            yield return new WaitForSeconds(minuteCheck / timerMultiplier);
-
-            for (int i = 0; i < GeneralUtil.dataBank.buildingDict.Count; i++)
-            {
-                CallMinuteInterface(GeneralUtil.dataBank.buildingDict.Values.ElementAt(i).buildingID.buildingTimer);
-            }
-
-            for (int i = 0; i < GeneralUtil.dataBank.npcDict.Count; i++)
-            {
-                CallMinuteInterface(GeneralUtil.dataBank.npcDict.Values.ElementAt(i));
-            }
-        }
-    }
 
 
     private void SetDayTime() 
@@ -221,8 +202,6 @@ public class TimeCycle : MonoBehaviour
         OnFunctionCalled?.Invoke();
     }
 
-
-    private void CallMinuteInterface(ITimeTickers timeInterface) => timeInterface.MinuteTick();
     private void CallHourInterface(ITimeTickers timeInterface) => timeInterface.HourTick();
     private void CallDayInterface(ITimeTickers timeInterface) => timeInterface.DayTick();
 

@@ -53,7 +53,7 @@ public class ResourceBank : MonoBehaviour
             if (sandAmount > sandMaxAmount)
                 sandAmount = sandMaxAmount;
 
-            GeneralUtil.Ui.SetSandResText(sandMaxAmount, sandMaxAmount);
+            GeneralUtil.Ui.SetSandResText(sandAmount, sandMaxAmount);
         }
         else
         {
@@ -181,7 +181,7 @@ public class ResourceBank : MonoBehaviour
     public void AddStartingAmount() 
     {
         ChangeWoodAmount(300);
-        ChangeSandAmount(300);
+        ChangeSandAmount(250);
         ChangeStoneAmount(300);
         ChangeFoodAmount(300);
     }

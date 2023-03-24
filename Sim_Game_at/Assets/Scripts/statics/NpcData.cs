@@ -130,8 +130,6 @@ public class AgentData : Entity, ITimeTickers
     }
 
 
-
-
     /// <summary>
     /// this is used to set the age of the npc, similar to the time of day thing, should be called every new day
     /// </summary>
@@ -167,7 +165,7 @@ public class AgentData : Entity, ITimeTickers
         return true;
     }
 
-    private void Kill()
+    public void Kill()
     {
         if (refToWorkPlace != null)
         {
@@ -176,12 +174,15 @@ public class AgentData : Entity, ITimeTickers
 
         if (refToHouse != null)
         {
-            refToWorkPlace.buildingID.RemoveWorker(guid);
+            refToHouse.buildingID.RemoveWorker(guid);
         }
 
         GeneralUtil.resourceBank.ChangePeopleAmount(-1);
 
         GeneralUtil.Ui.SetMessage($"The NPC {name} is dead", Color.red);
+        dead = true;
+            
+
         //GeneralUtil.dataBank.npcDict.Remove(guid);
     }
 
@@ -234,7 +235,7 @@ public class AgentData : Entity, ITimeTickers
 
         if (agentObj == null)
         {
-            GeneralUtil.map.SpawnAgent(this.guid, GeneralUtil.map.tilesArray[refToWorkPlace.entrancePoints[0].x, refToWorkPlace.entrancePoints[0].y]);
+            GeneralUtil.map.SpawnAgent(this.guid, GeneralUtil.map.tilesArray[refToHouse.entrancePoints[0].x, refToHouse.entrancePoints[0].y]);
         }
 
         agentObj.GetComponent<Agent>().StopAllCoroutines();
@@ -277,6 +278,9 @@ public class AgentData : Entity, ITimeTickers
 
     private void EndOfDayCall() 
     {
+        if (dead)
+            return;
+
         if (currAge != AGE_STATE.BABY)
         {
             if (GeneralUtil.timeCycle.isNightTime) // if its night time 

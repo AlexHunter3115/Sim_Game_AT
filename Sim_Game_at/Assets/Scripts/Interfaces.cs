@@ -10,7 +10,6 @@ public interface ITimeTickers
 {
     void HourTick();
     void DayTick();
-    void MinuteTick();
 }
 
 public interface IAgentInteractions 

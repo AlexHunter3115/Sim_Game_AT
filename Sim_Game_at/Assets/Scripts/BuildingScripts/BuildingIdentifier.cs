@@ -1,13 +1,6 @@
-using Newtonsoft.Json.Linq;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
-using System.Reflection;
-using TMPro;
 using UnityEngine;
-using UnityEngine.Events;
 
 public class BuildingIdentifier : MonoBehaviour
 {
@@ -49,6 +42,8 @@ public class BuildingIdentifier : MonoBehaviour
         }
 
         buildingData.entrancePoints = entranceLocation;
+
+
 
     }
 
@@ -164,10 +159,10 @@ public class BuildingIdentifier : MonoBehaviour
             }
         }
 
-        texture.filterMode = FilterMode.Point;
-        texture.Apply();
+        //texture.filterMode = FilterMode.Point;
+        //texture.Apply();
 
-        GeneralUtil.map.plane.GetComponent<Renderer>().material.mainTexture = texture;
+        //GeneralUtil.map.plane.GetComponent<Renderer>().material.mainTexture = texture;
 
         for (int i = buildingData.workers.Count; i-- > 0;)
         {

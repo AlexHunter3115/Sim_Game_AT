@@ -158,19 +158,14 @@ public class UserUIManager : MonoBehaviour
             float totalWidth = buttonWidth + spacing + toggleWidth + spacing + sliderWidth * 5 + spacing * 3;
             float totalHeight = buttonHeight + spacing + sliderHeight;
 
-            // Calculate the position to center the GUI elements on the screen
             float x = (Screen.width - totalWidth) / 2;
             float y = (Screen.height - totalHeight) / 2;
 
-            // Create a background box
             GUI.Box(new Rect(x, y, totalWidth, totalHeight + 20), "");
 
-            // Set GUI color to the background color
             GUI.color = Color.white;
-            // Create a button to restart the game
             if (GUI.Button(new Rect(x + spacing, y + spacing, buttonWidth, buttonHeight), "Restart"))
             {
-                // Call a function to restart the game
                 SceneManager.LoadScene(SceneManager.GetActiveScene().name);
             }
             GUI.tooltip = "Restart the game to get a new map";
@@ -180,12 +175,7 @@ public class UserUIManager : MonoBehaviour
 
             PlayerPrefs.SetInt("RandomGen", prefSave ? 1 : 0);
 
-            // Create a toggle
-            databank.prioritizeHousing = GUI.Toggle(new Rect( 200 +x + spacing + buttonWidth + spacing, y + spacing, toggleWidth, toggleHeight), databank.prioritizeHousing, "AI: prioritize House Building");
-            GUI.tooltip = "True, Prioritize the creation of new housing\nFalse, Prioritize the creation of new jobs";
 
-
-            // Create 5 sliders
             GUI.Label(new Rect(x + spacing, y + spacing * 2 + buttonHeight - 4, sliderWidth, sliderHeight + 4), new GUIContent() { text = "AI: division Organiser", tooltip = "Lower Value, Prioritize the percentage of total missing resources\nHigher Value, Prioritize the resource whihc was spent the most this round" });
             databank.importanceDivision = GUI.HorizontalSlider(new Rect(x + spacing, y + spacing * 3 + buttonHeight + 15, sliderWidth, sliderHeight), databank.importanceDivision, 0.2f, 0.8f);
 

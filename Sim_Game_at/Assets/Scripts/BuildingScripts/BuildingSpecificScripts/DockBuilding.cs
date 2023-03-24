@@ -51,6 +51,7 @@ public class DockBuilding : MonoBehaviour, IAgentInteractions, ITimeTickers, IBu
 
     public void HourTick()
     {
+        LookForWorkers();
 
         if (!GeneralUtil.timeCycle.isNightTime) 
         {
@@ -60,11 +61,6 @@ public class DockBuilding : MonoBehaviour, IAgentInteractions, ITimeTickers, IBu
             GeneralUtil.resourceBank.ChangeFoodAmount((int)(buildingId.buildingData.stats.hourlyProductionWSFS[2] * (buildingId.buildingData.workers.Count / buildingId.buildingData.maxWorkers * 1.0f)));
             GeneralUtil.resourceBank.ChangeSandAmount((int)(buildingId.buildingData.stats.hourlyProductionWSFS[3] * (buildingId.buildingData.workers.Count / buildingId.buildingData.maxWorkers * 1.0f)));
         }
-    }
-
-    public void MinuteTick()
-    {
-        LookForWorkers();
     }
 
     #endregion

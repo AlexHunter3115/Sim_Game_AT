@@ -122,6 +122,7 @@ public class MapInteraction : MonoBehaviour
                             GeneralUtil.resourceBank.stoneMaxAmount += building.BankAmountWSFS[1];
                             GeneralUtil.resourceBank.foodMaxAmount += building.BankAmountWSFS[2];
                             GeneralUtil.resourceBank.sandMaxAmount += building.BankAmountWSFS[3];
+
                         }
                         else
                         {
@@ -169,10 +170,10 @@ public class MapInteraction : MonoBehaviour
                     if (graphChoiceTwo + 1 >= GeneralUtil.dataBank.ArrayOfLists.Length) { graphChoiceTwo = 0; }
                     else { graphChoiceTwo += 1; }
 
-                    if (graphChoiceTwo == graphChoiceOne)
-                    {
-                        graphChoiceTwo = 1;
-                    }
+                    //if (graphChoiceTwo == graphChoiceOne)
+                    //{
+                    //    graphChoiceTwo = 1;
+                    //}
 
                     CallDrawGraph();
 
@@ -182,10 +183,10 @@ public class MapInteraction : MonoBehaviour
                     if (graphChoiceTwo - 1 < 0) { graphChoiceTwo = GeneralUtil.dataBank.ArrayOfLists.Length - 1; }
                     else { graphChoiceTwo -= 1; }
 
-                    if (graphChoiceTwo == graphChoiceOne)
-                    {
-                        graphChoiceTwo = GeneralUtil.dataBank.ArrayOfLists.Length - 2;
-                    }
+                    //if (graphChoiceTwo == graphChoiceOne)
+                    //{
+                    //    graphChoiceTwo = GeneralUtil.dataBank.ArrayOfLists.Length - 2;
+                    //}
 
                     CallDrawGraph();
                 }
@@ -201,10 +202,10 @@ public class MapInteraction : MonoBehaviour
                         graphChoiceOne -= 1;
                     }
 
-                    if (graphChoiceOne == graphChoiceTwo)
-                    {
-                        graphChoiceOne = GeneralUtil.dataBank.ArrayOfLists.Length - 2;
-                    }
+                    //if (graphChoiceOne == graphChoiceTwo)
+                    //{
+                    //    graphChoiceOne = GeneralUtil.dataBank.ArrayOfLists.Length - 2;
+                    //}
 
                     CallDrawGraph();
                 }
@@ -213,10 +214,10 @@ public class MapInteraction : MonoBehaviour
                     if (graphChoiceOne + 1 >= GeneralUtil.dataBank.ArrayOfLists.Length) { graphChoiceOne = 0; }
                     else { graphChoiceOne += 1; }
 
-                    if (graphChoiceTwo == graphChoiceOne)
-                    {
-                        graphChoiceOne = 1;
-                    }
+                    //if (graphChoiceTwo == graphChoiceOne)
+                    //{
+                    //    graphChoiceOne = 1;
+                    //}
 
                     CallDrawGraph();
                 }
@@ -418,13 +419,12 @@ public class MapInteraction : MonoBehaviour
     public void CallDrawGraph()
     {
         GeneralUtil.graphRef.DrawGraph(GeneralUtil.dataBank.ArrayOfLists[graphChoiceOne], GeneralUtil.dataBank.ArrayOfLists[graphChoiceTwo]);
-
-        GeneralUtil.graphRef.graphOneString.text = GeneralUtil.dataBank.ArrayOfListsNames[graphChoiceTwo];
-        GeneralUtil.graphRef.graphTwoString.text = GeneralUtil.dataBank.ArrayOfListsNames[graphChoiceOne];
+        GeneralUtil.graphRef.graphTwoString.text = GeneralUtil.dataBank.ArrayOfListsNames[graphChoiceTwo];
+        GeneralUtil.graphRef.graphOneString.text = GeneralUtil.dataBank.ArrayOfListsNames[graphChoiceOne];
     }
 
     /// <summary>
-    /// returns true if there are enough resrouces avaialble to build 
+    /// returns true if there are enough resrouces available to build 
     /// </summary>
     /// <returns></returns>
     private bool CheckEnoughResources(int index)
@@ -466,7 +466,8 @@ public class MapInteraction : MonoBehaviour
 
     public void SpawnFloatingText(string text, Color color, Transform parent) 
     {
-        var obj = Instantiate(floatingText, parent.position + new Vector3(0,4,0), Quaternion.identity, parent);
+        var obj = Instantiate(floatingText, parent.position + new Vector3(0,4,0),Quaternion.identity, parent);
+        obj.transform.LookAt(Camera.main.transform);
         obj.GetComponent<TMP_Text>().text = text;
         obj.GetComponent<TMP_Text>().color = color;
     }
@@ -478,9 +479,19 @@ public class MapInteraction : MonoBehaviour
         SpawnShowObj(centerTile, sel.x, sel.y);
         var success =SpawnBuilding(indexBuilding);
 
+        ClearSection(true);
+        ClearShowObj();
+
         if (success) 
         {
             GeneralUtil.Ui.SetMessage($"The AI has created a {GeneralUtil.buildingScritpable.buildingStats[indexBuilding].name}", Color.green);
+
+            var building = GeneralUtil.buildingScritpable.buildingStats[selectedIndex];
+
+            GeneralUtil.resourceBank.woodMaxAmount += building.BankAmountWSFS[0];
+            GeneralUtil.resourceBank.stoneMaxAmount += building.BankAmountWSFS[1];
+            GeneralUtil.resourceBank.foodMaxAmount += building.BankAmountWSFS[2];
+            GeneralUtil.resourceBank.sandMaxAmount += building.BankAmountWSFS[3];
         }
         else 
         {
@@ -569,8 +580,8 @@ public class MapInteraction : MonoBehaviour
             }
         }
 
-        //if (!GeneralUtil.dataBank.allowedBuildingLocations.Contains(middleTile.coord) && selectedIndex !=0)
-        //    canInteract = false;
+        if (!GeneralUtil.dataBank.allowedBuildingLocations.Contains(middleTile.coord) && selectedIndex != 0)
+            canInteract = false;
 
         canSpawn = canInteract;
         SetTextureDependingOnInteractionAllowance(canInteract);
@@ -654,47 +665,54 @@ public class MapInteraction : MonoBehaviour
 
         GUILayout.Label( $"Name: {npcData.name}");
         GUILayout.Space(-5);
-        GUILayout.Label( $"Health: {npcData.health}");
-        GUILayout.Space(-5);
-        GUILayout.Label($"Stamina: {npcData.stamina}");
-        GUILayout.Space(-5);
-        GUILayout.Label( $"Speed: {npcData.speed}");
-        GUILayout.Space(-5);
-        GUILayout.Label( $"Age: {npcData.name}");
 
-        GUILayout.Space(10);
-        if (npcData.refToWorkPlace != null)
+        if (npcData.dead) 
         {
-            GUILayout.Label($"Works at: {npcData.refToWorkPlace.typeOfBuilding}");
+            GUILayout.Label($"This NPC is dead");
         }
-        if (npcData.refToHouse != null)
+        else 
         {
-            GUILayout.Label( $"House at: {npcData.refToHouse.centerCoord}");
-        }
+            GUILayout.Label($"Health: {npcData.health}");
+            GUILayout.Space(-5);
+            GUILayout.Label($"Stamina: {npcData.stamina}");
+            GUILayout.Space(-5);
+            GUILayout.Label($"Speed: {npcData.speed}");
+            GUILayout.Space(-5);
+            GUILayout.Label($"Age: {npcData.name}");
 
-        GUILayout.Space(10);
-        if (npcData.parentsArr[0] != null)
-            GUILayout.Label($"parent 1: {npcData.parentsArr[0].name}");
-
-        if (npcData.parentsArr[0] != null)
-            GUILayout.Label($"parent 2: {npcData.parentsArr[1].name}");
-
-        if (npcData.children.Count > 0)
-        {
-            GUILayout.Label("list of children");
-            for (int i = 0; i < npcData.children.Count; i++)
+            GUILayout.Space(10);
+            if (npcData.refToWorkPlace != null)
             {
-                GUILayout.Label("child");
+                GUILayout.Label($"Works at: {npcData.refToWorkPlace.typeOfBuilding}");
+            }
+            if (npcData.refToHouse != null)
+            {
+                GUILayout.Label($"House at: {npcData.refToHouse.centerCoord}");
+            }
+
+            GUILayout.Space(10);
+            if (npcData.parentsArr[0] != null)
+                GUILayout.Label($"parent 1: {npcData.parentsArr[0].name}");
+
+            if (npcData.parentsArr[0] != null)
+                GUILayout.Label($"parent 2: {npcData.parentsArr[1].name}");
+
+            if (npcData.children.Count > 0)
+            {
+                GUILayout.Label("list of children");
+                for (int i = 0; i < npcData.children.Count; i++)
+                {
+                    GUILayout.Label("child");
+                }
+            }
+
+            if (GUILayout.Button("kill me"))
+            {
+                npcData.Kill();
             }
         }
 
 
-
-        GUILayout.Space(10);
-        npcObjComp.showPathToggle = GUILayout.Toggle( npcObjComp.showPathToggle, "Show path Mode");
-
-        if (npcObjComp.showPathToggle)
-            npcObjComp.switchPathMode = GUILayout.Toggle( npcObjComp.switchPathMode, npcObjComp.switchPathMode == true ? "path mode" : "all tiles checked mode");
 
         Rect lastRect = GUILayoutUtility.GetLastRect();
 
@@ -750,14 +768,14 @@ public class MapInteraction : MonoBehaviour
         }
 
 
-        if (buildingData.tilesWithResourcesInRange.Count > 0)
-        {
-            buildingData.buildingID.drawResources = GUILayout.Toggle(buildingData.buildingID.drawResources, "draw resources");
-        }
-        else 
-        {
-            GUILayout.Label(new GUIContent() { text = "This buidling has no resources close to it", tooltip = "this is a tooltip" });
-        }
+        //if (buildingData.tilesWithResourcesInRange.Count > 0)
+        //{
+        //    buildingData.buildingID.drawResources = GUILayout.Toggle(buildingData.buildingID.drawResources, "draw resources");
+        //}
+        //else 
+        //{
+        //    GUILayout.Label(new GUIContent() { text = "This buidling has no resources close to it", tooltip = "this is a tooltip" });
+        //}
 
   
         if (buildingData.stats.type == BuildingData.BUILDING_TYPE.HOUSE) 

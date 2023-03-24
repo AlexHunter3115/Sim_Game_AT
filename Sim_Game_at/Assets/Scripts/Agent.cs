@@ -52,6 +52,11 @@ public class Agent : MonoBehaviour
         {
             PathingCall();
         }
+    
+        if (data.dead) 
+        {
+            Destroy(gameObject);
+        }
     }
 
     public void PathingCall() 

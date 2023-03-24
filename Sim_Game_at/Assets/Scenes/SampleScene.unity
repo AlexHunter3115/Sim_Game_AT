@@ -1000,7 +1000,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1791050367}
   m_Direction: 0
   m_MinValue: 0
-  m_MaxValue: 4
+  m_MaxValue: 10
   m_WholeNumbers: 0
   m_Value: 1
   m_OnValueChanged:
@@ -2317,7 +2317,6 @@ MonoBehaviour:
   daysPassed: 0
   unemployedNpc: []
   importanceDivision: 0.5
-  prioritizeHousing: 1
   leftAreaThreashold: 0.78
   importanceOfFood: 1
   importanceOfStone: 1
@@ -3474,8 +3473,8 @@ MonoBehaviour:
   resolutionGraph: 20
   LineWidth: 1.5
   graphBackground: {fileID: 3373005806229874170, guid: b8d6bf1b9a7222e42bf2c9cabbb6b7dd, type: 3}
-  graphOneString: {fileID: 2024266344}
-  graphTwoString: {fileID: 2045181099}
+  graphTwoString: {fileID: 2024266344}
+  graphOneString: {fileID: 2045181099}
   maxRedVal: {fileID: 721026981}
   higherRedVal: {fileID: 874358668}
   lowerRedVal: {fileID: 1912297514}

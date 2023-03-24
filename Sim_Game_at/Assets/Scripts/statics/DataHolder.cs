@@ -24,49 +24,54 @@ public class DataHolder : MonoBehaviour
 
     public HashSet<Vector2> allowedBuildingLocations = new HashSet<Vector2>();
 
-    public static List<int> listOfValueForResourceStone = new List<int>();
-    public static List<int> listOfValueForResourceWood = new List<int>();
-    public static List<int> listOfValueForResourceFood = new List<int>();
-    public static List<int> listOfValueForResourceTotal = new List<int>();
+    private static List<int> numberOfStoneResources = new List<int>();
+    private static List<int> numberOfWoodResources = new List<int>();
+    private static List<int> numberOfFoodResources = new List<int>();
+    private static List<int> numberOfTotalResources = new List<int>();
 
-    public static List<int> listOfValueForPeople = new List<int>();
+    private static List<int> numberOfTotaPeople = new List<int>();
 
-    public static List<int> listOfValueForWoodBuildings = new List<int>();
-    public static List<int> listOfValueForStoneBuildings = new List<int>();
-    public static List<int> listOfValueForAllBuildings = new List<int>();
+    private static List<int> howManyWoodBuildings = new List<int>();
+    private static List<int> howManyStoneBuildings = new List<int>();
+    private static List<int> howManyTotalBuildings = new List<int>();
 
-    public static List<int> listOfCostsWood = new List<int>();
-    public static List<int> listOfCostsFood = new List<int>();
-    public static List<int> listOfCostsStone = new List<int>();
-    public static List<int> listOfCostsSand = new List<int>();
+    private static List<int> listOfCostsWood = new List<int>();
+    private static List<int> listOfCostsFood = new List<int>();
+    private static List<int> listOfCostsStone = new List<int>();
+    private static List<int> listOfCostsSand = new List<int>();
 
-    public static List<int> listOfHoldingsWood = new List<int>();
-    public static List<int> listOfHoldingsFood = new List<int>();
-    public static List<int> listOfHoldingsStone = new List<int>();
-    public static List<int> listOfHoldingsSand = new List<int>();
+    private static List<int> closeDayWoodHoldings = new List<int>();
+    private static List<int> closeDayFoodHoldings = new List<int>();
+    private static List<int> closeDayStoneHoldings = new List<int>();
+    private static List<int> closeDaySandHoldings = new List<int>();
 
-    public static List<int> failureToDeliverList = new List<int>();
+    private static List<int> failureToDeliverList = new List<int>();
 
 
 
     private List<int>[] arrayOfLists = new List<int>[17]
     {
-        listOfValueForResourceStone,
-        listOfValueForResourceWood,
-        listOfValueForResourceFood,
-        listOfValueForResourceTotal,
-        listOfValueForPeople,
-        listOfValueForWoodBuildings,
-        listOfValueForStoneBuildings,
-        listOfValueForAllBuildings,
+        numberOfStoneResources,
+        numberOfWoodResources,
+        numberOfFoodResources,
+        numberOfTotalResources,
+
+        numberOfTotaPeople,
+
+        howManyWoodBuildings,
+        howManyStoneBuildings,
+        howManyTotalBuildings,
+
         listOfCostsFood,
         listOfCostsStone,
         listOfCostsSand,
         listOfCostsWood,
-        listOfHoldingsWood,
-        listOfHoldingsFood,
-        listOfHoldingsStone,
-        listOfHoldingsSand,
+
+        closeDayWoodHoldings,
+        closeDayFoodHoldings,
+        closeDayStoneHoldings,
+        closeDaySandHoldings,
+
         failureToDeliverList
     };
     public List<int>[] ArrayOfLists
@@ -80,18 +85,23 @@ public class DataHolder : MonoBehaviour
         "Wood resources",
         "Food resources",
         "Total resources",
+
         "People amount",
+
         "Wood buildings",
         "Stone buildings",
         "All buildings",
+
         "Daily cost of food",
         "Daily cost of stone",
         "Daily cost of sand",
         "Daily cost of wood", 
+
         "Daily close wood amount",
         "Daily close food amount",
         "Daily close stone amount",
         "Daily close sand amount",
+
         "Failure To Deliver"
     };
     public string[] ArrayOfListsNames
@@ -103,53 +113,55 @@ public class DataHolder : MonoBehaviour
 
     public void SaveAllResourceThisCycle(int totalFoodDay, int totalStoneDay, int totalSandDay, int totalWoodDay, int failureToDeliver) 
     {
-        if (listOfValueForResourceStone.Count == 15) 
+        if (numberOfStoneResources.Count == 15) 
         {
-            listOfValueForResourceWood.RemoveAt(0);
-            listOfValueForResourceStone.RemoveAt(0);
-            listOfValueForResourceTotal.RemoveAt(0);
-            listOfValueForResourceFood.RemoveAt(0);
+            numberOfWoodResources.RemoveAt(0);
+            numberOfStoneResources.RemoveAt(0);
+            numberOfTotalResources.RemoveAt(0);
+            numberOfFoodResources.RemoveAt(0);
 
-            listOfValueForPeople.RemoveAt(0);
+            numberOfTotaPeople.RemoveAt(0);
 
-            listOfValueForWoodBuildings.RemoveAt(0);
-            listOfValueForStoneBuildings.RemoveAt(0);
-            listOfValueForAllBuildings.RemoveAt(0);
+            howManyWoodBuildings.RemoveAt(0);
+            howManyStoneBuildings.RemoveAt(0);
+            howManyTotalBuildings.RemoveAt(0);
 
             listOfCostsWood.RemoveAt(0);
             listOfCostsFood.RemoveAt(0);
             listOfCostsStone.RemoveAt(0);
             listOfCostsSand.RemoveAt(0);
 
-            listOfHoldingsWood.RemoveAt(0);
-            listOfHoldingsFood.RemoveAt(0);
-            listOfHoldingsStone.RemoveAt(0);
-            listOfHoldingsSand.RemoveAt(0);
+            closeDayWoodHoldings.RemoveAt(0);
+            closeDayFoodHoldings.RemoveAt(0);
+            closeDayStoneHoldings.RemoveAt(0);
+            closeDaySandHoldings.RemoveAt(0);
 
             failureToDeliverList.RemoveAt(0);
         }
 
-        listOfValueForResourceStone.Add(numOfResourcesStone);
-        listOfValueForResourceFood.Add(numOfResourcesFood);
-        listOfValueForResourceWood.Add(numOfResourcesWood);
-        listOfValueForResourceTotal.Add(numOfResourcesStone + numOfResourcesFood + numOfResourcesWood);
+       
+        numberOfStoneResources.Add(numOfResourcesStone);
+        numberOfFoodResources.Add(numOfResourcesFood);
+        numberOfWoodResources.Add(numOfResourcesWood);
+        numberOfTotalResources.Add(numOfResourcesStone + numOfResourcesFood + numOfResourcesWood);
 
-        listOfValueForPeople.Add(GeneralUtil.resourceBank.peopleAmount);
-        listOfValueForWoodBuildings.Add(numOfBuidlingsStoneSpecific);
-        listOfValueForStoneBuildings.Add(numOfBuidlingsWoodSpecific);
-        listOfValueForAllBuildings.Add(buildingDict.Count);
+        numberOfTotaPeople.Add(GeneralUtil.resourceBank.peopleAmount);
+        howManyWoodBuildings.Add(numOfBuidlingsStoneSpecific);
+        howManyStoneBuildings.Add(numOfBuidlingsWoodSpecific);
+        howManyTotalBuildings.Add(buildingDict.Count);
 
         listOfCostsWood.Add(totalWoodDay);
         listOfCostsFood.Add(totalFoodDay);
         listOfCostsStone.Add(totalStoneDay);
         listOfCostsSand.Add(totalSandDay);
 
-        listOfHoldingsWood.Add(GeneralUtil.resourceBank.woodAmount);
-        listOfHoldingsFood.Add(GeneralUtil.resourceBank.foodAmount);
-        listOfHoldingsStone.Add(GeneralUtil.resourceBank.stoneAmount);
-        listOfHoldingsSand.Add(GeneralUtil.resourceBank.sandAmount);
+        closeDayWoodHoldings.Add(GeneralUtil.resourceBank.woodAmount);
+        closeDayFoodHoldings.Add(GeneralUtil.resourceBank.foodAmount);
+        closeDayStoneHoldings.Add(GeneralUtil.resourceBank.stoneAmount);
+        closeDaySandHoldings.Add(GeneralUtil.resourceBank.sandAmount);
 
         failureToDeliverList.Add(failureToDeliver);
+
     }
 
     public void SpendDailyNeeds() 
@@ -219,7 +231,6 @@ public class DataHolder : MonoBehaviour
                 building.ChangeHealth(-5);
                 GeneralUtil.mapInteraction.SpawnFloatingText("Not close to outpost", Color.yellow, building.buildingID.transform);
 
-                Debug.Log($"Thaddais");
                 if (cont)
                     continue;
             }
@@ -278,7 +289,7 @@ public class DataHolder : MonoBehaviour
         foreach (var building in buildingDict.Values)
         {
             //building.workers.Count > 0 &&
-            if ( (building.buildingID.buildingIndex == 0 || building.buildingID.buildingIndex == 4)) 
+            if (building.workers.Count > 0 && (building.buildingID.buildingIndex == 0 || building.buildingID.buildingIndex == 4)) 
             {
                 var listOfTiles = GeneralUtil.GetResourcesCloseSpiral(building.centerCoord, building.stats.tileRange);
                 
@@ -296,7 +307,6 @@ public class DataHolder : MonoBehaviour
     public List<string> unemployedNpc = new List<string>();
     public float importanceDivision = 0.5f;
 
-    public bool prioritizeHousing = true;
     public float leftAreaThreashold = 0.8f;
 
     public float importanceOfFood = 1;
@@ -310,6 +320,7 @@ public class DataHolder : MonoBehaviour
 
         int jobLess = 0;
         int homeLess = 0;
+        int grownups = 0;
 
         foreach (var npc in npcDict.Values)
         {
@@ -319,6 +330,7 @@ public class DataHolder : MonoBehaviour
                 {
                     jobLess++;
                     homeLess++;
+                    grownups++;
                 }
                 continue;
             }
@@ -328,22 +340,24 @@ public class DataHolder : MonoBehaviour
                     homeLess++;
                 if (npc.refToWorkPlace == null)
                     jobLess++;
+
+                grownups++;
             }
         }
 
-        int openHouses = 0;
-        int openJob = 0;
+        int housePlacesAvailable = 0;
+        int jobPlacesAvailable = 0;
         float totalAreaTaken = 0;
 
         foreach (var building in buildingDict.Values)
         {
             if (building.stats.type == BuildingData.BUILDING_TYPE.HOUSE) 
             {
-                openHouses += building.maxWorkers - building.workers.Count;
+                housePlacesAvailable += building.maxWorkers - building.workers.Count;
             }
             else 
             {
-                openJob += building.maxWorkers - building.workers.Count;
+                jobPlacesAvailable += building.maxWorkers - building.workers.Count;
             }
 
             totalAreaTaken += (float)GetCircleArea((double)building.effectiveRadius);
@@ -351,8 +365,8 @@ public class DataHolder : MonoBehaviour
         }
 
         // negative means is in need
-        var jobDiscrepency =  openJob - jobLess;
-        var houseDiscrepency = openHouses - homeLess;
+        var jobDiscrepency =  jobPlacesAvailable - jobLess;
+        var houseDiscrepency = housePlacesAvailable - homeLess;
 
         float percTaken = totalAreaTaken / allowedBuildingLocations.Count;
 
@@ -362,12 +376,16 @@ public class DataHolder : MonoBehaviour
             return;
         }
 
-        if (prioritizeHousing) 
+
+        float percHouseLess = (float)homeLess / (float)grownups;
+        float percJobLess = (float)jobLess / (float)grownups;
+
+
+        if (percHouseLess <= percJobLess) 
         {
             if (houseDiscrepency < 0) 
             {
                 RunPoissant(6);
-                return;
             }
             if (jobDiscrepency < 0) 
             {
@@ -384,8 +402,20 @@ public class DataHolder : MonoBehaviour
                 else if (importanceStone == smallestNum) { decision = 2; }
                 else if (importanceSand == smallestNum) { decision = 4; }
                 else if (importanceWood == smallestNum) { decision = 1; }
-                else { decision = 6; }
+                //else { decision = 3; }
 
+                if (decision == 0)
+                {
+                    Debug.Log(importanceFood);
+                    Debug.Log(importanceSand);
+                    Debug.Log(importanceStone);
+                    Debug.Log(importanceWood);
+
+                    Debug.Log(smallestNum);
+
+                    Debug.Log("there is an issue");
+                    return;
+                }
 
                 RunPoissant(decision);
             }
@@ -403,17 +433,27 @@ public class DataHolder : MonoBehaviour
                 int decision = 0;
 
                 float smallestNum = Math.Min(Math.Min(importanceFood, importanceStone), Math.Min(importanceSand, importanceWood));
-
-
+                
                 if (importanceFood == smallestNum) { decision = 5; }
                 else if (importanceStone == smallestNum) { decision = 2; }
                 else if (importanceSand == smallestNum) { decision = 4; }
                 else if (importanceWood == smallestNum) { decision = 1; }
-                else { decision = 6; }
+                //else { decision = 6; }
 
+                if (decision == 0) 
+                {
+                    Debug.Log(importanceFood);
+                    Debug.Log(importanceSand);
+                    Debug.Log(importanceStone);
+                    Debug.Log(importanceWood);
+
+                    Debug.Log(smallestNum);
+
+                    Debug.Log("there is an issue");
+                    return; 
+                }
 
                 RunPoissant(decision);
-                return;
             }
             if (houseDiscrepency < 0)
             {

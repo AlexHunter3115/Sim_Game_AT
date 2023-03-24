@@ -148,6 +148,9 @@ public class HouseBuilding : MonoBehaviour, IAgentInteractions,IBuildingActions,
 
     public void HourTick()
     {
+
+        FindHabitant();
+
         if (GeneralUtil.timeCycle.isNightTime)
         {
             buildingId.buildingData.shut = false;
@@ -188,11 +191,6 @@ public class HouseBuilding : MonoBehaviour, IAgentInteractions,IBuildingActions,
         }
     }
 
-    public void MinuteTick()
-    {
-        FindHabitant();
-    }
-
     #endregion
 
 
@@ -206,23 +204,28 @@ public class HouseBuilding : MonoBehaviour, IAgentInteractions,IBuildingActions,
 
                 if (Random.Range(0.000f, 1.000f) <= chanceOfFertility)
                 {
-                    AgentData newChild = new AgentData(AgentData.AGE_STATE.BABY);
-
-                    GeneralUtil.dataBank.npcDict.Add(newChild.guid, newChild);
-
-                    newChild.SetParents(buildingId.buildingData.workers[0], buildingId.buildingData.workers[1]);
-                    newChild.refToHouse = buildingId.buildingData;
-
-                    childrenHabitantsGUID.Add(newChild.guid);
-
-                    for (int i = 0; i < buildingId.buildingData.workers.Count; i++)
+                    if (GeneralUtil.resourceBank.CheckFoodAmount(25)) 
                     {
-                        buildingId.buildingData.workers[i].AddChild(newChild);
+                        AgentData newChild = new AgentData(AgentData.AGE_STATE.BABY);
+
+                        GeneralUtil.dataBank.npcDict.Add(newChild.guid, newChild);
+
+                        newChild.SetParents(buildingId.buildingData.workers[0], buildingId.buildingData.workers[1]);
+                        newChild.refToHouse = buildingId.buildingData;
+
+                        childrenHabitantsGUID.Add(newChild.guid);
+
+                        for (int i = 0; i < buildingId.buildingData.workers.Count; i++)
+                        {
+                            buildingId.buildingData.workers[i].AddChild(newChild);
+                        }
+
+                        GeneralUtil.resourceBank.ChangePeopleAmount(1);
+
+                        GeneralUtil.Ui.SetMessage($"The NPC {buildingId.buildingData.workers[0].name} and {buildingId.buildingData.workers[1].name} had a baby called {newChild.name}", Color.green);
+
+                        GeneralUtil.resourceBank.ChangeFoodAmount(-25);
                     }
-
-                    GeneralUtil.resourceBank.ChangePeopleAmount(1);
-
-                    GeneralUtil.Ui.SetMessage($"The NPC {buildingId.buildingData.workers[0].name} and {buildingId.buildingData.workers[1].name} had a baby called {newChild.name}", Color.green);
                 }
             }
         }

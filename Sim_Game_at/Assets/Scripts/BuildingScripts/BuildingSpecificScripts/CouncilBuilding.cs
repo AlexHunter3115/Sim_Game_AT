@@ -135,6 +135,10 @@ public class CouncilBuilding : MonoBehaviour, IAgentInteractions, ITimeTickers, 
                 {
                     for (int i = 0; i < buildingId.buildingData.tilesWithResourcesInRange.Count; i++)
                     {
+
+                        if (buildingId.buildingData.tilesWithResourcesInRange[i].tileObject == null)
+                            continue;
+
                         if (buildingId.buildingData.tilesWithResourcesInRange[i].tileObject.GetComponent<Resource>().available)
                         {
                             buildingId.buildingData.tilesWithResourcesInRange[i].tileObject.GetComponent<Resource>().available = false;

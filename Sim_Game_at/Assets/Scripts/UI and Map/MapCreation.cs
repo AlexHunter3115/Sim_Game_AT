@@ -148,8 +148,10 @@ public class MapCreation : MonoBehaviour
         GeneralUtil.Ui.SetMessage("Place the council to start the simulation", Color.blue);
         GeneralUtil.Ui.SetMessage("Use the time slider to speed things up", Color.blue);
         GeneralUtil.Ui.SetMessage("Press Space to see the graph of your current progress", Color.blue);
-        GeneralUtil.Ui.SetMessage("You can either let the game take its course but you can also take contorl and place buildings your self", Color.blue);
-        GeneralUtil.Ui.SetMessage("Press Esc to pause the game and change the value for the AI behaviour", Color.blue);
+        GeneralUtil.Ui.SetMessage("You can either let the game take its course but you can also take control and place buildings your self", Color.blue);
+        GeneralUtil.Ui.SetMessage("Press Esc to pause the game and change the values for the AI behaviour", Color.blue);
+        GeneralUtil.Ui.SetMessage("You can click on buildings or NPCs to see their stats, but remember to press right click to deselect them!!", Color.blue);
+        GeneralUtil.Ui.SetMessage("USe WASD to move around, scrol wheel to go up or down, press scroll wheel to pan around", Color.blue);
     }
 
     public void RandomizePerlin()
@@ -218,6 +220,10 @@ public class MapCreation : MonoBehaviour
 
     public GameObject SpawnAgent(string guid, Tile exitPoint) 
     {
+        if (GeneralUtil.dataBank.npcDict[guid].agentObj != null) 
+        {
+            return null;
+        }
         var objRef = Instantiate(agent, transform);
         var comp = objRef.GetComponent<Agent>();
 
@@ -256,8 +262,6 @@ public class MapCreation : MonoBehaviour
 
     public void RespawnSomeTrees(int amountOfTries) 
     {
-
-
         GeneralUtil.Ui.SetProgressState(1);
         for (int i = 0; i < amountOfTries; i++)
         {
@@ -331,6 +335,9 @@ public class MapCreation : MonoBehaviour
         {
             for (int y = 0; y < newCaGrid.GetLength(1); y++)
             {
+                if (tilesArray[x, y].tileType != TileType.GRASS)
+                    continue;
+
                 int neigboursNum = CountNeighbors(x, y, newCaGrid);
 
                 if (neigboursNum <= 2) //set to die
