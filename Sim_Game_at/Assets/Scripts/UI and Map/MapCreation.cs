@@ -151,7 +151,7 @@ public class MapCreation : MonoBehaviour
         GeneralUtil.Ui.SetMessage("You can either let the game take its course but you can also take control and place buildings your self", Color.blue);
         GeneralUtil.Ui.SetMessage("Press Esc to pause the game and change the values for the AI behaviour", Color.blue);
         GeneralUtil.Ui.SetMessage("You can click on buildings or NPCs to see their stats, but remember to press right click to deselect them!!", Color.blue);
-        GeneralUtil.Ui.SetMessage("USe WASD to move around, scrol wheel to go up or down, press scroll wheel to pan around", Color.blue);
+        GeneralUtil.Ui.SetMessage("Use WASD to move around, scrol wheel to go up or down, press scroll wheel to pan around", Color.blue);
     }
 
     public void RandomizePerlin()
@@ -241,7 +241,7 @@ public class MapCreation : MonoBehaviour
         {
             for (int x = 0; x < tilesArray.GetLength(1); x++)
             {
-                var newVec = new Vector2(x, y);
+                var newVec = new Vector2Int(x, y);
 
                 if (GeneralUtil.dataBank.allowedBuildingLocations.Contains(newVec))
                     texture.SetPixel(x, y, Color.green);
@@ -420,6 +420,7 @@ public class MapCreation : MonoBehaviour
     {
         tile.busy = true;
         var objRef = Instantiate(rocks.Count == 0 ? rocks[0] : rocks[Random.Range(0, rocks.Count)]);
+        objRef.GetComponent<Resource>().tile = tile;
 
         objRef.transform.parent = resourceHolder.transform;
         objRef.transform.position = new Vector3(tile.midCoord.x, 0.25f, tile.midCoord.z);

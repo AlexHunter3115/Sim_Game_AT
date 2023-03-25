@@ -154,7 +154,7 @@ public class AgentData : Entity, ITimeTickers
             currAge = AGE_STATE.ELDER;
         } 
 
-        if ((int)AGE_STATE.ELDER < daysAlive)
+        if ((int)AGE_STATE.ELDER + Random.Range(0,8) < daysAlive)
         {
             //dead
             Kill();
@@ -182,8 +182,6 @@ public class AgentData : Entity, ITimeTickers
         GeneralUtil.Ui.SetMessage($"The NPC {name} is dead", Color.red);
         dead = true;
             
-
-        //GeneralUtil.dataBank.npcDict.Remove(guid);
     }
 
     public void ChangeHealth(int val) 
@@ -270,8 +268,6 @@ public class AgentData : Entity, ITimeTickers
        AgeUp();
     }
 
-    public void MinuteTick()
-    { }
 
     public void HourTick()
     { }
@@ -302,7 +298,6 @@ public class AgentData : Entity, ITimeTickers
                         SetToSleeping();
                     }
                 }
-                
             }
             else // if its day time and no job this takes over
             {

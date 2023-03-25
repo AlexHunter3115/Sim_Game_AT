@@ -51,7 +51,7 @@ public class MineBuilding : MonoBehaviour, IAgentInteractions, ITimeTickers, IBu
 
     public void HourTick()
     {
-
+        LookForWorkers();
 
         if (GeneralUtil.timeCycle.isNightTime)
         {
@@ -107,7 +107,6 @@ public class MineBuilding : MonoBehaviour, IAgentInteractions, ITimeTickers, IBu
                                 }
                                 buildingId.buildingData.tilesWithResourcesInRange.RemoveAt(i);
                                 break;
-
                             }
                         }
                     }
@@ -116,10 +115,6 @@ public class MineBuilding : MonoBehaviour, IAgentInteractions, ITimeTickers, IBu
         }
     }
 
-    public void MinuteTick()
-    {
-        LookForWorkers();
-    }
 
     #endregion
 

@@ -19,16 +19,16 @@ MonoBehaviour:
     size: {x: 5, y: 5}
     entrances:
     - {x: 2, y: 1}
-    tileRange: 10
-    keepUpCostWSFS: 0a0000000a0000000a0000000a000000
+    tileRange: 15
     startCostWSFS: 00000000000000000000000000000000
+    keepUpCostWSFS: 0a0000000a0000000a0000000a000000
+    hourlyProductionWSFS: 01000000010000000100000001000000
+    BankAmountWSFS: 58020000900100009001000090010000
     allowedTileTypes: 0000000001000000
+    whatResourceLookingFor: 0200000001000000
     building: {fileID: 8044071594055797428, guid: 3a833e0bba287844289de25c1a8cdcbf, type: 3}
     maxWorkers: 4
-    whatResourceLookingFor: 0200000001000000
-    BankAmountWSFS: 58020000900100009001000090010000
     poissantRadius: 3
-    hourlyProductionWSFS: 01000000010000000100000001000000
   - type: 1
     centerOffset: {x: -0.25, y: 0}
     name: Sawmill
@@ -36,15 +36,15 @@ MonoBehaviour:
     entrances:
     - {x: 0, y: 1}
     tileRange: 8
-    keepUpCostWSFS: 14000000140000000a00000000000000
     startCostWSFS: 960000001e0000001400000000000000
+    keepUpCostWSFS: 14000000140000000a00000000000000
+    hourlyProductionWSFS: 08000000000000000100000003000000
+    BankAmountWSFS: 8c000000280000001e0000000a000000
     allowedTileTypes: 00000000
+    whatResourceLookingFor: 02000000
     building: {fileID: 7682443745824996913, guid: 80992b63c3f74bd41ae008cfce31f538, type: 3}
     maxWorkers: 2
-    whatResourceLookingFor: 01000000
-    BankAmountWSFS: 8c000000280000001e0000000a000000
     poissantRadius: 2
-    hourlyProductionWSFS: 08000000000000000100000003000000
   - type: 2
     centerOffset: {x: 0, y: 0}
     name: Mine
@@ -52,15 +52,15 @@ MonoBehaviour:
     entrances:
     - {x: 0, y: 1}
     tileRange: 10
-    keepUpCostWSFS: 0a0000000f0000000a00000005000000
     startCostWSFS: 1e00000032000000050000000a000000
+    keepUpCostWSFS: 0a0000000f0000000a00000005000000
+    hourlyProductionWSFS: 00000000060000000000000004000000
+    BankAmountWSFS: 28000000780000001e00000028000000
     allowedTileTypes: 0100000002000000
+    whatResourceLookingFor: 00000000
     building: {fileID: 5167131309139135296, guid: 80b0186fbe9ec1447aa15b0364a766d5, type: 3}
     maxWorkers: 2
-    whatResourceLookingFor: 00000000
-    BankAmountWSFS: 28000000780000001e00000028000000
-    poissantRadius: 1
-    hourlyProductionWSFS: 00000000060000000000000004000000
+    poissantRadius: 1.5
   - type: 6
     centerOffset: {x: 0.4, y: -0.4}
     name: Outpost
@@ -68,16 +68,16 @@ MonoBehaviour:
     entrances:
     - {x: 1, y: 0}
     - {x: 0, y: 0}
-    tileRange: 15
-    keepUpCostWSFS: 05000000050000000500000000000000
+    tileRange: 20
     startCostWSFS: 640000001e0000000500000000000000
+    keepUpCostWSFS: 05000000050000000500000000000000
+    hourlyProductionWSFS: 00000000000000000300000000000000
+    BankAmountWSFS: 1e0000001e0000003c0000000a000000
     allowedTileTypes: 000000000100000002000000
+    whatResourceLookingFor: 
     building: {fileID: 6269123546353934552, guid: 0d799d7fd2da0604b978eafb7f4e3859, type: 3}
     maxWorkers: 1
-    whatResourceLookingFor: 
-    BankAmountWSFS: 1e0000001e0000003c0000000a000000
     poissantRadius: 2
-    hourlyProductionWSFS: 00000000000000000300000000000000
   - type: 5
     centerOffset: {x: 0, y: 0}
     name: Dock
@@ -86,31 +86,31 @@ MonoBehaviour:
     - {x: 0, y: 1}
     - {x: 0, y: -1}
     tileRange: 1
-    keepUpCostWSFS: 0a0000000a0000000f0000000a000000
     startCostWSFS: 32000000640000000a00000005000000
+    keepUpCostWSFS: 0a0000000a0000000f0000000a000000
+    hourlyProductionWSFS: 00000000050000000100000005000000
+    BankAmountWSFS: 280000003c0000001400000078000000
     allowedTileTypes: 0000000003000000
+    whatResourceLookingFor: 
     building: {fileID: 3201369498106564900, guid: f97c628e40ac8c742be8eec5551c3870, type: 3}
     maxWorkers: 2
-    whatResourceLookingFor: 
-    BankAmountWSFS: 280000003c0000001400000078000000
     poissantRadius: 2
-    hourlyProductionWSFS: 00000000050000000100000005000000
   - type: 3
     centerOffset: {x: 0, y: 0}
     name: Farm
     size: {x: 5, y: 3}
     entrances:
     - {x: 0, y: 1}
-    tileRange: 10
-    keepUpCostWSFS: 0a00000005000000050000000a000000
+    tileRange: 20
     startCostWSFS: 640000000a0000000500000000000000
+    keepUpCostWSFS: 0a00000005000000050000000a000000
+    hourlyProductionWSFS: 03000000010000000a00000000000000
+    BankAmountWSFS: 3200000014000000fa00000028000000
     allowedTileTypes: 00000000
+    whatResourceLookingFor: 01000000
     building: {fileID: 5393357137421281980, guid: e5007346d9a5ef944b0e25d59e1be0bf, type: 3}
     maxWorkers: 2
-    whatResourceLookingFor: 02000000
-    BankAmountWSFS: 3200000014000000fa00000028000000
     poissantRadius: 2.5
-    hourlyProductionWSFS: 03000000010000000a00000000000000
   - type: 4
     centerOffset: {x: 0.4, y: -0.4}
     name: House
@@ -119,12 +119,12 @@ MonoBehaviour:
     - {x: 0, y: 0}
     - {x: 1, y: 0}
     tileRange: 2
-    keepUpCostWSFS: 0a000000000000000a00000000000000
     startCostWSFS: 64000000140000001400000000000000
+    keepUpCostWSFS: 0a000000000000000a00000000000000
+    hourlyProductionWSFS: 00000000000000000000000000000000
+    BankAmountWSFS: 32000000140000006400000014000000
     allowedTileTypes: 0000000001000000
+    whatResourceLookingFor: 
     building: {fileID: 1840192149836013038, guid: 96b5a450d2bf02a4d88ecff8f704f8fd, type: 3}
     maxWorkers: 2
-    whatResourceLookingFor: 
-    BankAmountWSFS: 32000000140000006400000014000000
     poissantRadius: 2
-    hourlyProductionWSFS: 00000000000000000000000000000000

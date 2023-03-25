@@ -32,13 +32,10 @@ public class FarmBuilding : MonoBehaviour, IAgentInteractions, ITimeTickers, IBu
                     }
                 }
             }
-
         }
         else
         {
-
             buildingId.buildingData.shut = false;
-
 
             buildingId.GetResourceNearby();
 

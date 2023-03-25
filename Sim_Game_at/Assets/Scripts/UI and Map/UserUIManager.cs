@@ -193,8 +193,8 @@ public class UserUIManager : MonoBehaviour
              databank.importanceOfWood = GUI.HorizontalSlider(new Rect(x + spacing * 5 + sliderWidth * 4 + 40, y + spacing * 3 + buttonHeight + 15, sliderWidth, sliderHeight), databank.importanceOfWood, 0.7f, 1.3f);
 
 
-            GUI.Label(new Rect(x + spacing * 5 + sliderWidth * 5 +5 + 80, y + spacing * 2 + buttonHeight - 6, sliderWidth, sliderHeight + 4), new GUIContent() { text = "AI: Threshold Space", tooltip = "" });
-            databank.leftAreaThreashold = GUI.HorizontalSlider(new Rect(x + spacing * 6 + sliderWidth * 5 + 80, y + spacing * 3 + buttonHeight + 15, sliderWidth, sliderHeight), databank.leftAreaThreashold, 0.5f, 0.9f);
+            //GUI.Label(new Rect(x + spacing * 5 + sliderWidth * 5 +5 + 80, y + spacing * 2 + buttonHeight - 6, sliderWidth, sliderHeight + 4), new GUIContent() { text = "AI: Threshold Space", tooltip = "" });
+            //databank.leftAreaThreashold = GUI.HorizontalSlider(new Rect(x + spacing * 6 + sliderWidth * 5 + 80, y + spacing * 3 + buttonHeight + 15, sliderWidth, sliderHeight), databank.leftAreaThreashold, 0.5f, 0.9f);
         }
     }
 

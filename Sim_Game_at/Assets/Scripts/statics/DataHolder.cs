@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEngine.EventSystems.EventTrigger;
 using Random = UnityEngine.Random;
 
 public class DataHolder : MonoBehaviour
@@ -22,7 +23,7 @@ public class DataHolder : MonoBehaviour
 
     public int daysPassed = 0;
 
-    public HashSet<Vector2> allowedBuildingLocations = new HashSet<Vector2>();
+    public HashSet<Vector2Int> allowedBuildingLocations = new HashSet<Vector2Int>();
 
     private static List<int> numberOfStoneResources = new List<int>();
     private static List<int> numberOfWoodResources = new List<int>();
@@ -264,16 +265,18 @@ public class DataHolder : MonoBehaviour
                 continue;
             }
 
+
+            GeneralUtil.resourceBank.ChangeFoodAmount(-building.stats.keepUpCostWSFS[2]);
+            GeneralUtil.resourceBank.ChangeStoneAmount(-building.stats.keepUpCostWSFS[1]);
+            GeneralUtil.resourceBank.ChangeSandAmount(-building.stats.keepUpCostWSFS[3]);
+            GeneralUtil.resourceBank.ChangeWoodAmount(-building.stats.keepUpCostWSFS[0]);
+
             totalFoodAmountToPay += building.stats.keepUpCostWSFS[2];
             totalSandAmountToPay += building.stats.keepUpCostWSFS[3];
             totalWoodAmountToPay += building.stats.keepUpCostWSFS[0];
             totalStoneAmountToPay += building.stats.keepUpCostWSFS[1];
         }
         
-        GeneralUtil.resourceBank.ChangeFoodAmount(-totalFoodAmountToPay);
-        GeneralUtil.resourceBank.ChangeStoneAmount(-totalStoneAmountToPay);
-        GeneralUtil.resourceBank.ChangeSandAmount(-totalSandAmountToPay);
-        GeneralUtil.resourceBank.ChangeWoodAmount(-totalWoodAmountToPay);
 
         SaveAllResourceThisCycle(totalFoodAmountToPay, totalStoneAmountToPay, totalSandAmountToPay, totalWoodAmountToPay,
                 failureToDeliver);
@@ -289,13 +292,21 @@ public class DataHolder : MonoBehaviour
         foreach (var building in buildingDict.Values)
         {
             //building.workers.Count > 0 &&
-            if (building.workers.Count > 0 && (building.buildingID.buildingIndex == 0 || building.buildingID.buildingIndex == 4)) 
+            if (building.workers.Count > 0 && (building.buildingID.buildingIndex == 0 || building.buildingID.buildingIndex == 3)) 
             {
-                var listOfTiles = GeneralUtil.GetResourcesCloseSpiral(building.centerCoord, building.stats.tileRange);
-                
-                for (int i = 0; i < listOfTiles.Count; i++)
+                for (int x = building.centerCoord.x - building.stats.tileRange; x <= building.centerCoord.x + building.stats.tileRange; x++)
                 {
-                    allowedBuildingLocations.Add(listOfTiles[i].coord);
+                    for (int y = building.centerCoord.y - building.stats.tileRange; y <= building.centerCoord.y + building.stats.tileRange; y++)
+                    {
+                        // Calculate the distance from the center tile to the current tile
+                        int distance = (int)Math.Sqrt(Math.Pow(building.centerCoord.x - x, 2) + Math.Pow(building.centerCoord.y - y, 2));
+
+                        // Check if the current tile is within the given radius
+                        if (distance <= building.stats.tileRange)
+                        {
+                            allowedBuildingLocations.Add(new Vector2Int(x, y));
+                        }
+                    }
                 }
             }
         }
@@ -317,7 +328,7 @@ public class DataHolder : MonoBehaviour
 
     public void CalculationForNewDay(int foodSpendingAmount, int stoneSpendingAmount, int sandSpendingAmount, int woodSpendingAmount) 
     {
-
+        //this whoel thing needs a revamp
         int jobLess = 0;
         int homeLess = 0;
         int grownups = 0;
@@ -360,9 +371,16 @@ public class DataHolder : MonoBehaviour
                 jobPlacesAvailable += building.maxWorkers - building.workers.Count;
             }
 
-            totalAreaTaken += (float)GetCircleArea((double)building.effectiveRadius);
-
+            totalAreaTaken += (float)GetCircleArea((double)building.stats.poissantRadius);
         }
+
+        foreach (var cord in allowedBuildingLocations)
+        {
+            if (GeneralUtil.map.tilesArray[cord.x,cord.y].tileType == TileType.WATER)
+                totalAreaTaken++;
+        }
+
+
 
         // negative means is in need
         var jobDiscrepency =  jobPlacesAvailable - jobLess;
@@ -370,13 +388,13 @@ public class DataHolder : MonoBehaviour
 
         float percTaken = totalAreaTaken / allowedBuildingLocations.Count;
 
-        if (leftAreaThreashold < percTaken)
+        if (0.4f < percTaken)
         {
             RunPoissant(3);
             return;
         }
 
-        //fix the casting to float stuff, this is disgusting
+        //fix the casting to float stuff, this is disgusting   edit: this whole codebase is disgusting
 
         float percHouseLess = (float)homeLess / (float)grownups;
         float percJobLess = (float)jobLess / (float)grownups;

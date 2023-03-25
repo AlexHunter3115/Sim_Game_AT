@@ -69,7 +69,7 @@ public class MapInteraction : MonoBehaviour
 
                                 GeneralUtil.map.clickedTile = GeneralUtil.WorldPosToTile(hit.point);
 
-                                SpawnShowObj(GeneralUtil.map.clickedTile, sel.x, sel.y);
+                                SpawnShowObj(GeneralUtil.map.clickedTile, sel.x, sel.y, selectedIndex);
                                 typeSelected = 0;
                             }
 
@@ -143,7 +143,7 @@ public class MapInteraction : MonoBehaviour
 
 
                     var sel = GeneralUtil.buildingScritpable.buildingStats[selectedIndex].size;
-                    SpawnShowObj(GeneralUtil.map.clickedTile, sel.x, sel.y);
+                    SpawnShowObj(GeneralUtil.map.clickedTile, sel.x, sel.y,selectedIndex);
 
 
                     GeneralUtil.Ui.SetSelIndexText(GeneralUtil.buildingScritpable.buildingStats[selectedIndex].name);
@@ -158,7 +158,7 @@ public class MapInteraction : MonoBehaviour
                     ClearSection(false);
 
                     var sel = GeneralUtil.buildingScritpable.buildingStats[selectedIndex].size;
-                    SpawnShowObj(GeneralUtil.map.clickedTile, sel.x, sel.y);
+                    SpawnShowObj(GeneralUtil.map.clickedTile, sel.x, sel.y,selectedIndex);
 
                     GeneralUtil.Ui.SetSelIndexText(GeneralUtil.buildingScritpable.buildingStats[selectedIndex].name);
                 }
@@ -280,7 +280,7 @@ public class MapInteraction : MonoBehaviour
     public List<PoissantPoints> GeneratePoissantPoints(int buildingIndex) 
     {
         var grid = GeneralUtil.map.tilesArray;
-         List<PoissantPoints> listOfPoissantsPoints = new List<PoissantPoints>();
+        List<PoissantPoints> listOfPoissantsPoints = new List<PoissantPoints>();
 
         //get the boundary of the current square
 
@@ -378,7 +378,7 @@ public class MapInteraction : MonoBehaviour
             }
             else 
             {
-                SpawnShowObj(tile, GeneralUtil.buildingScritpable.buildingStats[buildingIndex].size.x, GeneralUtil.buildingScritpable.buildingStats[buildingIndex].size.y);
+                SpawnShowObj(tile, GeneralUtil.buildingScritpable.buildingStats[buildingIndex].size.x, GeneralUtil.buildingScritpable.buildingStats[buildingIndex].size.y,buildingIndex);
 
                 if (!canSpawn) 
                 {
@@ -476,7 +476,7 @@ public class MapInteraction : MonoBehaviour
     {
         var sel = GeneralUtil.buildingScritpable.buildingStats[indexBuilding].size;
 
-        SpawnShowObj(centerTile, sel.x, sel.y);
+        SpawnShowObj(centerTile, sel.x, sel.y,indexBuilding);
         var success =SpawnBuilding(indexBuilding);
 
         ClearSection(true);
@@ -523,8 +523,8 @@ public class MapInteraction : MonoBehaviour
         //GeneralUtil.map.UpdateMapTexture();
         return true;
     }
-
-    private void SpawnShowObj(Tile startingTile, int width, int height)
+    
+    private void SpawnShowObj(Tile startingTile, int width, int height, int buildingIndex)
     {
         if (spawnedShowObj.Count > 0)
             ClearShowObj();
@@ -560,7 +560,7 @@ public class MapInteraction : MonoBehaviour
 
                 bool typeCheck = false;
 
-                foreach (var type in GeneralUtil.buildingScritpable.buildingStats[selectedIndex].allowedTileTypes)
+                foreach (var type in GeneralUtil.buildingScritpable.buildingStats[buildingIndex].allowedTileTypes)
                 {
                     if (GeneralUtil.map.tilesArray[x, y].tileType == (TileType)type)
                     {
@@ -586,6 +586,7 @@ public class MapInteraction : MonoBehaviour
         canSpawn = canInteract;
         SetTextureDependingOnInteractionAllowance(canInteract);
     }
+
     private void ClearShowObj()
     {
         selectedCoords.Clear();
@@ -596,6 +597,7 @@ public class MapInteraction : MonoBehaviour
             spawnedShowObj.RemoveAt(i);
         }
     }
+
     private void SetTextureDependingOnInteractionAllowance(bool canInteract)
     {
         foreach (var showObj in spawnedShowObj)
@@ -678,7 +680,9 @@ public class MapInteraction : MonoBehaviour
             GUILayout.Space(-5);
             GUILayout.Label($"Speed: {npcData.speed}");
             GUILayout.Space(-5);
-            GUILayout.Label($"Age: {npcData.name}");
+            GUILayout.Label($"Age: {npcData.daysAlive}");
+            GUILayout.Space(-5);
+            GUILayout.Label($"State: {npcData.currAction}");
 
             GUILayout.Space(10);
             if (npcData.refToWorkPlace != null)
@@ -702,7 +706,7 @@ public class MapInteraction : MonoBehaviour
                 GUILayout.Label("list of children");
                 for (int i = 0; i < npcData.children.Count; i++)
                 {
-                    GUILayout.Label("child");
+                    GUILayout.Label($"child {i +1}: {npcData.children[i].name}");
                 }
             }
 
