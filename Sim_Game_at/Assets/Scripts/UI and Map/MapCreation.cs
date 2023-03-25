@@ -218,9 +218,9 @@ public class MapCreation : MonoBehaviour
         plane.GetComponent<Renderer>().material.mainTexture = textMap;
     }
 
-    public GameObject SpawnAgent(string guid, Tile exitPoint) 
+    public GameObject SpawnAgent(string guid, Tile exitPoint,bool checkObj = true) 
     {
-        if (GeneralUtil.dataBank.npcDict[guid].agentObj != null) 
+        if (GeneralUtil.dataBank.npcDict[guid].agentObj != null && checkObj) 
         {
             return null;
         }
@@ -319,6 +319,11 @@ public class MapCreation : MonoBehaviour
                 if (tilesArray[x, y].tileType != TileType.GRASS)
                     currCAgrid[x, y] = new CAtile(false, false);
 
+
+                if (tilesArray[x, y].tileObject != null)
+                    tilesArray[x, y].tileObject.GetComponent<Resource>().available = true;
+
+
                 newCaGrid[x, y] = new CAtile();
 
                 if (!currCAgrid[x, y].interactable)
@@ -327,6 +332,8 @@ public class MapCreation : MonoBehaviour
                 currCAgrid[x, y].Tick(tilesArray[x, y]);
 
                 newCaGrid[x, y] = new CAtile(currCAgrid[x, y]);
+
+                
             }
         }
 
@@ -354,6 +361,7 @@ public class MapCreation : MonoBehaviour
                     {
                         SpawnTreeType(tilesArray[x, y]);
                     }
+                
                 }
                 else if (neigboursNum > 4) //set to die
                 {

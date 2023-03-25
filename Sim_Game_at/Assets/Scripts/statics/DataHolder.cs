@@ -376,6 +376,7 @@ public class DataHolder : MonoBehaviour
             return;
         }
 
+        //fix the casting to float stuff, this is disgusting
 
         float percHouseLess = (float)homeLess / (float)grownups;
         float percJobLess = (float)jobLess / (float)grownups;

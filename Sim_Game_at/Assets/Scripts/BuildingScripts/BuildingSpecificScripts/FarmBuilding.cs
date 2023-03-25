@@ -14,9 +14,25 @@ public class FarmBuilding : MonoBehaviour, IAgentInteractions, ITimeTickers, IBu
 
     public void HourTick()
     {
+        LookForWorkers();
+
         if (GeneralUtil.timeCycle.isNightTime)
         {
             buildingId.buildingData.shut = true;
+            foreach (var worker in buildingId.buildingData.workers) 
+            {
+                if (worker.refToHouse != null)
+                {
+                    if (worker.readyToWork == true && worker.currAction == AgentData.CURRENT_ACTION.WORKING)
+                    {
+                        worker.SetAgentPathing(buildingId.buildingData.entrancePoints[0], worker.refToHouse.entrancePoints[0], true);
+                        GeneralUtil.map.SpawnAgent(worker.guid, GeneralUtil.map.tilesArray[buildingId.buildingData.entrancePoints[0].x, buildingId.buildingData.entrancePoints[0].y]);
+                        worker.readyToWork = false;
+                        worker.atWork = false;
+                    }
+                }
+            }
+
         }
         else
         {
@@ -62,11 +78,6 @@ public class FarmBuilding : MonoBehaviour, IAgentInteractions, ITimeTickers, IBu
         }
     }
 
-    public void MinuteTick()
-    {
-        LookForWorkers();
-    }
-
     #endregion 
 
 
@@ -83,7 +94,7 @@ public class FarmBuilding : MonoBehaviour, IAgentInteractions, ITimeTickers, IBu
                 if (data.readyToWork == true && data.currAction == AgentData.CURRENT_ACTION.WORKING)
                 {
                     data.SetAgentPathing(buildingId.buildingData.entrancePoints[0], data.refToHouse.entrancePoints[0], true);
-                    GeneralUtil.map.SpawnAgent(data.guid, GeneralUtil.map.tilesArray[buildingId.buildingData.entrancePoints[0].x, buildingId.buildingData.entrancePoints[0].y]);
+                    GeneralUtil.map.SpawnAgent(data.guid, GeneralUtil.map.tilesArray[buildingId.buildingData.entrancePoints[0].x, buildingId.buildingData.entrancePoints[0].y], false);
                     data.readyToWork = false;
                     data.atWork = false;
                 }

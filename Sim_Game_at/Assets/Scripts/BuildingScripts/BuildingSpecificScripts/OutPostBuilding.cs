@@ -48,7 +48,7 @@ public class OutPostBuilding : MonoBehaviour, IAgentInteractions, ITimeTickers, 
                 if (data.readyToWork == true && data.currAction == AgentData.CURRENT_ACTION.WORKING)
                 {
                     data.SetAgentPathing(buildingId.buildingData.entrancePoints[0], data.refToHouse.entrancePoints[0], true);
-                    GeneralUtil.map.SpawnAgent(data.guid, GeneralUtil.map.tilesArray[buildingId.buildingData.entrancePoints[0].x, buildingId.buildingData.entrancePoints[0].y]);
+                    GeneralUtil.map.SpawnAgent(data.guid, GeneralUtil.map.tilesArray[buildingId.buildingData.entrancePoints[0].x, buildingId.buildingData.entrancePoints[0].y],false);
                     data.readyToWork = false;
                     data.atWork = false;
                 }
@@ -63,19 +63,31 @@ public class OutPostBuilding : MonoBehaviour, IAgentInteractions, ITimeTickers, 
 
     public void HourTick()
     {
+        LookForWorkers();
+
         if (!GeneralUtil.timeCycle.isNightTime) 
         {
-
             GeneralUtil.resourceBank.ChangeWoodAmount((int)(buildingId.buildingData.stats.hourlyProductionWSFS[0] * (buildingId.buildingData.workers.Count / buildingId.buildingData.maxWorkers * 1.0f)));
             GeneralUtil.resourceBank.ChangeStoneAmount((int)(buildingId.buildingData.stats.hourlyProductionWSFS[1] * (buildingId.buildingData.workers.Count / buildingId.buildingData.maxWorkers * 1.0f)));
             GeneralUtil.resourceBank.ChangeFoodAmount((int)(buildingId.buildingData.stats.hourlyProductionWSFS[2] * (buildingId.buildingData.workers.Count / buildingId.buildingData.maxWorkers * 1.0f)));
             GeneralUtil.resourceBank.ChangeSandAmount((int)(buildingId.buildingData.stats.hourlyProductionWSFS[3] * (buildingId.buildingData.workers.Count / buildingId.buildingData.maxWorkers * 1.0f)));
         }
-    }
-
-    public void MinuteTick()
-    {
-        LookForWorkers();
+        else 
+        {
+            foreach (var worker in buildingId.buildingData.workers)
+            {
+                if (worker.refToHouse != null)
+                {
+                    if (worker.readyToWork == true && worker.currAction == AgentData.CURRENT_ACTION.WORKING)
+                    {
+                        worker.SetAgentPathing(buildingId.buildingData.entrancePoints[0], worker.refToHouse.entrancePoints[0], true);
+                        GeneralUtil.map.SpawnAgent(worker.guid, GeneralUtil.map.tilesArray[buildingId.buildingData.entrancePoints[0].x, buildingId.buildingData.entrancePoints[0].y]);
+                        worker.readyToWork = false;
+                        worker.atWork = false;
+                    }
+                }
+            }
+        }
     }
 
     #endregion
