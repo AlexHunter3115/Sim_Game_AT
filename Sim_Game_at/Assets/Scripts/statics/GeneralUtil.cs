@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -379,13 +378,13 @@ public static class GeneralUtil
     //the cost of pathfidnign for each tile
     public static Dictionary<TileType, float> tileCosts = new Dictionary<TileType, float>()
     {
-        {TileType.GRASS, 1.2f},
-        {TileType.HILL, 3f},
-        {TileType.SNOW, 6f},
-        {TileType.WATER, 8f},
-        {TileType.NULL, 30},
+        {TileType.GRASS, 0.9f},
+        {TileType.HILL, 2f},
+        {TileType.SNOW, 4f},
+        {TileType.WATER, 6f},
+        {TileType.NULL, 20f},
         {TileType.PATH, 0.3f},
-        {TileType.BLOCKED, 30},
+        {TileType.BLOCKED, 20f},
         {TileType.ENTRANCE, 0f}
     };
 

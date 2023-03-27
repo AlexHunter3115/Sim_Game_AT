@@ -1,14 +1,9 @@
-using System.Collections;
+
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
-using UnityEngine.UI;
 using UnityEngine.SceneManagement;
-using UnityEngine.UIElements;
 using Slider = UnityEngine.UI.Slider;
-using static System.Net.Mime.MediaTypeNames;
-using UnityEditor.VersionControl;
-using static UserUIManager;
 
 public class UserUIManager : MonoBehaviour
 {
