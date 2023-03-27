@@ -13,7 +13,6 @@ public class TimeCycle : MonoBehaviour
     public float hourCheck = 25;
     public float dayCheck = 125;
 
-    public float timerMultiplier = 1;
     private bool timeOn = true;   //deal with this later
 
     public bool isNightTime; 
@@ -28,7 +27,6 @@ public class TimeCycle : MonoBehaviour
     public TIME currentDayState;
 
     private int currentHour = 8;
-
 
     private bool changing = false;
     private float timeElapsed = 0;
@@ -46,30 +44,23 @@ public class TimeCycle : MonoBehaviour
 
     public UnityEvent OnFunctionCalled;
 
-
-    private delegate IEnumerator DailyCycleCorutineVar();
-    private DailyCycleCorutineVar _updateDayCheck;
-
-    private delegate IEnumerator MinuteCycleCorutineVar();
-    private MinuteCycleCorutineVar _updateMinuteCheck;
-
-    private delegate IEnumerator HourCycleCorutineVar();
-    private HourCycleCorutineVar _updateHourCheck;
-
+    private float timer1;
+    private float timer2;
 
     private void Awake()
     {
         GeneralUtil.timeCycle = this;
 
-        _updateHourCheck = HourCycleCorutine;
-        _updateDayCheck = DailyCycleCorutine;
         SetDayTime();
     }
 
     private void Start()
     {
-        StartCoroutine(_updateDayCheck());
-        StartCoroutine(_updateHourCheck());
+
+        timer1 = hourCheck;
+        timer2 = dayCheck;
+
+        HourPassCall();
     }
 
     private void Update()
@@ -84,60 +75,62 @@ public class TimeCycle : MonoBehaviour
             if (sunLight.color == endColor)
                 changing = false;
         }
-    }
 
-   
-    private IEnumerator DailyCycleCorutine()
-    {
-        while (timeOn)
+        timer1 -= Time.deltaTime;
+        timer2 -= Time.deltaTime;
+
+        if (timer1 <= 0)
         {
-            yield return new WaitForSeconds(dayCheck/timerMultiplier);
+            HourPassCall();
+            timer1 = hourCheck; // Reset the timer
+        }
 
-            for (int i = 0; i < GeneralUtil.dataBank.npcDict.Count; i++)
-            {
-                CallDayInterface(GeneralUtil.dataBank.npcDict.Values.ElementAt(i));
-            }
-
-
-            for (int i = 0; i < GeneralUtil.dataBank.buildingDict.Count; i++)
-            {
-                CallDayInterface(GeneralUtil.dataBank.buildingDict.Values.ElementAt(i).buildingID.buildingTimer);
-            }
+        if (timer2 <= 0)
+        {
+            DailyPassCall();
+            timer2 = dayCheck; // Reset the timer
         }
     }
 
-    private IEnumerator HourCycleCorutine()
+    private void DailyPassCall() 
     {
-        while (timeOn)
+        for (int i = 0; i < GeneralUtil.dataBank.npcDict.Count; i++)
         {
-            yield return new WaitForSeconds(hourCheck / timerMultiplier);
-            currentHour++;
-            if (currentHour >= 24) 
-            {
-                GeneralUtil.map.StartCoroutine(GeneralUtil.map.CallNewTurnSpawn(Random.Range(5, 15), Random.Range(10, 30)));
-                GeneralUtil.dataBank.SpendDailyNeeds();
-                currentHour = 0;
-            }
+            CallDayInterface(GeneralUtil.dataBank.npcDict.Values.ElementAt(i));
+        }
 
-            SetDayTime();
-            
-            for (int i = 0; i < GeneralUtil.dataBank.buildingDict.Count; i++)
-            {
-                if (GeneralUtil.dataBank.buildingDict.Values.ElementAt(i).buildingID.buildingTimer !=null)
-                    CallHourInterface(GeneralUtil.dataBank.buildingDict.Values.ElementAt(i).buildingID.buildingTimer);
-            }
-            //checm for null so it doesnt crash
-            for (int i = 0; i < GeneralUtil.dataBank.npcDict.Count; i++)
-            {
-                if (GeneralUtil.dataBank.npcDict.Values.ElementAt(i) != null)
-                    CallHourInterface(GeneralUtil.dataBank.npcDict.Values.ElementAt(i));
-            }
-
-            GeneralUtil.Ui.SetHoursText(currentHour);
+        for (int i = 0; i < GeneralUtil.dataBank.buildingDict.Count; i++)
+        {
+            CallDayInterface(GeneralUtil.dataBank.buildingDict.Values.ElementAt(i).buildingID.buildingTimer);
         }
     }
 
+    private void HourPassCall() 
+    {
+        currentHour++;
+        if (currentHour >= 24)
+        {
+            GeneralUtil.map.StartCoroutine(GeneralUtil.map.CallNewTurnSpawn(Random.Range(5, 15), Random.Range(10, 30)));
+            GeneralUtil.dataBank.SpendDailyNeeds();
+            currentHour = 0;
+        }
 
+        SetDayTime();
+
+        for (int i = 0; i < GeneralUtil.dataBank.buildingDict.Count; i++)
+        {
+            if (GeneralUtil.dataBank.buildingDict.Values.ElementAt(i).buildingID.buildingTimer != null)
+                CallHourInterface(GeneralUtil.dataBank.buildingDict.Values.ElementAt(i).buildingID.buildingTimer);
+        }
+        //checm for null so it doesnt crash
+        for (int i = 0; i < GeneralUtil.dataBank.npcDict.Count; i++)
+        {
+            if (GeneralUtil.dataBank.npcDict.Values.ElementAt(i) != null)
+                CallHourInterface(GeneralUtil.dataBank.npcDict.Values.ElementAt(i));
+        }
+
+        GeneralUtil.Ui.SetHoursText(currentHour);
+    }
 
     private void SetDayTime() 
     {

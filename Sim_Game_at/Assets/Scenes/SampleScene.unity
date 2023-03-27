@@ -2107,8 +2107,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   minuteCheck: 4
-  hourCheck: 8
-  dayCheck: 192
+  hourCheck: 16
+  dayCheck: 384
   timerMultiplier: 1
   isNightTime: 0
   currentDayState: 0
